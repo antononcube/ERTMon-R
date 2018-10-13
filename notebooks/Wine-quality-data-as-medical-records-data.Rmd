@@ -1,6 +1,7 @@
 ---
 title: "Wine quality data as medical records data"
 author: Anton Antonov
+date: "2018-10-13"
 output: html_notebook
 ---
 
