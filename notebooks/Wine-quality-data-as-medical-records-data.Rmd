@@ -1,0 +1,109 @@
+---
+title: "Wine quality data as medical records data"
+author: Anton Antonov
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(reshape2)
+```
+
+```{r}
+saveDirectoryName <- "~/ERTMon-R/WineQualityData/"
+```
+
+# Introduction
+
+# Get data
+
+```{r}
+dfWineQuality <- read.csv("https://raw.githubusercontent.com/antononcube/MathematicaVsR/master/Data/MathematicaVsR-Data-WineQuality.csv", stringsAsFactors = F)
+dim(dfWineQuality)
+```
+
+```{r}
+summary(dfWineQuality)
+```
+
+# Convert to medical records
+
+## Change "wineQuality" into "Label"
+
+```{r}
+dfWineQuality <-
+  dfWineQuality %>%
+  mutate( wineQuality = ifelse( wineQuality >= 7, "high", "low") ) %>% 
+  mutate( Label = wineQuality ) %>% 
+  select(-one_of("wineQuality"))
+```
+
+```{r}
+summary(as.data.frame(unclass(dfWineQuality)))
+```
+
+## Long form
+
+```{r}
+dfWineQualityLongForm <-
+  melt( dfWineQuality %>% select(-one_of("Label")) , id.vars = "id" )
+names(dfWineQualityLongForm) <- c("EntityID", "Variable", "Value")
+dfWineQualityLongForm
+```
+
+```{r}
+dfWineQualityLongForm <-
+  dfWineQualityLongForm %>% 
+  mutate( ObservationTimeString = "2017-12-04 23:18:48", 
+          ObservationTime = 1512429528)
+```
+
+```{r}
+pids <- unique(dfWineQualityLongForm$EntityID)
+dfWineEntities <-
+  data.frame( EntityID = dfWineQuality$id, Age = floor(runif(n = nrow(dfWineQuality), min = 0, max = 100)), Sex = "U", 
+              Label = dfWineQuality$Label, stringsAsFactors = F ) 
+dfWineEntities <-
+  dfWineEntities %>%
+  mutate( Label = ifelse( Label == "high", "high", "Non.high") )
+dfWineEntities <- melt( dfWineEntities, id.vars = "EntityID")
+dfWineEntities <- setNames(dfWineEntities, c("EntityID", "Attribute", "Value"))
+dfWineEntities <- dfWineEntities %>% arrange(EntityID)
+dfWineEntities
+```
+
+## Export
+
+```{r}
+write.csv( x = dfWineEntities, file = paste0( saveDirectoryName, "entityAttributes.csv") )
+```
+
+```{r}
+write.csv( x = dfWineQualityLongForm, file = paste0( saveDirectoryName, "eventRecords.csv") )
+```
+
+# Specifications
+
+```{r}
+origSpec <- read.csv( "~/ERTMon-R/data/computationSpecification.csv", stringsAsFactors = F)
+origSpec
+```
+
+```{r}
+outVars <- unique(dfWineQualityLongForm$Variable)
+outSpecDF1 <- data.frame( outVars, outVars, "numerical", "NULL", 57600, "Mean", 57600, "Variable", "Mean", "NULL", "NULL", stringsAsFactors = F)
+outSpecDF2 <- data.frame( outVars, outVars, "numerical", "NULL", 57600, "OutCnt", 57600, "Age", "Mean", "NULL", "NULL", stringsAsFactors = F)
+outSpecDF3 <- data.frame( outVars, outVars, "numerical", "NULL", 57600, "OutFrc", 57600, "Entity", "None", "NULL", "NULL", stringsAsFactors = F)
+outSpecDF1 <- setNames( outSpecDF1, names(origSpec) )
+outSpecDF2 <- setNames( outSpecDF2, names(origSpec) )
+outSpecDF3 <- setNames( outSpecDF3, names(origSpec) )
+outSpecDF <- rbind( outSpecDF1, outSpecDF2, outSpecDF3 )
+outSpecDF <- rbind( outSpecDF, origSpec[ origSpec$Variable %in% c("Unit", "Label", "Age"), ] )
+outSpecDF[ outSpecDF$Variable == "Label", "Critical.label" ] <- "high"
+outSpecDF <- outSpecDF[ order(outSpecDF$Variable), ]
+outSpecDF
+```
+
+```{r}
+write.csv( x = outSpecDF, file= paste0( saveDirectoryName, "computationSpecification.csv" ), row.names = F)
+```

@@ -1,0 +1,198 @@
+---
+title: "Event records transformations main use case"
+author: Anton Antonov
+date: "2018-10-13"
+params:
+  trainingDataFraction: 0.8
+  saveModelQ: TRUE
+output: html_notebook
+---
+
+```{r, eval=TRUE, include=FALSE}
+library(stringi)
+library(stringr)
+library(RcppRoll)
+
+
+source("~/ERTMon-R/R/LoadClasses.R")
+
+source("~/MathematicaForPrediction/R/DataConversionFunctions.R")
+source("~/MathematicaForPrediction/R/DocumentTermWeightFunctions.R")
+source("~/MathematicaForPrediction/R/SparseMatrixRecommender.R")
+source("~/MathematicaForPrediction/R/OutlierIdentifiers.R")
+source("~/MathematicaForPrediction/R/VariableImportanceByClassifiers.R" )
+```
+
+
+# Data directory
+
+Here we specify the directory with data and transformations specifications:
+
+```{r}
+directoryName <- "~/ERTMon-R/WineQualityData/"
+```
+
+
+# Ingest computations specification data
+
+```{r}
+compSpecObj <- new( "ComputationSpecification" )
+compSpecObj <- readSpec( compSpecObj,  file.path( directoryName, "computationSpecification.csv" ) )  
+compSpecObj <- ingestSpec( compSpecObj )
+```
+
+The ingestion process below is done with this data transformation specification:
+
+```{r}
+compSpecObj@parameters
+```
+
+# Ingest data
+
+```{r}
+diObj <- new( "DataIngester")
+
+diObj <- readData( diObj, 
+                   file.path( directoryName, "eventRecords.csv" ),
+                   file.path( directoryName, "entityAttributes.csv" ) )
+
+diObj <- ingestData( diObj, "Label" )
+
+dwObj <- diObj@dataObj
+```
+
+```{r}
+dwObj@labels
+```
+
+ERTMon does not require the data ingester object to have its fields "diedLabel" and "survivedLabel" set to have the correct values.
+If it is done it is for convenience or "as a memo". 
+(The label values are set through the parameters CSV table in the class ComputationSpecification.)
+
+```{r}
+#dwObj@survivedLabel <- compSpecObj@parameters[ compSpecObj@parameters$Variable == "Label","Critical.label"]
+## Note the the computation here has two different approaches.
+#dwObj@diedLabel <- paste0("Non.", dwObj@survivedLabel)
+#dwObj@diedLabel <- setdiff( dwObj@labels, dwObj@survivedLabel)
+```
+
+```{r}
+## If this is really needed it can be in the validation function for DataWrapper.
+#assertthat::assert_that( mean( c(dwObj@diedLabel, dwObj@survivedLabel) %in% dwObj@labels ) == 1 )
+```
+
+# Split data
+
+Obtaining splitting indices: 
+
+```{r}
+set.seed(1456)
+entityIDs <- unique(dwObj@eventRecords$EntityID)
+trainingEntityIDs <- sample( entityIDs, floor( params$trainingDataFraction * length(entityIDs) ) )
+testEntityIDs <- setdiff( unique(dwObj@eventRecords$EntityID), trainingEntityIDs )
+```
+
+Splitting of data into training and test parts:
+
+```{r}  
+trainingData <- dwObj@eventRecords[ dwObj@eventRecords$EntityID %in% trainingEntityIDs, ]
+testData <- dwObj@eventRecords[ dwObj@eventRecords$EntityID %in% testEntityIDs, ]
+```
+   
+**Remark:** PCCPF has a data splitter object, but here use a more direct approach in order to simulate real-life scenarios.
+
+# Transform training data
+
+Make a new data transformer Obj:
+
+```{r}
+dtObj <- new( "DataTransformerCatMatrices" )
+```
+
+Note that the data has not been "seen" by the data transformation object:
+
+```{r} 
+dtObj <- transformData( dtObj, compSpecObj, trainingData, dwObj@entityAttributes[ dwObj@entityAttributes$EntityID %in% trainingEntityIDs, ] )
+```
+
+```{r}
+transformedTrainingDataDF <- dtObj@transformedData
+```
+
+```{r}
+summary(as.data.frame(unclass(dtObj@transformedData)), maxsum=20)
+```
+
+Matrix version of the transformed data:
+
+```{r}
+transformedTrainingDataMat <- dtObj@dataMat
+```
+
+  
+  
+# What data do we have?
+
+The ingestion function call above encapsulates a lot of steps. 
+Here we show summaries of the entity data and medical data that are going to be used in the classification.
+
+*Remark:* These data objects contain transformed versions of the data that is placed in the specified directory.
+
+
+### Patient data
+
+```{r}
+summary(as.data.frame(unclass(dwObj@entityAttributes)))
+```
+
+### Event records
+
+```{r}
+summary(as.data.frame(unclass(dwObj@eventRecords)))
+```
+
+### Transformed event records data (training)
+
+```{r}
+dim(transformedTrainingDataDF)
+```
+
+```{r}
+summary(as.data.frame(unclass(transformedTrainingDataDF)), maxsum=12)
+```
+ 
+The corresponding data matrix:
+
+```{r}
+dim(transformedTrainingDataMat)
+```
+ 
+### Transformed event records data (test)
+
+The test data should not be "known" at this point.
+
+```{r}
+rm("transformedTestDataDF")
+exists("transformedTestDataDF")
+```
+
+
+# Transform test data
+
+Here we repeat the transformations over the test data using the aggregation values from the training data transformation.
+(This is specified with the parameter `testDataRun`.)
+
+```{r}
+dtObj <- transformData( dtObj, compSpecObj, testData, dwObj@entityAttributes[ dwObj@entityAttributes$EntityID %in% testEntityIDs, ], testDataRun = TRUE )
+transformedTestDataDF <- dtObj@transformedData 
+transformedTestDataMat <- dtObj@dataMat
+```
+
+# Sparse matrix object (for explanations and proofs)
+
+Make a Sparse Matrix Recommender (SMR) object.
+
+```{r}
+clSMRFreq <- SMRCreateFromMatrices( matrices = dtObj@sparseMatrices, tagTypes = names(dtObj@sparseMatrices), itemColumnName = "EntityID" )
+```
+

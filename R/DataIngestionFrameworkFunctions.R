@@ -34,23 +34,22 @@ ProcessDataSpecification <- function( dataSpec ) {
   
   dataSpecDF <- dataSpec
   
-  
   ## Add 'Label' row if it does not exist.
   if ( !( "Label" %in% dataSpecDF$Variable ) ) {
     
     warning( "No 'Label' row in given in the specification. Attempt to continue with automatically added 'Label' row.", call. = T)
     
     df <- do.call( data.frame, as.list( setNames( rep("NULL", ncol(dataSpecDF)), colnames(dataSpecDF) ) ) )
-    df$Variable <- "Label"; df$Aggregation.time.interval <- 0
+    df$Variable <- "Label"; df$Aggregation.interval.length <- 0
     dataSpecDF <- rbind( dataSpecDF, df )
   }
   
   ## Defaults
   dataSpecDF <- 
     ddply( dataSpecDF, c("Variable"), function(x) { 
-      if ( mean( is.na( x$Aggregation.time.interval ) ) == 1 ) { mval <- 1800 }
-      else { mval <- min( x$Aggregation.time.interval, na.rm = T) }
-      x$Aggregation.time.interval[ is.na(x$Aggregation.time.interval) ] <- mval
+      if ( mean( is.na( x$Aggregation.interval.length ) ) == 1 ) { mval <- 1800 }
+      else { mval <- min( x$Aggregation.interval.length, na.rm = T) }
+      x$Aggregation.interval.length[ is.na(x$Aggregation.interval.length) ] <- mval
       x
     } )
   
@@ -63,17 +62,29 @@ ProcessDataSpecification <- function( dataSpec ) {
                                                laply( dataSpecDF$Aggregation.function, is.na ) ,
                                              "Mean", dataSpecDF$Aggregation.function )
   
-  dataSpecDF$Normalization <- gsub( "^\\W*", "", dataSpecDF$Normalization)
-  dataSpecDF$Normalization <- gsub( "\\W*$", "", dataSpecDF$Normalization)
+  dataSpecDF$Normalization.scope <- gsub( "^\\W*", "", dataSpecDF$Normalization.scope)
+  dataSpecDF$Normalization.scope <- gsub( "\\W*$", "", dataSpecDF$Normalization.scope)
   
-  dataSpecDF$Normalization <- ifelse( dataSpecDF$Normalization == "NULL" | 
-                                        dataSpecDF$Normalization == "NA" |
-                                        laply( dataSpecDF$Normalization, is.na ) ,
-                                      "None", dataSpecDF$Normalization )
+  dataSpecDF$Normalization.scope <- ifelse( dataSpecDF$Normalization.scope == "NULL" | 
+                                        dataSpecDF$Normalization.scope == "NA" |
+                                        laply( dataSpecDF$Normalization.scope, is.na ) ,
+                                      "None", dataSpecDF$Normalization.scope )
   
-  dataSpecDF <- cbind( dataSpecDF, MatrixName = paste( dataSpecDF$Variable, dataSpecDF$Aggregation.function, sep = "."), stringsAsFactors = FALSE )
+  dataSpecDF$Normalization.function <- gsub( "^\\W*", "", dataSpecDF$Normalization.function)
+  dataSpecDF$Normalization.function <- gsub( "\\W*$", "", dataSpecDF$Normalization.function)
   
-  dataSpecDF$Aggregation.time.interval <- as.numeric(dataSpecDF$Aggregation.time.interval)
+  dataSpecDF$Normalization.function <- ifelse( dataSpecDF$Normalization.function == "NULL" | 
+                                              dataSpecDF$Normalization.function == "NA" |
+                                              laply( dataSpecDF$Normalization.function, is.na ) ,
+                                            "None", dataSpecDF$Normalization.function )
+  
+  
+  dataSpecDF <-
+    cbind( dataSpecDF, 
+           MatrixName = paste( dataSpecDF$Variable, dataSpecDF$Aggregation.function, sep = "."), 
+           stringsAsFactors = FALSE )
+  
+  dataSpecDF$Aggregation.interval.length <- as.numeric(dataSpecDF$Aggregation.interval.length)
   dataSpecDF$Max.history.length <- as.numeric(dataSpecDF$Max.history.length)
   
   if( "LocationID" %in% dataSpecDF$Variable ) {
@@ -83,9 +94,9 @@ ProcessDataSpecification <- function( dataSpec ) {
       dataSpecDF[ dataSpecDF$Variable == "LocationID", "Max.history.length"] <- max( dataSpecDF$Max.history.length, na.rm = T)
     }
     
-    if( !is.numeric( dataSpecDF[ dataSpecDF$Variable == "LocationID", "Aggregation.time.interval"] ) ||
-        is.na( dataSpecDF[ dataSpecDF$Variable == "LocationID", "Aggregation.time.interval"] ) ) {
-      dataSpecDF[ dataSpecDF$Variable == "LocationID", "Aggregation.time.interval"] <- dataSpecDF[ dataSpecDF$Variable == "LocationID", "Max.history.length"] 
+    if( !is.numeric( dataSpecDF[ dataSpecDF$Variable == "LocationID", "Aggregation.interval.length"] ) ||
+        is.na( dataSpecDF[ dataSpecDF$Variable == "LocationID", "Aggregation.interval.length"] ) ) {
+      dataSpecDF[ dataSpecDF$Variable == "LocationID", "Aggregation.interval.length"] <- dataSpecDF[ dataSpecDF$Variable == "LocationID", "Max.history.length"] 
     }
     
   }
@@ -114,7 +125,8 @@ AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, a
       dplyr::mutate( MatrixName = mName )
   } else if( specRow$Variable == "Label" ) {
     entityData %>% 
-      dplyr::mutate( VarID = paste("Label",Label,sep="."), TimeGridCell = 0) %>% 
+      dplyr::filter( Attribute == "Label" ) %>% 
+      dplyr::mutate( VarID = paste("Label", Value, sep="."), TimeGridCell = 0) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
       dplyr::summarise( AValue = 1 ) %>%
       dplyr::mutate( MatrixName = "Label" )
@@ -124,7 +136,7 @@ AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, a
     eventRecordsData %>% 
       dplyr::select( EntityID, LocationID, DiffToMaxObsTime ) %>%
       dplyr::filter( DiffToMaxObsTime <= specRow$Max.history.length ) %>%
-      dplyr::mutate( TimeGridCell = floor( DiffToMaxObsTime / specRow$Aggregation.time.interval ) ) %>%
+      dplyr::mutate( TimeGridCell = floor( DiffToMaxObsTime / specRow$Aggregation.interval.length ) ) %>%
       dplyr::mutate( VarID = paste(LocationID, TimeGridCell, sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
       dplyr::summarise( AValue = func(LocationID) ) %>%
@@ -185,39 +197,77 @@ AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, a
 #' @description NOT USED ANYMORE. Applies a normalization function to long form contingency matrix data.
 #' @param specRow a speficication that has columns "MatrixName" and "Normalization"
 #' @param matLongFormData aggregated event records in long form
-#' @param entityData entity specifica data
+#' @param entityAttributes entity attributes data
 #' @param normalizationFuncSpecToFunc a named elements list of normalization functions
 #' @detail NOT USED ANYMORE. See the method "normalizeGroupsBySpec" of the class DataTransformer.
-NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityData, normalizationFuncSpecToFunc ) {
+NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, normalizationFuncSpecToFunc ) {
   
-  if ( specRow$Normalization[[1]] %in% c( "ByAttributeAverage", "ByAttributeMean") ) {
+  func <- aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
+
+  allEntityAttrs <- unique(entityAttributes$Attribute)
+  
+  if ( ! ( specRow$Normalization.function[[1]] %in% names(normalizationFuncSpecToFunc) ) ) {
     
-    ## Currently this is wrong. It has to be replaced with the correct use of c("EntityID", "Attribute", "Value").
+    warning("Uknown normalization function. Continuing by ignoring it.", call. = TRUE )
     
-    ageAvg <- 
+    matLongFormData %>% 
+      dplyr::filter( MatrixName == specRow$MatrixName )
+    
+  } else if ( specRow$Normalization.scope[[1]] == "Variable" ) {
+    
+    dfNormalizationValues <- 
       matLongFormData %>% 
-      dplyr::filter( MatrixName == specRow$MatrixName ) %>%
-      dplyr::inner_join( entityData[, c("EntityID", "Attribute")], by = "EntityID" ) %>% 
-      dplyr::group_by( Attribute ) %>% 
-      dplyr::summarise( AttributeAverage = mean(AValue) ) %>% 
+      dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
+      dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
       dplyr::ungroup()
     
     matLongFormData %>% 
       dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
-      dplyr::inner_join( entityData[, c("EntityID", "Attribute")], by = "EntityID" ) %>% 
-      dplyr::inner_join( ageAvg, by = "Attribute" ) %>%
+      dplyr::inner_join( dfNormalizationValues, by = "MatrixName" ) %>%
       dplyr::group_by( EntityID ) %>% 
-      dplyr::mutate( AValue = AValue / AttributeAverage )
+      dplyr::mutate( AValue = AValue / NormalizationValue )
     
-  } else if ( specRow$Normalization[[1]] %in% names(normalizationFuncSpecToFunc) ) {
+  } else if ( specRow$Normalization.scope[[1]] %in% allEntityAttrs ) {
     
-    # cat( "in:", specRow$Normalization[[1]], "\n" )
-    func <- normalizationFuncSpecToFunc[ specRow$Normalization[[1]] ][[1]]
-    matLongFormData %>% dplyr::filter( MatrixName == specRow$MatrixName ) %>% group_by( EntityID ) %>% dplyr::mutate( AValue = func(AValue) )
+    dfNormalizationValues <- 
+      matLongFormData %>% 
+      dplyr::filter( MatrixName == specRow$MatrixName ) %>%
+      dplyr::inner_join( entityAttributes[, c("EntityID", "Attribute")] %>% 
+                           dplyr::filter( Attribute == specRow$Normalization.scope[[1]] ),
+                         by = "EntityID" ) %>% 
+      dplyr::group_by( Attribute ) %>% 
+      dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
+      dplyr::ungroup()
+    
+    matLongFormData %>% 
+      dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
+      dplyr::inner_join( entityAttributes[, c("EntityID", "Attribute")], by = "EntityID" ) %>% 
+      dplyr::inner_join( dfNormalizationValues, by = "Attribute" ) %>%
+      dplyr::group_by( EntityID ) %>% 
+      dplyr::mutate( AValue = AValue / NormalizationValue )
+    
+  } else if ( specRow$Normalization.function[[1]] %in% names(normalizationFuncSpecToFunc) ) {
+    
+    # cat( "in:", specRow$Normalization.function[[1]], "\n" )
+    func <- normalizationFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
+    matLongFormData %>% 
+      dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
+      group_by( EntityID ) %>% 
+      dplyr::mutate( AValue = func(AValue) )
     
   } else {
     
-    matLongFormData %>% dplyr::filter( MatrixName == specRow$MatrixName )
+    matLongFormData %>% 
+      dplyr::filter( MatrixName == specRow$MatrixName )
     
   }
+}
+
+
+##-----------------------------------------------------------
+## Verify directory
+VerifyDataDirectory <- function( directoryName ) {
+  file.exists( directoryName ) &&
+    file.exists( file.path( directoryName, "eventRecords.csv" ) ) &&
+    file.exists( file.path( directoryName, "entityAttributes.csv" ) )
 }
