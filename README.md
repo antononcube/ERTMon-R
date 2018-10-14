@@ -1,6 +1,6 @@
 # Event Records Transformations Monad in R
 
-This repository has an R implementation of the "**E**vent **R**ecords **T**ransformations **Mon**and" (ERTMon) described in \[1\]
+This repository has an R implementation of the "**E**vent **R**ecords **T**ransformations **Mon**ad" (ERTMon) described in \[1\]
 and implemented with Mathematica in \[2\].
 
 ## References
