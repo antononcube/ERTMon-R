@@ -263,11 +263,26 @@ NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, no
   }
 }
 
-
 ##-----------------------------------------------------------
 ## Verify directory
+##-----------------------------------------------------------
 VerifyDataDirectory <- function( directoryName ) {
   file.exists( directoryName ) &&
     file.exists( file.path( directoryName, "eventRecords.csv" ) ) &&
     file.exists( file.path( directoryName, "entityAttributes.csv" ) )
+}
+
+##-----------------------------------------------------------
+## Empty computation specification row
+##-----------------------------------------------------------
+
+EmptyComputationSpecificationRow <- function() {
+  data.frame(
+    "Variable" = NA,                    "Explanation" = "",
+    "Type" = "numerical",               "Convert.type" = "NULL",               
+    "Aggregation.interval.length" = 60, "Aggregation.function" = "Mean",
+    "Max.history.length" = 3600,        "Normalization.scope" = "Entity",       
+    "Normalization.function" = "Mean",  "Moving.average.window" = "NULL",
+    "Critical.label" = "NULL",
+    stringsAsFactors = FALSE)
 }

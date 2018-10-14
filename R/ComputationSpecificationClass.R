@@ -71,6 +71,7 @@ setClass( "ComputationSpecification",
 ##-----------------------------------------------------------
 ## Method signatures
 setGeneric("readSpec", function (object, fileName) standardGeneric("readSpec") )
+setGeneric("setSpec", function (object, compSpec) standardGeneric("setSpec") )
 setGeneric("ingestSpec", function (object) standardGeneric("ingestSpec") )
 
 ##===========================================================
@@ -90,6 +91,14 @@ setMethod("readSpec",
             
             cat("\n\t\t...DONE\n")
             
+            object
+          }
+)
+
+setMethod("setSpec",
+          signature = c(object = "ComputationSpecification", compSpec = "data.frame" ), 
+          def = function(object, compSpec) {
+            object@originalParameters <- compSpec            
             object
           }
 )

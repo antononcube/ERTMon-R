@@ -48,14 +48,14 @@ source( file.path( ertMonDirName, "R/DataIngestionFrameworkFunctions.R" ) )
 
 setClass( "DataIngester",
           slots = list( ID = "character", 
-                        fileNameRecords = "character", 
-                        fileNamePatients = "character", 
+                        fileNameEventRecords = "character", 
+                        fileNameEntityAttributes = "character", 
                         dataObj = "DataWrapper",
                         progressObject = "ANY" ),
           
           prototype = list( ID = NA_character_, 
-                            fileNameRecords = NA_character_, 
-                            fileNamePatients = NA_character_, 
+                            fileNameEventRecords = NA_character_, 
+                            fileNameEntityAttributes = NA_character_, 
                             dataObj = NULL,
                             progressObject = NULL )
 )
@@ -63,7 +63,9 @@ setClass( "DataIngester",
 ##-----------------------------------------------------------
 ## Methods
 setGeneric( name="readDataFromDirectory", function( object, directoryName ) standardGeneric("readDataFromDirectory") )
-setGeneric( name="readData", function( object, fileNameRecords, fileNamePatients ) standardGeneric("readData") )
+setGeneric( name="readData", function( object, fileNameRecords, fileNameAttributes ) standardGeneric("readData") )
+setGeneric( name="setEventRecords", function( object, eventRecords ) standardGeneric("setEventRecords") )
+setGeneric( name="setEntityAttributes", function( object, entityAttributes ) standardGeneric("setEntityAttributes") )
 setGeneric( name="ingestData", function( object, labelAttributeName ) standardGeneric("ingestData") )
 
 
@@ -89,9 +91,10 @@ setMethod( "readDataFromDirectory",
            }
 )
 
+
 setMethod( "readData",
            signature = c( "DataIngester", "character", "character" ),
-           def = function(object, fileNameRecords, fileNamePatients)
+           def = function(object, fileNameRecords, fileNameAttributes)
            {
              cat("\n\tReading event records data and entity attributes data.\n")
           
@@ -107,13 +110,41 @@ setMethod( "readData",
              ## pData
              object@dataObj@entityAttributes <- read.csv( fileNamePatients, stringsAsFactors = FALSE )
              
-             object@fileNameRecords = fileNameRecords
-             object@fileNamePatients = fileNamePatients
+             object@fileNameEventRecords <- fileNameRecords
+             object@fileNameEntityAttributes <- fileNameAttributes
              
              cat("\n\t\t...DONE\n")
              
              object
            }
+)
+
+setMethod("setEventRecords",
+          signature = c(object = "DataIngester", eventRecords = "data.frame" ), 
+          def = function(object, eventRecords) {
+            
+            if( is.null(object@dataObj) ) {
+              object@dataObj <- new( "DataWrapper" )
+            }
+            
+            object@dataObj@eventRecords <- eventRecords    
+            object@fileNameEventRecords <- NA_character_
+            object
+          }
+)
+
+setMethod("setEntityAttributes",
+          signature = c(object = "DataIngester", entityAttributes = "data.frame" ), 
+          def = function(object, entityAttributes) {
+            
+            if( is.null(object@dataObj) ) {
+              object@dataObj <- new( "DataWrapper" )
+            }
+            
+            object@dataObj@entityAttributes <- entityAttributes
+            object@fileNameEntityAttributes <- NA_character_
+            object
+          }
 )
 
 setMethod( "ingestData",
