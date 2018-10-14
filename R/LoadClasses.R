@@ -48,10 +48,15 @@ library(rhandsontable)
 library(h2o)
 
 library(devtools)
-## source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/DataConversionFunctions.R")
-source("~/MathematicaForPrediction/R/DataConversionFunctions.R")
-source("~/MathematicaForPrediction/R/OutlierIdentifiers.R")
-source("~/MathematicaForPrediction/R/VariableImportanceByClassifiers.R")
+
+## 
+source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/DataConversionFunctions.R")
+source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/OutlierIdentifiers.R")
+#source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/VariableImportanceByClassifiers.R")
+
+# source("~/MathematicaForPrediction/R/DataConversionFunctions.R")
+# source("~/MathematicaForPrediction/R/OutlierIdentifiers.R")
+# source("~/MathematicaForPrediction/R/VariableImportanceByClassifiers.R")
 
 # fnames = list.files( path = ".", pattern = ".*Class.R" )
 # llply( fnames, source ) 
@@ -60,12 +65,12 @@ if( !exists("ertMonDirName") ) {
   ertMonDirName <- "~/ERTMon-R"
 }
 
-source( file.path( ertMonDirName, "R/DataIngestionFrameworkFunctions.R") )
-source( file.path( ertMonDirName, "R/DataWrapperClass.R") )
-source( file.path( ertMonDirName, "R/DataIngesterClass.R") )
-source( file.path( ertMonDirName, "R/DataSplitterClass.R") )
-source( file.path( ertMonDirName, "R/ComputationSpecificationClass.R") )
-source( file.path( ertMonDirName, "R/DataTransformerClass.R") )
-source( file.path( ertMonDirName, "R/DataTransformerCatMatricesClass.R") )
+source( file.path( ertMonDirName, "R", "DataIngestionFrameworkFunctions.R") )
+source( file.path( ertMonDirName, "R", "DataWrapperClass.R") )
+source( file.path( ertMonDirName, "R", "DataIngesterClass.R") )
+source( file.path( ertMonDirName, "R", "DataSplitterClass.R") )
+source( file.path( ertMonDirName, "R", "ComputationSpecificationClass.R") )
+source( file.path( ertMonDirName, "R", "DataTransformerClass.R") )
+source( file.path( ertMonDirName, "R", "DataTransformerCatMatricesClass.R") )
 
 
