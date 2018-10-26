@@ -1,0 +1,12 @@
+Variable,Explanation,Type,Convert type,Aggregation interval length,Aggregation function,Max history length,Normalization scope,Normalization function,Moving average window,Critical label
+HR,Heart rate,numerical,NULL,1800,Mean,28800,Age,Mean,NULL,NULL
+HR,Heart rate,numerical,NULL,1800,Range,28800,Age,Mean,NULL,NULL
+HR,Heart rate,numerical,NULL,1800,OutFrc,28800,Variable,Mean,NULL,NULL
+NBP.M,Non-invasive blood pressure mean,numerical,NULL,1800,Mean,28000,Age,Mean,NULL,NULL
+NBP.M,Non-invasive blood pressure mean,numerical,NULL,1800,Range,28000,Age,Mean,NULL,NULL
+RR,Respiratory rate,numerical,NULL,1800,Mean,28800,Variable,Mean,NULL,NULL
+RR,Respiratory rate,numerical,NULL,NULL,Range,28000,Variable,Mean,NULL,NULL
+Unit,Hospital unit,categorical,NULL,NULL,Count,28000,Entity,Sum,NULL,NULL
+Age,Patient age,numerical,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL
+Label,Classification label,categorical,NULL,NULL,NULL,NULL,NULL,NULL,NULL,CB
+
