@@ -108,7 +108,7 @@ setMethod( "readData",
              if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/2, detail = "Read entity attributes data." ) }
              
              ## pData
-             object@dataObj@entityAttributes <- read.csv( fileNamePatients, stringsAsFactors = FALSE )
+             object@dataObj@entityAttributes <- read.csv( fileNameAttributes, stringsAsFactors = FALSE )
              
              object@fileNameEventRecords <- fileNameRecords
              object@fileNameEntityAttributes <- fileNameAttributes
