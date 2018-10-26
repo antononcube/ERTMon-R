@@ -100,8 +100,15 @@ setMethod("transformData",
             
             additionalArgs <- list(...)
             testDataRun <- FALSE
+            outlierIdentifierParametersFunc <- QuartileIdentifierParameters
             
-            if( "testDataRun" %in% names(additionalArgs) ) { testDataRun <- additionalArgs[["testDataRun"]] }
+            if( "testDataRun" %in% names(additionalArgs) ) { 
+              testDataRun <- additionalArgs[["testDataRun"]] 
+            }
+            
+            if( "outlierIdentifierParameters" %in% names(additionalArgs) ) { 
+              outlierIdentifierParametersFunc <- additionalArgs[["outlierIdentifierParameters"]] 
+            } 
             
             ## Set data fields
             object@compSpec <- compSpec
@@ -115,7 +122,7 @@ setMethod("transformData",
                   obs <-
                     eventRecordsData %>% 
                     dplyr::filter( Variable == x$Variable[[1]] )
-                  obs <- QuartileIdentifierParameters( obs$Value )
+                  obs <- outlierIdentifierParametersFunc( obs$Value )
                   data.frame( Variable = x$Variable[[1]], Lower = obs[[1]], Upper = obs[[2]], stringsAsFactors = F )
                 })
             }
@@ -423,10 +430,17 @@ setMethod("aggregateAndAccumulateOverGroups",
                     aggrMRData %>% 
                     dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
                     dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
+                    dplyr::mutate( Scope = "Variable", Attribute = NA ) %>% 
                     dplyr::ungroup()
                   
-                  if( nrow(dfNormalizationValues) == 0 ) { NULL }
-                  else { rbind( object@groupAggregatedValues, cbind( MatrixName = specRow$MatrixName, dfNormalizationValues, stringsAsFactors = F ) ) }
+                  if( nrow(dfNormalizationValues) == 0 ) { 
+                    NULL 
+                  } else { 
+                    #print( colnames(object@groupAggregatedValues) )
+                    #print( cbind( MatrixName = specRow$MatrixName, dfNormalizationValues, stringsAsFactors = F ) )
+                    rbind( object@groupAggregatedValues, 
+                           cbind( MatrixName = specRow$MatrixName, dfNormalizationValues, stringsAsFactors = F ) ) 
+                  }
                   
                 } else if ( specRow$Normalization.scope[[1]] %in% allEntityAttributes ) {
                   

@@ -112,8 +112,9 @@ ProcessDataSpecification <- function( dataSpec ) {
 #' @param entityData entity specifica data
 #' @param aggrFuncSpecToFunc a named elements list of aggregation functions
 #' @param outlierBoundaries a data frame with columns c("Variable", "Lower", "Upper")
+#' @param outlierIdentifierFunc outlier identifier function
 #' @return a data frame (tibble) with columns c("EntityID","VarID","AValue")
-AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, aggrFuncSpecToFunc, outlierBoundaries = NULL ) {
+AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, aggrFuncSpecToFunc, outlierBoundaries = NULL, outlierIdentifierFunc = QuartileIdentifierParameters) {
   ##print(paste(specRow,collapse = " "))
   func <- aggrFuncSpecToFunc[ specRow$Aggregation.function[[1]] ][[1]]
   mName <- paste( specRow$Variable, specRow$Aggregation.function, sep = ".")
@@ -154,8 +155,8 @@ AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, a
         eventRecordsData %>% 
         dplyr::filter( Variable == specRow$Variable )
       
-      outBndrs <- QuartileIdentifierParameters( outBndrs$Value )
       ## outBndrs <- HampelIdentifierParameters( outBndrs$Value )
+      outBndrs <- outlierIdentifierFunc( outBndrs$Value )
     }
     
     ## Mark the outliers for each entity.
