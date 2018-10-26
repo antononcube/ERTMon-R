@@ -67,7 +67,7 @@
 
 nEntitys <- 500
 outputDirName <- "~/ERTMon-R/FakeData/"
-writeFilesQ <- FALSE
+writeFilesQ <- TRUE
 evaluateAllQ <- TRUE
 
 ##===========================================================
@@ -141,7 +141,7 @@ if ( evaluateAllQ || !exists("fakeMedicalRecords") ) {
       ddply( fakeEntityData[ fakeEntityData$Attribute == "Label", ] , "EntityID", function(x) {
         
         timeGrid <- Sys.time() + timeInterval * timeGridIndexes
-        values <- runif(n = length(timeGrid), min = 0.8, max = 1.2 )      
+        values <- round(runif(n = length(timeGrid), min = 0.8, max = 1.2 ))
         
         if( x$Value == "CB" ) {
           values <- cbVitalSignsMeans[[vSign]] * values
