@@ -19,14 +19,22 @@
 ## antononcube @@@ gmail ... com,
 ## Windermere, Florida, USA.
 ##===========================================================
-
+##
+## TODO: 
+##   1. [ ] Reimplement plyr functions with purrr.
+##   2. [ ] Implement corresponding unit tests.
+##   3. [ ] Add more expected arguments checks.
+##
+##===========================================================
 #---
 # Title: Data ingestion framework functions
 # Author: Anton Antonov
 # Start date: 2018-10-07
 #---
+
 library(plyr)
 library(dplyr)
+library(purrr)
 
 #' @description Process data specification to have actionable values for NULL, NA, or other 'automatic' values.
 #' @param dataSpec data specification
@@ -286,4 +294,87 @@ EmptyComputationSpecificationRow <- function() {
     "Normalization.function" = "Mean",  "Moving.average.window" = "NULL",
     "Critical.label" = "NULL",
     stringsAsFactors = FALSE)
+}
+
+
+##-----------------------------------------------------------
+## Formula specification application to feature sub-matrices
+##-----------------------------------------------------------
+
+#' @description Applies a formula specification to a list of sub-matrices that comprise a feature matrix.
+#' @param smats (sparse) matrices
+#' @param formulaSpec formula specification
+#' @param reduceFunc function to be applied when forming the numerator and denominator
+#' @details The formula specification is expected to have the columns:
+#' c("FeatureName", "Coefficient", "Exponent", "RatioPartType") .
+#' The column "FeatureName" is expeceted to have non-unique value.
+#' The "RatioPartType" can have one of the values "Denominator" or "Numerator" and no others.
+#' The argument \param reduceFunc can have one of the values 'sum', "+", or "*" and no others.
+#' The interpretation is:
+#'   newRow = 
+#'      reduceFunc[ Coefficient[i] * smats[ FeatureName[i] ] ^ Exponent[i], {i,NumeratorRows}] 
+#'      /
+#'      reduceFunc[ Coefficient[i] * smats[ FeatureName[i], All ] ^ Exponent[i], {i,DenominatorRows}] 
+ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
+  
+  ## Verification of mat
+  if( class(smats) != "list" ) {
+    stop( "The arument smats is expected to be a list named matrix elements.", call. = TRUE )
+  }
+  
+  
+  
+  ## Verification of formulaSpec.
+  ## Additional checks have to be done for the names and types of the columns.
+  if( !( class(formulaSpec) == "data.frame" && 
+         colnames(formulaSpec) == c("FeatureName", "Coefficient", "Exponent", "RatioPartType") ) ) {
+    stop( "The arument formulaSpec is expected to be a data frame with columns: c(\"FeatureName\", \"Coefficient\", \"Exponent\", \"RatioPartType\").", call. = TRUE )
+  }
+  
+  ## Verificatoin of reduceFunc
+  if ( !( reduceFunc %in% c( "+", "*") ) ) {
+    stop( "The expected values for the argument reduceFunc are sum, '+', or '*'.", call. = TRUE )
+  }
+  
+  ## Filter out rows with unknown feature names.
+  formulaSpecTemp <- formulaSpec
+  formulaSpecTemp <- formulaSpecTemp %>% dplyr::filter( FeatureName %in% names(smats) )
+  
+  
+  if( nrow(formulaSpecTemp) == 0 ) {
+    stop( "The formula specification data frame has no known feature names.", call. = TRUE )
+  } else if( nrow(formulaSpecTemp) < nrow(formulaSpec) ) {
+    warning( "Some feature names are not known.", call. = TRUE )
+  }
+  
+  matNRows <- nrow(smats[[1]])
+  matNCols <- ncol(smats[[1]])
+  
+  ## Compute numerator vector
+  formulaSpecTemp <- formulaSpec[ formulaSpec$RatioPartType == "Numerator", ]
+  numeratorMat <- matrix( rep( 1, matNRows*matNCols ), nrow = matNRows)
+  if( nrow(formulaSpecTemp) > 0 ) {
+    numeratorMat <- 
+      map( 1:nrow(formulaSpecTemp), 
+           function(i) { 
+             formulaSpecTemp$Coefficient[[i]] * smats[[ formulaSpecTemp$FeatureName[[i]] ]] ^ formulaSpecTemp$Exponent[[i]]
+           } )
+    numeratorMat <- Reduce( reduceFunc, numeratorMat)
+  }
+  
+  ## Compute denominator vector
+  ## Very similar / same as the code above.
+  formulaSpecTemp <- formulaSpec[ formulaSpec$RatioPartType == "Denominator", ]
+  denominatorMat <- matrix( rep( 1, matNRows*matNCols ), nrow = matNRows)
+  if( nrow(formulaSpecTemp) > 0 ) {
+    denominatorMat <- 
+      map( 1:nrow(formulaSpecTemp), 
+           function(i) { 
+             formulaSpecTemp$Coefficient[[i]] * smats[[ formulaSpecTemp$FeatureName[[i]] ]] ^ formulaSpecTemp$Exponent[[i]]
+           } )
+    denominatorMat <- Reduce( reduceFunc, numeratorMat)
+  }
+  
+  ## Result
+  numeratorMat / denominatorMat
 }
