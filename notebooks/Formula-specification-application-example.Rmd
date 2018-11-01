@@ -1,0 +1,55 @@
+---
+title: "Formula specification application example"
+author: Anton Antonov
+date: 2018-10-31
+output: html_notebook
+---
+
+# Introduction
+
+This notebook demonstrates the application of formula specification data frame onto a features matrix.
+
+# The feature sub-matrices
+
+Run the notebook "Event-records-transformations-main-use-case.Rmd" first. 
+(Better with the parameter `categoricalMatricesQ` set to `FALSE`.)
+
+Here we take the feature matrix (sparse) sub-matrices from data transformation object (`dtObj`):
+
+```{r}
+smats <- dtObj@sparseMatrices
+```
+
+# Specification
+
+Here we make a fake formula specification for the fake medical data:
+
+```{r}
+formulaSpecDF <- 
+  data.frame( "FeatureName" = c("HR.Mean", "HR.Range", "RR.Mean"), 
+              "Coefficient" = c(1, 1, 1), 
+              "Exponent" = c(1, 1, 2),
+              "RatioPartType" = c( "Numerator", "Denominator", "Denominator"),
+              stringsAsFactors = FALSE)
+formulaSpecDF
+```
+
+In order to apply the formula specification we have also choose a reduce function: "+" (summation) or "*" (multiplication).
+
+Here is the interpretation:
+
+$$formulaMat = \frac{reduceFunc[ \{ Coefficient[i] * smats[ FeatureName[i] ] ^ {Exponent[i]} : i \in NumeratorRows \} ]}{reduceFunc[ \{ Coefficient[i] * smats[ FeatureName[i] ] ^ {Exponent[i]} : i \in DenominatorRows \} ] }$$
+
+
+# Application
+
+The application of the formula specification is done with function `ApplyFormulaSpecification`.
+
+```{r}
+resMat <- ApplyFormulaSpecification( smats = smats[-length(smats)], formulaSpec = formulaSpecDF, reduceFunc = "+" )
+```
+
+```{r}
+image(resMat)
+```
+

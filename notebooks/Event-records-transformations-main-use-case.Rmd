@@ -4,7 +4,7 @@ author: Anton Antonov
 date: "2018-10-13"
 params:
   trainingDataFraction: 0.8
-  saveModelQ: TRUE
+  categoricalMatricesQ: FALSE
 output: html_notebook
 ---
 
@@ -106,7 +106,11 @@ testData <- dwObj@eventRecords[ dwObj@eventRecords$EntityID %in% testEntityIDs, 
 Make a new data transformer Obj:
 
 ```{r}
-dtObj <- new( "DataTransformerCatMatrices" )
+if( params$categoricalMatricesQ ) {
+  dtObj <- new( "DataTransformerCatMatrices" )
+} else {
+  dtObj <- new( "DataTransformer" )
+}
 ```
 
 Note that the data has not been "seen" by the data transformation object:
