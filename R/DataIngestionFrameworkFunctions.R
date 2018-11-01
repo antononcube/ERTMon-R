@@ -311,10 +311,10 @@ EmptyComputationSpecificationRow <- function() {
 #' The "RatioPartType" can have one of the values "Denominator" or "Numerator" and no others.
 #' The argument \param reduceFunc can have one of the values 'sum', "+", or "*" and no others.
 #' The interpretation is:
-#'   newRow = 
+#'   formulaMat = 
 #'      reduceFunc[ Coefficient[i] * smats[ FeatureName[i] ] ^ Exponent[i], {i,NumeratorRows}] 
 #'      /
-#'      reduceFunc[ Coefficient[i] * smats[ FeatureName[i], All ] ^ Exponent[i], {i,DenominatorRows}] 
+#'      reduceFunc[ Coefficient[i] * smats[ FeatureName[i] ] ^ Exponent[i], {i,DenominatorRows}] 
 ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   
   ## Verification of mat
@@ -322,7 +322,10 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
     stop( "The arument smats is expected to be a list named matrix elements.", call. = TRUE )
   }
   
-  
+  dimsDF <- map_dfr( smats, function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
+  if( mean( dimsDF$NRow == dimsDF$NRow[[1]] ) < 1 || mean( dimsDF$NCol == dimsDF$NCol[[1]] ) < 1 ) {
+    stop( "The matrices in the argument smats are expected to have same number of rows and columns.", call. = TRUE )
+  }
   
   ## Verification of formulaSpec.
   ## Additional checks have to be done for the names and types of the columns.
