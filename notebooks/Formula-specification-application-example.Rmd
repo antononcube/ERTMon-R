@@ -29,7 +29,7 @@ formulaSpecDF <-
   data.frame( "FeatureName" = c("HR.Mean", "HR.Range", "RR.Mean"), 
               "Coefficient" = c(1, 1, 1), 
               "Exponent" = c(1, 1, 2),
-              "RatioPartType" = c( "Numerator", "Denominator", "Denominator"),
+              "RatioPart" = c( "Numerator", "Denominator", "Denominator"),
               stringsAsFactors = FALSE)
 formulaSpecDF
 ```

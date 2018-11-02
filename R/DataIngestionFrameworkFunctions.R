@@ -306,9 +306,9 @@ EmptyComputationSpecificationRow <- function() {
 #' @param formulaSpec formula specification
 #' @param reduceFunc function to be applied when forming the numerator and denominator
 #' @details The formula specification is expected to have the columns:
-#' c("FeatureName", "Coefficient", "Exponent", "RatioPartType") .
+#' c("FeatureName", "Coefficient", "Exponent", "RatioPart") .
 #' The column "FeatureName" is expeceted to have non-unique value.
-#' The "RatioPartType" can have one of the values "Denominator" or "Numerator" and no others.
+#' The "RatioPart" can have one of the values "Denominator" or "Numerator" and no others.
 #' The argument \param reduceFunc can have one of the values 'sum', "+", or "*" and no others.
 #' The interpretation is:
 #'   formulaMat = 
@@ -330,8 +330,8 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   ## Verification of formulaSpec.
   ## Additional checks have to be done for the names and types of the columns.
   if( !( class(formulaSpec) == "data.frame" && 
-         colnames(formulaSpec) == c("FeatureName", "Coefficient", "Exponent", "RatioPartType") ) ) {
-    stop( "The arument formulaSpec is expected to be a data frame with columns: c(\"FeatureName\", \"Coefficient\", \"Exponent\", \"RatioPartType\").", call. = TRUE )
+         colnames(formulaSpec) == c("FeatureName", "Coefficient", "Exponent", "RatioPart") ) ) {
+    stop( "The arument formulaSpec is expected to be a data frame with columns: c(\"FeatureName\", \"Coefficient\", \"Exponent\", \"RatioPart\").", call. = TRUE )
   }
   
   ## Verificatoin of reduceFunc
@@ -354,7 +354,7 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   matNCols <- ncol(smats[[1]])
   
   ## Compute numerator vector
-  formulaSpecTemp <- formulaSpec[ formulaSpec$RatioPartType == "Numerator", ]
+  formulaSpecTemp <- formulaSpec[ formulaSpec$RatioPart == "Numerator", ]
   numeratorMat <- matrix( rep( 1, matNRows*matNCols ), nrow = matNRows)
   if( nrow(formulaSpecTemp) > 0 ) {
     numeratorMat <- 
@@ -367,7 +367,7 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   
   ## Compute denominator vector
   ## Very similar / same as the code above.
-  formulaSpecTemp <- formulaSpec[ formulaSpec$RatioPartType == "Denominator", ]
+  formulaSpecTemp <- formulaSpec[ formulaSpec$RatioPart == "Denominator", ]
   denominatorMat <- matrix( rep( 1, matNRows*matNCols ), nrow = matNRows)
   if( nrow(formulaSpecTemp) > 0 ) {
     denominatorMat <- 
