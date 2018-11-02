@@ -375,7 +375,7 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
            function(i) { 
              formulaSpecTemp$Coefficient[[i]] * smats[[ formulaSpecTemp$FeatureName[[i]] ]] ^ formulaSpecTemp$Exponent[[i]]
            } )
-    denominatorMat <- Reduce( reduceFunc, numeratorMat)
+    denominatorMat <- Reduce( reduceFunc, denominatorMat)
   }
   
   ## Result
