@@ -52,7 +52,7 @@ setClass( "DataTransformer",
                         entityAttributes = "data.frame",
                         compSpec = "ComputationSpecification",
                         # dataObject = "DataWrapper",
-                        eventRecordsDataForCategoricalMatrices = "data.frame",
+                        eventRecordsForCategoricalMatrices = "data.frame",
                         transformedData = "data.frame",
                         sparseMatrices = "vector",
                         dataMat = "sparseMatrix",
@@ -65,7 +65,7 @@ setClass( "DataTransformer",
                             compSpec = NULL,
                             # dataObject = NULL,
                             entityAttributes = NULL,
-                            eventRecordsDataForCategoricalMatrices = NULL,
+                            eventRecordsForCategoricalMatrices = NULL,
                             transformedData = NULL,
                             sparseMatrices = NULL,
                             dataMat = NULL,
@@ -135,7 +135,7 @@ setMethod("transformData",
               aggregateOverTimeGrid(object)
             
             ## This is useful for making categorical matrices
-            object@eventRecordsDataForCategoricalMatrices <- eventRecordsData
+            object@eventRecordsForCategoricalMatrices <- eventRecordsData
             
             ## Find aggregate values over groups of records 
             if( !testDataRun ) {
