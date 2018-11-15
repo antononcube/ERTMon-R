@@ -193,7 +193,7 @@ setMethod("addTimeGrid",
             cat("\n\tCompute differences with max time...\n")
             
             eventRecords <- dplyr::mutate( eventRecords, 
-                                          DiffToMaxObsTime = MostRecentTimeEpoch - ObservationTime )
+                                           DiffToMaxObsTime = MostRecentTimeEpoch - ObservationTime )
             
             cat("\n\t\t...DONE\n")
             
@@ -208,7 +208,7 @@ setMethod("addTimeGrid",
             cat("\n\tFor each of the specified variables find time grid intervals...\n")
             
             eventRecords <- dplyr::mutate( eventRecords, TimeGridCell = floor( DiffToMaxObsTime / object@compSpec@variableToAggregationIntervalLength[Variable] ) )
-            eventRecords <- dplyr::mutate( eventRecords, TimeGridCell =  TimeGridCell + 1 )
+            eventRecords <- dplyr::mutate( eventRecords, TimeGridCell = TimeGridCell + 1 )
             
             cat("\n\t\t...DONE\n")
             
@@ -235,10 +235,10 @@ setMethod("aggregateOverTimeGrid",
               object@compSpec@parameters %>%
               rowwise() %>%
               do( AggregateEventRecordsBySpec( .,
-                                                 eventRecords,
-                                                 object@entityAttributes,
-                                                 object@compSpec@aggrFuncSpecToFunc,
-                                                 object@outlierBoundaries ) ) %>%
+                                               eventRecords,
+                                               object@entityAttributes,
+                                               object@compSpec@aggrFuncSpecToFunc,
+                                               object@outlierBoundaries ) ) %>%
               ungroup()
             
             ## If we do not ungroup we will get
@@ -418,12 +418,12 @@ setMethod("aggregateAndAccumulateOverGroups",
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Aggregate and accumulate over groups of records." ) }
             
             allEntityAttributes <- unique(object@entityAttributes$Attribute)
-              
+            
             object@groupAggregatedValues <-
               ddply( object@compSpec@parameters, "MatrixName", function(specRow) { 
                 
                 func <- object@compSpec@aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
-   
+                
                 if ( specRow$Normalization.scope[[1]] == "Variable" ) {
                   
                   dfNormalizationValues <- 

@@ -24,6 +24,7 @@
 ##   1. [ ] Reimplement plyr functions with purrr.
 ##   2. [ ] Implement corresponding unit tests.
 ##   3. [ ] Add more expected arguments checks.
+##   4. [ ] Implement a more general formula for a sum of terms.
 ##
 ##===========================================================
 #---
@@ -336,7 +337,7 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   
   ## Verificatoin of reduceFunc
   if ( !( reduceFunc %in% c( "+", "*") ) ) {
-    stop( "The expected values for the argument reduceFunc are sum, '+', or '*'.", call. = TRUE )
+    stop( "The expected values for the argument reduceFunc are '+', or '*'.", call. = TRUE )
   }
   
   ## Filter out rows with unknown feature names.
@@ -347,7 +348,7 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   if( nrow(formulaSpecTemp) == 0 ) {
     stop( "The formula specification data frame has no known feature names.", call. = TRUE )
   } else if( nrow(formulaSpecTemp) < nrow(formulaSpec) ) {
-    warning( "Some feature names are not known.", call. = TRUE )
+    warning( "Some feature names are unknown.", call. = TRUE )
   }
   
   matNRows <- nrow(smats[[1]])
