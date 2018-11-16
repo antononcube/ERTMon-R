@@ -32,6 +32,7 @@ library(shinydashboard)
 #library(rhandsontable)
 library(shiny)
 library(DT)
+library(d3heatmap)
 
 
 ## Note that this brings and external dependency.

@@ -278,6 +278,41 @@ function(input, output, session)  {
     
   })
   
+  ##-------------------------------------------------------
+  ## Plots of the feature matrix
+  ##-------------------------------------------------------
+  
+  ## Sparse matrix image for the feature matrix
+  observeEvent( input$plotFeatureMatrixImageAction, {
+    
+    if ( !is.null( values[["dtObj"]] ) ) {
+      
+      output$plotFeatureMatrixImage <- renderPlot({ 
+        image(values[["dtObj"]]@dataMat)
+      })
+      
+    } else {
+      
+      warning( "Missing data transformation object for testing data." )
+    }
+    
+  })
+  
+  ## Heatmap for the feature matrix
+  observeEvent( input$plotFeatureMatrixImageAction, {
+    
+    if ( !is.null( values[["dtObj"]] ) ) {
+      
+      output$plotFeatureMatrixHeatmap <- renderPlot({ 
+        renderD3heatmap(d3heatmap(values[["dtObj"]]@dataMat))
+      })
+      
+    } else {
+      
+      warning( "Missing data transformation object for testing data." )
+    }
+    
+  })
 }
 
 

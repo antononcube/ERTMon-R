@@ -28,7 +28,8 @@ dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Computation specifications", tabName = "CompSpec"),
-      menuItem("Data", tabName = "Data")
+      menuItem("Data", tabName = "Data"),
+      menuItem("Plot feature matrix", tabName = "PlotFeatureMatrix")
       #menuItem("Export feature matrix", tabName = "ExportFeatureMatrix")
     )
   ),
@@ -146,6 +147,37 @@ dashboardPage(
                    
                  )
                )
+      ),
+      
+      tabItem( tabName = "PlotFeatureMatrix",
+               
+               h2("Plot the feature matrix"),
+               
+               textInput( "featureNamesPattern", "Feature names pattern:",  value = ".*"),
+               
+               hr(), 
+               
+               tabsetPanel( 
+                 tabPanel( "Sparse matrix image",
+                           h3("Image of the feature matrix"),
+                           
+                           fluidRow(
+                             column(3, actionButton( "plotFeatureMatrixImageAction", "Plot feature matrix image"))
+                           ),
+                           
+                           plotOutput( "plotFeatureMatrixImage" )
+                 ),
+                 
+                 tabPanel( "Heatmap",          
+                           h3("Heatmap plot of the feature matrix"),
+                           
+                           fluidRow(
+                             column(3, actionButton( "plotFeatureMatrixHeatmapAction", "Plot heatmap"))
+                           ),
+                           
+                           d3heatmapOutput( "plotFeatureMatrixHeatmap", width = "100%", height = "600px" )
+                 )
+               )      
       )
       
     )
