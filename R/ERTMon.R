@@ -221,6 +221,28 @@ ERTMonDataTransformerCheck <- function( ertObj, functionName = "", logicalResult
 
 
 ##===========================================================
+## Data transformer check
+##===========================================================
+
+ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult = FALSE ) {
+  
+  res <- ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) 
+  
+  if( !res ) {
+    if( logicalResult) { FALSE }
+    else { ERTMonFailureSymbol }
+  }
+  
+  if( is.null(ertObj$dtObj@dataMat) ) { 
+    if( logicalResult) { FALSE }
+    else { ERTMonFailureSymbol }
+  } else {
+    if( logicalResult) { TRUE }
+    else { ertObj }
+  }
+}
+
+##===========================================================
 ## Make time series feature extractor
 ##===========================================================
 
