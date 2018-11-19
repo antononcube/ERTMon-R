@@ -1,0 +1,94 @@
+---
+title: "ERTMon usage example"
+author: Anton Antonov, antononcube@gmail.com
+date: "`r Sys.Date()`"
+output: html_notebook
+---
+
+```{r}
+source("../R/LoadClasses.R")
+```
+
+# Introduction
+
+This notebook shows how to use the monad ERTMon provided by this package.
+
+# Data ingestion
+
+```{r}
+dirName <- file.path( "..", "FakeData")
+dirName
+```
+
+## Event records
+
+```{r}
+fakeEventRecords <- read.csv( file = file.path( dirName, "eventRecords.csv"), stringsAsFactors = FALSE)
+head(fakeEventRecords)
+```
+
+## Entity attributes
+
+In order to run the underlying function
+
+```{r}
+fakeEntityAttributes <- read.csv( file = file.path( dirName, "entityAttributes.csv"), stringsAsFactors = FALSE)
+fakeEntityAttributes
+```
+
+# Computation specification
+
+Here we read the computation specification.
+
+```{r}
+fakeCompSpec <- read.csv( file = file.path( dirName, "computationSpecification.csv"), stringsAsFactors = FALSE)
+fakeCompSpec
+```
+
+# Main pipeline
+
+## Setting data
+
+Initialize the monad and set the event records, entity attributes, and computation specification.
+
+```{r}
+ertmon1 <-
+  ERTMonUnit() %>%
+  ERTMonSetEventRecords( fakeEventRecords ) %>%
+  ERTMonSetEntityAttributes( fakeEntityAttributes ) %>%
+  ERTMonSetComputationSpecification( fakeCompSpec )
+```
+
+
+## Process event records
+
+```{r}
+ertmon1 <-
+  ertmon1 %>%
+  ERTMonProcessEventRecords()
+```
+
+```{r}
+smats <- ertmon1 %>% ERTMonTakeContingencyMatrices()
+names(smats)
+```
+
+## Examples of transformed matrices
+
+```{r}
+smats[["HR.Mean"]][1:12,]
+```
+
+
+# Plot the feature matrix
+
+```{r}
+image(ertmon1 %>% ERTMonTakeFeatureMatrix)
+```
+
+# Export the feature matrix
+
+```{r}
+ertmon1 %>% ERTMonExportToCSVFeatureMatrix( fileName = file.path( dirName, "featureMatrix.csv") )
+```
+
