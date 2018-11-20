@@ -54,9 +54,9 @@ ERTMonFailureSymbol <- NA
 ## FE Unit
 ##===========================================================
 
-ERTMonUnit <- function( eventRecords = NULL, EntityAttributes = NULL, compSpec = NULL ){
+ERTMonUnit <- function( eventRecords = NULL, entityAttributes = NULL, compSpec = NULL ){
   
-  res <- list( Value = NULL, EventRecords = eventRecords, EntityAttributes = EntityAttributes, ComputationSpecification = compSpec )
+  res <- list( Value = NULL, EventRecords = eventRecords, EntityAttributes = entityAttributes, ComputationSpecification = compSpec )
   attr(res, "class") <- "ERTMon"
   res
 }
@@ -75,23 +75,36 @@ ERTMonTakeValue <- function( ertObj ) {
 ##-----------------------------------------------------------
 
 ERTMonSetEventRecords <- function( ertObj, eRecs ) {
-  ertObj$EventRecords <- eRecs
+  expectedColNames <- c("EntityID", "LocationID", "ObservationTime", "Variable", "Value")
+  if( ! ( is.data.frame(eRecs) && length(intersect( colnames(eRecs), expectedColNames)) == length(expectedColNames) ) ) { 
+    warning( paste("The argument eRecs is expected to be a data frame with columns:", paste(expectedColNames, collapse =","), "."), call. = TRUE) 
+    return(ERTMonFailureSymbol)
+  }
+  ertObj$EventRecords <- eRecs[, expectedColNames]
   ertObj
 }
 
 ##-----------------------------------------------------------
 
 ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
-  if( intersect( colnames(eAttrs), c("EntityID", "Attribute", "Value") ) < 3 ) { 
+  expectedColNames <- c("EntityID", "Attribute", "Value")
+  if( ! ( is.data.frame(eAttrs) && length(intersect( colnames(eAttrs), expectedColNames)) == length(expectedColNames) ) ) { 
+    warning( paste("The argument eAttrs is expected to be a data frame with columns:", paste(expectedColNames, collapse =","), "."), call. = TRUE) 
     return(ERTMonFailureSymbol)
   }
-  ertObj$EntityAttributes <- eAttrs[, c("EntityID", "Attribute", "Value") ]
+  ertObj$EntityAttributes <- eAttrs[, expectedColNames]
   ertObj
 }
 
 ##-----------------------------------------------------------
 
 ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
+  expectedColNames <- names(EmptyComputationSpecificationRow())
+  if( ! ( is.data.frame(compSpec) && 
+          length(intersect( colnames(compSpec), expectedColNames )) == length(expectedColNames) ) ) { 
+    warning( paste("The argument compSpec is expected to be a data frame with columns:", paste(expectedColNames, collapse =","), "." ), call. = TRUE) 
+    return(ERTMonFailureSymbol)
+  }
   ertObj$ComputationSpecification <- compSpec
   ertObj
 }
