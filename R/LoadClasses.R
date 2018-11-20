@@ -90,5 +90,5 @@ source( file.path( ertMonDirName, "R", "DataSplitterClass.R") )
 source( file.path( ertMonDirName, "R", "ComputationSpecificationClass.R") )
 source( file.path( ertMonDirName, "R", "DataTransformerClass.R") )
 source( file.path( ertMonDirName, "R", "DataTransformerCatMatricesClass.R") )
-
+source( file.path( ertMonDirName, "R", "ERTMon.R") )
 
