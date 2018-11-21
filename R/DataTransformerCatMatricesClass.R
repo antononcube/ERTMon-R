@@ -43,6 +43,9 @@
 # Start date: 2017-11-03
 #---
 
+# @include DataTransformerClass.R
+#NULL
+
 if( !exists("ertMonDirName") ) {
   ertMonDirName <- "~/ERTMon-R"
 }

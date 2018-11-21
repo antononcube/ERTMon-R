@@ -226,7 +226,7 @@ AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, a
 #' @param matLongFormData aggregated event records in long form
 #' @param entityAttributes entity attributes data
 #' @param normalizationFuncSpecToFunc a named elements list of normalization functions
-#' @detail NOT USED ANYMORE. See the method "normalizeGroupsBySpec" of the class DataTransformer.
+#' @details NOT USED ANYMORE. See the method "normalizeGroupsBySpec" of the class DataTransformer.
 NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, normalizationFuncSpecToFunc ) {
   
   func <- aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]

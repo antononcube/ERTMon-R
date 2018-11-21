@@ -62,6 +62,8 @@
 ## For performance and explicitness of pipeline construction the event records data
 ## is an argument to the transformation opeartion functions.
 
+# A data transformer class.
+# @slot ID ID of the object.
 setClass( "DataTransformer",
           slots = list( ID = "character",
                         dataRepresentation = "character",
