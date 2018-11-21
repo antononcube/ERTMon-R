@@ -1,6 +1,5 @@
 ##===========================================================
 ## Event records transformations monad in R
-## Copyright (C) 2018  Anton Antonov
 ##
 ## BSD 3-Clause License
 ## 
@@ -48,12 +47,20 @@
 ## ERT Monad failure symbol
 ##===========================================================
 
+#' @description Failure symbol for the monad ERTMon.
+#' @export
 ERTMonFailureSymbol <- NA
 
 ##===========================================================
 ## FE Unit
 ##===========================================================
 
+#' @description Creates a monad object.
+#' @param eventRecords A data frame with event records; can be NULL.
+#' @param entityAttributes A data frame with entity attributes; can be NULL.
+#' @param compSpec A data frame that is a computation specification; can be NULL.
+#' @return An S3 class "ERTMon". In other words, a list with the attribute "class" set to "ERTMon".
+#' @export
 ERTMonUnit <- function( eventRecords = NULL, entityAttributes = NULL, compSpec = NULL ){
   
   res <- list( Value = NULL, EventRecords = eventRecords, EntityAttributes = entityAttributes, ComputationSpecification = compSpec )
@@ -61,6 +68,8 @@ ERTMonUnit <- function( eventRecords = NULL, entityAttributes = NULL, compSpec =
   res
 }
 
+#' @description A synonym of ERTMonUnit.
+#' @export
 ERTMonObject <- ERTMonUnit
 
 
@@ -68,12 +77,21 @@ ERTMonObject <- ERTMonUnit
 ## Setters and getters
 ##===========================================================
 
+#' @description Takes the value from ERTMon monad object.
+#' @param ertObj An ERTMon object.
+#' @return Just ertObj$Value.
+#' @export
 ERTMonTakeValue <- function( ertObj ) {
   ertObj$Value
 }
 
 ##-----------------------------------------------------------
 
+#' @description Set an event records data frame into the monad object.
+#' @param ertObj An ERTMon object.
+#' @param eRecs A data frame with event records.
+#' @return An ERTMon object.
+#' @export
 ERTMonSetEventRecords <- function( ertObj, eRecs ) {
   expectedColNames <- c("EntityID", "LocationID", "ObservationTime", "Variable", "Value")
   if( ! ( is.data.frame(eRecs) && length(intersect( colnames(eRecs), expectedColNames)) == length(expectedColNames) ) ) { 
@@ -86,6 +104,11 @@ ERTMonSetEventRecords <- function( ertObj, eRecs ) {
 
 ##-----------------------------------------------------------
 
+#' @description Set an entity attributes data frame into the monad object.
+#' @param ertObj An ERTMon object.
+#' @param eAttrs A data frame with entity attributes.
+#' @return An ERTMon object.
+#' @export
 ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
   expectedColNames <- c("EntityID", "Attribute", "Value")
   if( ! ( is.data.frame(eAttrs) && length(intersect( colnames(eAttrs), expectedColNames)) == length(expectedColNames) ) ) { 
@@ -98,6 +121,11 @@ ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
 
 ##-----------------------------------------------------------
 
+#' @description Set a computation specification data frame into the monad object.
+#' @param ertObj An ERTMon object.
+#' @param compSpec A data frame that is a computation specification.
+#' @return An ERTMon object.
+#' @export
 ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
   expectedColNames <- names(EmptyComputationSpecificationRow())
   if( ! ( is.data.frame(compSpec) && 
@@ -111,7 +139,13 @@ ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
 
 ##-----------------------------------------------------------
 
-ERTMonTakeFeatureNames <- function( ertObj ) {
+#' @description Returns the prefixes of the column names of the feature matrix 
+#' using the computation spefication.
+#' @param ertObj an ERTMon object.
+#' @return A character vector. 
+#' @details The matrix is not computed; only the computation specification is needed.
+#' @export
+ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
   if( is.null(ertObj$ComputationSpecification) ) {
     stop( "Cannot find computation specification.", call. = TRUE )
   }
@@ -120,6 +154,14 @@ ERTMonTakeFeatureNames <- function( ertObj ) {
 
 ##-----------------------------------------------------------
 
+#' @description Returns the sub-matrices of the feature matrix.
+#' @param ertObj An ERTMon object.
+#' @param smat If not NULL it is going to be used instead of ertObj$Value.
+#' @param noColumnPrefixes If TRUE the column names are just integers.
+#' @return A list of named matrices.
+#' @details The sub-matrices are extracted through the corresponding prefixes.
+#' An alternative is to use the sparse matrices that are in ertObj$dtObj.
+#' @export
 ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes = TRUE ) {
   
   if( is.null(smat) ) {
@@ -155,6 +197,12 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
 
 ##-----------------------------------------------------------
 
+#' @description Returns the feature matrix.
+#' @param ertObj An ERTMon object.
+#' @return A (sparse) matrix or ERTMonFailureSymbol.
+#' @details If the matrix does exists then ERTMonFailureSymbol is returned. 
+#' The row names correspond to entities; the column names to features.
+#' @export
 ERTMonTakeFeatureMatrix <- function( ertObj ) {
   
   if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) ) {
@@ -171,6 +219,12 @@ ERTMonTakeFeatureMatrix <- function( ertObj ) {
 ## Data presence check
 ##===========================================================
 
+#' @description Checks does an ERTMon object have event records, entity attributes, and computation specification.
+#' @param ertObj An ERTMon object.
+#' @param functionName A name of the delegating function (if any).
+#' @param logicalResult Should the result be logical value?
+#' @return If \param(logicalValue) is FALSE the result is ERTMon object; if TRUE the result is logical value.
+#' @export
 ERTMonDataCheck <- function( ertObj, functionName = NULL, logicalResult = FALSE ) {
   
   res <- TRUE
@@ -206,6 +260,14 @@ ERTMonDataCheck <- function( ertObj, functionName = NULL, logicalResult = FALSE 
 ## Member presense check
 ##===========================================================
 
+#' @description A general function for checking the presence of a data member in an ERTMon object.
+#' @param ertObj An ERTMon object.
+#' @param memberName The name of the member to be checked.
+#' @param memberPrettyName A pretty member name (for messages).
+#' @param functionName The name of the delegating function.
+#' @param logicalResult Should the result be logical value?
+#' @return A logical value or an ERTMon object.
+#' @export
 ERTMonMemberPresenceCheck <- function( ertObj, memberName, memberPrettyName = memberName, functionName = "", logicalResult = FALSE ) {
   
   res <- TRUE
@@ -227,6 +289,12 @@ ERTMonMemberPresenceCheck <- function( ertObj, memberName, memberPrettyName = me
 ## Data transformer check
 ##===========================================================
 
+#' @description Checks the presence of a data transformation S4 object in a given ERTMon object.
+#' @param ertObj An ERTMon object.
+#' @param functionName The name of the delegating function.
+#' @param logicalResult Should the result be logical value?
+#' @return A logical value or an ERTMon object.
+#' @export
 ERTMonDataTransformerCheck <- function( ertObj, functionName = "", logicalResult = FALSE ) {
   
   ERTMonMemberPresenceCheck( ertObj, "dtObj", "data transformer object", functionName = functionName, logicalResult = logicalResult)
@@ -237,6 +305,12 @@ ERTMonDataTransformerCheck <- function( ertObj, functionName = "", logicalResult
 ## Data transformer check
 ##===========================================================
 
+#' @description Checks the presence of a feature matrix in a given ERTMon object.
+#' @param ertObj An ERTMon object.
+#' @param functionName The name of the delegating function.
+#' @param logicalResult Should the result be logical value?
+#' @return A logical value or an ERTMon object.
+#' @export
 ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult = FALSE ) {
   
   res <- ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) 
@@ -259,6 +333,12 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 ## Make time series feature extractor
 ##===========================================================
 
+#' @description Processes the set event records using the set computation specification in an ERTMon object. 
+#' @param ertObj An ERTMon object.
+#' @param echoStepsQ Should the steps be echoed?
+#' @param outlierIdentifier Outlier parameters function.
+#' @return An ERTMon object.
+#' @export
 ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentifier = SPLUSQuartileIdentifierParameters ) {
   
   if( !ERTMonDataCheck( ertObj, "ERTMonProcessEventRecords", logicalResult = T ) ) {
@@ -308,11 +388,14 @@ ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentif
 ## Compute formula (with a formula spec)
 ##===========================================================
 
-## The computation is completely wrong/not developed; just a filler at this point.
-
-#' @param ertObj ERTMon monad object
-#' @param formulaSpec formula specification
-#' @param reduceFunc reduction function, one of "+" or "*"
+#' @description Computes a formula with a given specification using the feature 
+#' sub-matrices of an ERTMon object.
+#' @param ertObj An ERTMon object.
+#' @param formulaSpec A formula specification.
+#' @param reduceFunc Reduction function, one of "+" or "*".
+#' @return An ERTMon object.
+#' @details The result matrix is assigned into ertObj$Value.
+#' @export
 ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
   
   if( !( is.data.frame(formulaSpec) && colnames(formulaSpec) == c("FeatureName", "Coefficient", "Exponent", "RatioPart") ) ) {
@@ -335,6 +418,10 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
 ## Export (computed) 
 ##===========================================================
 
+#' @description Exports the feature matrix into a CSV file.
+#' @param ertObj An ERTMon object.
+#' @param fileName A CSV file name. 
+#' @export
 ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName ) {
   
   if( !ERTMonFeatureMatrixCheck(ertObj, logicalResult = TRUE) ) {
