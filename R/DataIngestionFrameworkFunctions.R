@@ -1,6 +1,5 @@
 ##===========================================================
 ## Event records transformations OOP framework functions
-## Copyright (C) 2018  Anton Antonov
 ##
 ## BSD 3-Clause License
 ## 
@@ -290,6 +289,11 @@ NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, no
     
   }
 }
+
+##-----------------------------------------------------------
+## Impose row and column ID's
+##-----------------------------------------------------------
+
 
 ##-----------------------------------------------------------
 ## Verify directory

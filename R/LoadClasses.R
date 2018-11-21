@@ -1,6 +1,5 @@
 ##===========================================================
 ## Event records transformations OOP class loading script
-## Copyright (C) 2018  Anton Antonov
 ##
 ## BSD 3-Clause License
 ## 
@@ -44,37 +43,21 @@
 # Start date: 2018-10-13
 #---
 
-
 library(plyr)
-library(tidyr)
 library(dplyr)
 
 library(stringi)
 library(Matrix)
-library(ggplot2)
 library(RcppRoll)
-
-#devtools::install_github("jrowen/rhandsontable")
-library(rhandsontable)
-
-#devtools::install_github("rstudio/sparklyr")
-#library(sparklyr)
-
-#spark_install(version = "1.6.2")
-#spark_install(version = "1.6.0")
-
-library(h2o)
 
 library(devtools)
 
 ## 
-source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/DataConversionFunctions.R")
+#source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/DataConversionFunctions.R")
 source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/OutlierIdentifiers.R")
-#source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/VariableImportanceByClassifiers.R")
 
 # source("~/MathematicaForPrediction/R/DataConversionFunctions.R")
 # source("~/MathematicaForPrediction/R/OutlierIdentifiers.R")
-# source("~/MathematicaForPrediction/R/VariableImportanceByClassifiers.R")
 
 # fnames = list.files( path = ".", pattern = ".*Class.R" )
 # llply( fnames, source ) 

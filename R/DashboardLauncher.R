@@ -1,6 +1,5 @@
 ##===========================================================
 ## ERTMon-R dashboard launcher
-## Copyright (C) 2018  Anton Antonov
 ##
 ## BSD 3-Clause License
 ## 

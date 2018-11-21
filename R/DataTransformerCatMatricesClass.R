@@ -1,6 +1,5 @@
 ##===========================================================
 ## Event records transformations OOP data transformer class for categorical matrices
-## Copyright (C) 2018  Anton Antonov
 ##
 ## BSD 3-Clause License
 ## 
