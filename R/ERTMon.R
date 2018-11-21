@@ -47,6 +47,7 @@
 ## ERT Monad failure symbol
 ##===========================================================
 
+#' Failure symbol for ERTMon.
 #' @description Failure symbol for the monad ERTMon.
 #' @export
 ERTMonFailureSymbol <- NA
@@ -55,6 +56,7 @@ ERTMonFailureSymbol <- NA
 ## FE Unit
 ##===========================================================
 
+#' Make a ERTMon Unit
 #' @description Creates a monad object.
 #' @param eventRecords A data frame with event records; can be NULL.
 #' @param entityAttributes A data frame with entity attributes; can be NULL.
@@ -68,6 +70,7 @@ ERTMonUnit <- function( eventRecords = NULL, entityAttributes = NULL, compSpec =
   res
 }
 
+#' Make a ERTMon unit.
 #' @description A synonym of ERTMonUnit.
 #' @export
 ERTMonObject <- ERTMonUnit
@@ -77,6 +80,7 @@ ERTMonObject <- ERTMonUnit
 ## Setters and getters
 ##===========================================================
 
+#' Take the value in a ERTMon object.
 #' @description Takes the value from ERTMon monad object.
 #' @param ertObj An ERTMon object.
 #' @return Just ertObj$Value.
@@ -87,6 +91,7 @@ ERTMonTakeValue <- function( ertObj ) {
 
 ##-----------------------------------------------------------
 
+#' Set event records.
 #' @description Set an event records data frame into the monad object.
 #' @param ertObj An ERTMon object.
 #' @param eRecs A data frame with event records.
@@ -104,6 +109,7 @@ ERTMonSetEventRecords <- function( ertObj, eRecs ) {
 
 ##-----------------------------------------------------------
 
+#' Set entity attributes.
 #' @description Set an entity attributes data frame into the monad object.
 #' @param ertObj An ERTMon object.
 #' @param eAttrs A data frame with entity attributes.
@@ -121,6 +127,7 @@ ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
 
 ##-----------------------------------------------------------
 
+#' Set computation specification.
 #' @description Set a computation specification data frame into the monad object.
 #' @param ertObj An ERTMon object.
 #' @param compSpec A data frame that is a computation specification.
@@ -139,6 +146,7 @@ ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
 
 ##-----------------------------------------------------------
 
+#' Take feature name prefixes.
 #' @description Returns the prefixes of the column names of the feature matrix 
 #' using the computation spefication.
 #' @param ertObj an ERTMon object.
@@ -154,6 +162,7 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 
 ##-----------------------------------------------------------
 
+#' Take feature sub-matrices.
 #' @description Returns the sub-matrices of the feature matrix.
 #' @param ertObj An ERTMon object.
 #' @param smat If not NULL it is going to be used instead of ertObj$Value.
@@ -197,6 +206,7 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
 
 ##-----------------------------------------------------------
 
+#' Take the feature matrix.
 #' @description Returns the feature matrix.
 #' @param ertObj An ERTMon object.
 #' @return A (sparse) matrix or ERTMonFailureSymbol.
@@ -219,6 +229,7 @@ ERTMonTakeFeatureMatrix <- function( ertObj ) {
 ## Data presence check
 ##===========================================================
 
+#' Check presence of required data.
 #' @description Checks does an ERTMon object have event records, entity attributes, and computation specification.
 #' @param ertObj An ERTMon object.
 #' @param functionName A name of the delegating function (if any).
@@ -260,6 +271,7 @@ ERTMonDataCheck <- function( ertObj, functionName = NULL, logicalResult = FALSE 
 ## Member presense check
 ##===========================================================
 
+#' General member presence check.
 #' @description A general function for checking the presence of a data member in an ERTMon object.
 #' @param ertObj An ERTMon object.
 #' @param memberName The name of the member to be checked.
@@ -289,6 +301,7 @@ ERTMonMemberPresenceCheck <- function( ertObj, memberName, memberPrettyName = me
 ## Data transformer check
 ##===========================================================
 
+#' Check presence of a data transformer object.
 #' @description Checks the presence of a data transformation S4 object in a given ERTMon object.
 #' @param ertObj An ERTMon object.
 #' @param functionName The name of the delegating function.
@@ -302,9 +315,10 @@ ERTMonDataTransformerCheck <- function( ertObj, functionName = "", logicalResult
 
 
 ##===========================================================
-## Data transformer check
+## Feature matrix check
 ##===========================================================
 
+#' Feature matrix presence check.
 #' @description Checks the presence of a feature matrix in a given ERTMon object.
 #' @param ertObj An ERTMon object.
 #' @param functionName The name of the delegating function.
@@ -333,6 +347,7 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 ## Make time series feature extractor
 ##===========================================================
 
+#' Process the data and make feature matrix.
 #' @description Processes the set event records using the set computation specification in an ERTMon object. 
 #' @param ertObj An ERTMon object.
 #' @param echoStepsQ Should the steps be echoed?
@@ -388,6 +403,7 @@ ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentif
 ## Compute formula (with a formula spec)
 ##===========================================================
 
+#' Compute specified formula.
 #' @description Computes a formula with a given specification using the feature 
 #' sub-matrices of an ERTMon object.
 #' @param ertObj An ERTMon object.
@@ -418,6 +434,7 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
 ## Export (computed) 
 ##===========================================================
 
+#' Export the feature matrix into a CSV file.
 #' @description Exports the feature matrix into a CSV file.
 #' @param ertObj An ERTMon object.
 #' @param fileName A CSV file name. 
