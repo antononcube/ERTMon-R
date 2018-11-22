@@ -84,8 +84,9 @@
 
 nEntitys <- 500
 outputDirName <- "~/ERTMon-R/FakeData/"
-writeFilesQ <- TRUE
-evaluateAllQ <- TRUE
+writeFilesQ <- FALSE
+evaluateAllQ <- FALSE
+evaluateQ <- FALSE
 
 ##===========================================================
 ## Load libraries
@@ -99,7 +100,7 @@ library(lubridate)
 ##===========================================================
 ## Generate patients
 ##===========================================================
-if ( evaluateAllQ || !exists("fakeEntityData") ) {
+if ( evaluateQ && ( evaluateAllQ || !exists("fakeEntityData") ) ) {
   
   cat("\n\tCreate fake patients data...\n")
   
@@ -137,7 +138,7 @@ if ( evaluateAllQ || !exists("fakeEntityData") ) {
 ##===========================================================
 ## Generate patients vitals
 ##===========================================================
-if ( evaluateAllQ || !exists("fakeMedicalRecords") ) {
+if ( evaluateQ && ( evaluateAllQ || !exists("fakeMedicalRecords") ) ) {
   
   cat("\n\tCreate fake medical records...\n")
   

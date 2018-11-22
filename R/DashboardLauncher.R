@@ -1,5 +1,6 @@
 ##===========================================================
 ## ERTMon-R dashboard launcher
+## Copyright (C) 2018  Anton Antonov
 ##
 ## BSD 3-Clause License
 ## 
@@ -43,25 +44,20 @@
 # Start date: 2017-08-02
 #---
 
-source("./R/LoadClasses.R")
-
-library(shinydashboard)
-#library(rhandsontable)
-library(shiny)
-library(DT)
-library(d3heatmap)
-
-
-## Note that this brings and external dependency.
-library(devtools)
-##source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/VariableImportanceByClassifiers.R")
-
 
 ##===========================================================
 ## Create objects at play
 ##===========================================================
-if ( TRUE ) {
+if ( FALSE ) {
 
+  source("./R/LoadClasses.R")
+  
+  library(shinydashboard)
+  #library(rhandsontable)
+  library(shiny)
+  library(DT)
+  library(d3heatmap)
+  
   ## Here we create objects with default values that are going
   ## to be used in the dashboard.
   
@@ -85,7 +81,5 @@ if ( TRUE ) {
   ## ERTMon object.
   
 
-  
+  runApp( "./R/Dashboard" )  
 }
-
-runApp( "./R/Dashboard" )
