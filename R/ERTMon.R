@@ -42,6 +42,13 @@
 # Start date: 2018-11-19
 #---
 
+#' @import plyr
+#' @import dplyr
+#' @import stringi
+#' @import Matrix
+#' @import RcppRoll
+#' @import devtools
+NULL
 
 ##===========================================================
 ## ERT Monad failure symbol
