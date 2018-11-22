@@ -21,3 +21,5 @@ Collate:
     'DataWrapperClass.R'
     'ERTMon.R'
     'LoadClasses.R'
+    'DashboardLauncher.R'
+    'FakeMedicalDataCreation.R'
