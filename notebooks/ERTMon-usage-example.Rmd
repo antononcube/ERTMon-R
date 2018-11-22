@@ -5,8 +5,16 @@ date: "`r Sys.Date()`"
 output: html_notebook
 ---
 
+Clear all definitions:
+
 ```{r}
-source("../R/LoadClasses.R")
+rm(list=ls())
+```
+Load the GitHub repository:
+
+```{r}
+library(devtools)
+install_github("antononcube/ERTMon-R")
 ```
 
 # Introduction
