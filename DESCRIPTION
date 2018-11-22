@@ -12,6 +12,8 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 Collate: 
+    'OutlierIdentifiers.R'
+    'DataConversionFunctions.R'
     'ComputationSpecificationClass.R'
     'DataIngesterClass.R'
     'DataIngestionFrameworkFunctions.R'
@@ -19,8 +21,6 @@ Collate:
     'DataTransformerClass.R'
     'DataTransformerCatMatricesClass.R'
     'DataWrapperClass.R'
-    'OutlierIdentifiers.R '
-    'DataConversionFunctions.R'
     'ERTMon.R'
     'LoadClasses.R'
     'DashboardLauncher.R'
