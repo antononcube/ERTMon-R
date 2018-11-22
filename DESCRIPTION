@@ -23,3 +23,12 @@ Collate:
     'LoadClasses.R'
     'DashboardLauncher.R'
     'FakeMedicalDataCreation.R'
+Imports:
+    plyr,
+    dplyr,
+    magrittr,
+    RcppRoll,
+    stringi,
+    devtools,
+    Matrix
+
