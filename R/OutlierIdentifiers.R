@@ -55,16 +55,20 @@
 ##
 ##=======================================================================================
 
+#' Hampel identifier parameters.
 #' @description Find an Hampel outlier threshold for a data vector
-#' @param dataVec data vector
+#' @param dataVec A data vector.
+#' @export
 HampelIdentifierParameters <- function( dataVec ) {
   x0 <- median(dataVec)
   md <- 1.4826 * median(abs(dataVec - x0));
   c(x0 - md, x0 + md)
 }
 
+#' Quartile identifier parameters
 #' @description Find an Quartile outlier for a data vector
 #' @param dataVec dataVec vector
+#' @export
 QuartileIdentifierParameters <- function( dataVec ) {
   res <- quantile( dataVec, c( 1/4, 1/2, 3/4 ) )
   xL <- res[[1]]
@@ -73,9 +77,10 @@ QuartileIdentifierParameters <- function( dataVec ) {
   c( x0 - (xU - xL), x0 + (xU - xL) )
 }
 
-
+#' SPLUS quartile identifier parameters
 #' @description Find an SPLUS Quartile outlier for a data vector
 #' @param dataVec dataVec vector
+#' @export
 SPLUSQuartileIdentifierParameters <- function( dataVec ) {
   if ( length(dataVec) <=4 ) {
     xL <- min(dataVec)
@@ -89,46 +94,58 @@ SPLUSQuartileIdentifierParameters <- function( dataVec ) {
 }
 
 
+#' Outlier identifier.
 #' @description Find an outlier threshold for a data vector
 #' @param dataVec data vector
 #' @param lowerAndUpperThresholds outlier identifier parameters
+#' @export
 OutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
   dataVec[ dataVec <= lowerAndUpperThresholds[[1]] | dataVec >= lowerAndUpperThresholds[[2]] ]
 }
 
+#' Top outlier identifier.
 #' @description Find the top outliers for a data vector
 #' @param dataVec data vector
 #' @param lowerAndUpperThresholds outlier identifier parameters
+#' @export
 TopOutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
   dataVec[dataVec >= lowerAndUpperThresholds[[2]] ]
 }
 
+#' Bottom outlier identifier.
 #' @description Find the bottom outliers for a data vector
 #' @param dataVec data vector
 #' @param lowerAndUpperThresholds outlier identifier parameters
+#' @export
 BottomOutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
   dataVec[dataVec <= lowerAndUpperThresholds[[1]] ]
 }
 
+#' Outlier positions finder.
 #' @description Find the outlier positions in a data vector
 #' @param dataVec data vector
 #' @param outlierIdentifier outlier identifier function
+#' @export
 OutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
   cls <- outlierIdentifier(dataVec)
   which( dataVec <= cls[[1]] | dataVec >= cls[[2]] )
 }
 
+#' Top outlier positions finder.
 #' @description Find the top outlier positions in a data vector
 #' @param dataVec data vector
 #' @param outlierIdentifier outlier identifier function
+#' @export
 TopOutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
   cls <- outlierIdentifier(dataVec)
   which( dataVec >= cls[[2]] )
 }
 
+#' Bottom outlier positions finder.
 #' @description Find the bottom outlier positions in a data vector
 #' @param dataVec data vector
 #' @param outlierIdentifier outlier identifier function
+#' @export
 BottomOutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
   cls <- outlierIdentifier(dataVec)
   which( dataVec <= cls[[1]] )
