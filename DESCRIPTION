@@ -19,6 +19,8 @@ Collate:
     'DataTransformerClass.R'
     'DataTransformerCatMatricesClass.R'
     'DataWrapperClass.R'
+    'OutlierIdentifiers.R'
+    'DataConversionFunctions.R'
     'ERTMon.R'
     'LoadClasses.R'
     'DashboardLauncher.R'
