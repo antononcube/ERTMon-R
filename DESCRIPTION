@@ -19,7 +19,7 @@ Collate:
     'DataTransformerClass.R'
     'DataTransformerCatMatricesClass.R'
     'DataWrapperClass.R'
-    'OutlierIdentifiers.R'
+    'OutlierIdentifiers.R '
     'DataConversionFunctions.R'
     'ERTMon.R'
     'LoadClasses.R'
