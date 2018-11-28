@@ -15,6 +15,7 @@ Load the GitHub repository:
 ```{r}
 library(devtools)
 install_github("antononcube/ERTMon-R")
+library(ERTMon)
 ```
 
 # Introduction
@@ -24,7 +25,7 @@ This notebook shows how to use the monad ERTMon provided by this package.
 # Data ingestion
 
 ```{r}
-dirName <- file.path( "..", "FakeData")
+dirName <- file.path( "..", "data", "FakeData")
 dirName
 ```
 
