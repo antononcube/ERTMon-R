@@ -26,7 +26,7 @@
 ## DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
 ## FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 ## DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-##          SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+## SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 ## CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 ## OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -228,6 +228,7 @@ SparseMatrixToTriplets <- function( smat ) {
 #' @description Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
 #' @param rowIDs an array of row ID's
 #' @param smat a matrix with named rows
+#' @export
 ImposeRowIDs <- function( rowIDs, smat ) {
 
   missingRows <- setdiff( rowIDs, rownames(smat) )
@@ -250,6 +251,7 @@ ImposeRowIDs <- function( rowIDs, smat ) {
 #' @description Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
 #' @param colIDs an array of col ID's
 #' @param smat a matrix with named columns
+#' @export
 ImposeColumnIDs <- function( colIDs, smat ) {
 
   t( ImposeRowIDs( colIDs, t(smat)) )
@@ -464,50 +466,14 @@ ToColumnValueIncidenceMatrix <- function( mat, rowNames = TRUE, colNames = TRUE 
 
 
 ##===========================================================
-## Conversions to D3 network specifications
-##===========================================================
-
-SparseMatrixTripletsToD3NetworkSpec <- function( triplets ) {
-  nodes <- unique(as.character(c(triplets[[1]],triplets[[2]])))
-  rules <- setNames( seq(0,length(nodes)-1), nodes)
-  triplets[[1]] <- as.integer( rules[ triplets[[1]] ] )
-  triplets[[2]] <- as.integer( rules[ triplets[[2]] ] )
-  list( Nodes = data.frame(name = nodes, stringsAsFactors = F), Links = setNames( as.data.frame(triplets), c("source","target","value") ) )
-} 
-
-SparseMatrixToD3NetworkSpec <- function( smat, smat2 = NULL ) {
-  if( is.null(smat2) ) {
-    SparseMatrixTripletsToD3NetworkSpec(SparseMatrixToTriplets(smat))
-  } else {
-    SparseMatrixTripletsToD3NetworkSpec( rbind( SparseMatrixToTriplets(smat), SparseMatrixToTriplets(smat2) ) )
-  }
-}
-
-SparseMatrixListToD3NetworkSpec <- function( smats ) {
-  
-  SparseMatrixTripletsToD3NetworkSpec( do.call( rbind, Map( f = SparseMatrixToTriplets, smats ) ) )
-  
-}
-
-SparseMatrixToD3NetworkSpecFirst <- function( smat ) {
-  qMatNodes <- c(rownames(smat),colnames(smat))
-  qMatNodes <- data.frame(name = qMatNodes, stringsAsFactors = F)
-  rownames(smat) <- 0:(nrow(smat)-1)
-  colnames(smat) <- nrow(smat) + (0:(ncol(smat)-1))
-  qMatLinks <- setNames(as.data.frame(SparseMatrixToTriplets(smat)), c("source","target","value"))
-  qMatLinks$source <- as.integer(qMatLinks$source)
-  qMatLinks$target <- as.integer(qMatLinks$target)
-  list( Nodes = qMatNodes, Links = qMatLinks)
-}
-
-
-##===========================================================
 ## Add date tags
 ##===========================================================
 
+#' Adding date derived tags.
 #' @description Aggregate values for given column names.
 #' @param data a data frame
 #' @param dateColumnName a date column over which the aggregation is done
+#' @export
 AddDateTags <- function( data, dateColumnName ) {
 
   dateCol <- enquo(dateColumnName)
@@ -528,9 +494,11 @@ AddDateTags <- function( data, dateColumnName ) {
 ## Summary parititiong
 ##===========================================================
 
+#' Summary by columns parititioning.
 #' @description Print the summary of data frame in a series of specified number of columns.
 #' @param data a data frame
 #' @param numberOfColumns number of columns for the partitioning
+#' @export
 SummaryPartitioned <- function( data, numberOfColumns = 3, ...) {
 
   k <- 1
