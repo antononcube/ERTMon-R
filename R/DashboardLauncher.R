@@ -65,8 +65,8 @@ if ( FALSE ) {
   ## The directory name has all the CSV files needed to for dashboard.
   ## Of course the data ingestion can happen from other sources.
   ## Both data and computation specifications are held in that directory.
-  directoryName <- "~/ERTMon-R/FakeData/"
-  testDataDirectoryName <- "~/ERTMon-R/TestFakeData/"
+  directoryName <- file.path( "..", "..", "data", "FakeData")
+  testDataDirectoryName <- file.path( "..", "..", "data", "TestFakeData")
   specFileName <- file.path( directoryName, "computationSpecification.csv" )
   
   ## Data ingester object for reading medical and patient data.
@@ -81,5 +81,5 @@ if ( FALSE ) {
   ## ERTMon object.
   
 
-  runApp( "./R/Dashboard" )  
+  runApp( file.path( ".", "R", "Dashboard") )  
 }
