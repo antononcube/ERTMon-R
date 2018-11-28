@@ -83,7 +83,7 @@
 ##===========================================================
 
 nEntitys <- 500
-outputDirName <- "~/ERTMon-R/FakeData/"
+outputDirName <- file.path( ".", "data", "FakeData")
 writeFilesQ <- FALSE
 evaluateAllQ <- FALSE
 evaluateQ <- FALSE
