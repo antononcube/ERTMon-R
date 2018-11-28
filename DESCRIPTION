@@ -33,4 +33,7 @@ Imports:
     stringi,
     devtools,
     Matrix
-
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
