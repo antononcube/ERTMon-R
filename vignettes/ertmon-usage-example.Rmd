@@ -46,6 +46,8 @@ dirName
 
 ## Event records
 
+Here we read the event records data and display a sample of it.
+
 ```{r}
 fakeEventRecords <- read.csv( file = file.path( dirName, "eventRecords.csv"), stringsAsFactors = FALSE)
 head(fakeEventRecords)
@@ -53,7 +55,7 @@ head(fakeEventRecords)
 
 ## Entity attributes
 
-In order to run the underlying function
+Here we read the entity attributes data and display a sample of it.
 
 ```{r}
 fakeEntityAttributes <- read.csv( file = file.path( dirName, "entityAttributes.csv"), stringsAsFactors = FALSE)
@@ -71,6 +73,12 @@ fakeCompSpec
 
 # Main pipeline
 
+With the main pipeline we take event records data and transform that data into a feature matrix.
+
+Each row of the feature matrix corresponds to an entity; each column to a feature.
+
+A feature is combination of a variable name, aggregation function name, and a time cell index.
+
 ## Setting data
 
 Initialize the monad and set the event records, entity attributes, and computation specification.
@@ -86,11 +94,17 @@ ertmon1 <-
 
 ## Process event records
 
+The pipeline function that does the heavy lifting.
+
 ```{r}
 ertmon1 <-
   ertmon1 %>%
   ERTMonProcessEventRecords()
 ```
+
+Here we get the feature sub-matrices. 
+Each feature sub-matrix corresponds to a variable and an aggregation function name. 
+(Derived from the computation specification.)
 
 ```{r}
 smats <- ertmon1 %>% ERTMonTakeContingencyMatrices()
