@@ -44,6 +44,7 @@
 
 #' @import plyr
 #' @import dplyr
+#' @import magrittr
 #' @import stringi
 #' @import Matrix
 #' @import RcppRoll
