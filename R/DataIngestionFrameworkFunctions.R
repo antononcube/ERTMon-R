@@ -332,7 +332,7 @@ EmptyComputationSpecificationRow <- function() {
 #' c("FeatureName", "Coefficient", "Exponent", "RatioPart") .
 #' The column "FeatureName" is expeceted to have non-unique value.
 #' The "RatioPart" can have one of the values "Denominator" or "Numerator" and no others.
-#' The argument \param reduceFunc can have one of the values 'sum', "+", or "*" and no others.
+#' The argument \code{reduceFunc} can have one of the values 'sum', "+", or "*" and no others.
 #' The interpretation is:
 #'   formulaMat = 
 #'      reduceFunc[ Coefficient[i] * smats[ FeatureName[i] ] ^ Exponent[i], {i,NumeratorRows}] 

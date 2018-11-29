@@ -242,7 +242,7 @@ ERTMonTakeFeatureMatrix <- function( ertObj ) {
 #' @param ertObj An ERTMon object.
 #' @param functionName A name of the delegating function (if any).
 #' @param logicalResult Should the result be logical value?
-#' @return If \param(logicalValue) is FALSE the result is ERTMon object; if TRUE the result is logical value.
+#' @return If \code{logicalValue} is FALSE the result is ERTMon object; if TRUE the result is logical value.
 #' @export
 ERTMonDataCheck <- function( ertObj, functionName = NULL, logicalResult = FALSE ) {
   

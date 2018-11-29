@@ -14,7 +14,7 @@ ERTMonDataCheck(ertObj, functionName = NULL, logicalResult = FALSE)
 \item{logicalResult}{Should the result be logical value?}
 }
 \value{
-If \param(logicalValue) is FALSE the result is ERTMon object; if TRUE the result is logical value.
+If \code{logicalValue} is FALSE the result is ERTMon object; if TRUE the result is logical value.
 }
 \description{
 Checks does an ERTMon object have event records, entity attributes, and computation specification.
