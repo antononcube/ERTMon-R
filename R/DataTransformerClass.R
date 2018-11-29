@@ -103,8 +103,8 @@ setGeneric("transformData", function (object, compSpec, eventRecordsData, entity
 setGeneric("restrictToSpecifiedVariables", function (eventRecords, object) standardGeneric("restrictToSpecifiedVariables") )
 setGeneric("addTimeGrid", function (eventRecords, object) standardGeneric("addTimeGrid") )
 setGeneric("aggregateOverTimeGrid", function (eventRecords, object) standardGeneric("aggregateOverTimeGrid") )
-setGeneric("aggregateAndAccumulateOverGroups", function (object, aggrMRData) standardGeneric("aggregateAndAccumulateOverGroups") )
-setGeneric("normalize", function (aggrMRData, object) standardGeneric("normalize") )
+setGeneric("aggregateAndAccumulateOverGroups", function (object, aggrERData) standardGeneric("aggregateAndAccumulateOverGroups") )
+setGeneric("normalize", function (aggrERData, object) standardGeneric("normalize") )
 setGeneric("makeSparseMatrices", function (object, ...) standardGeneric("makeSparseMatrices") )
 setGeneric("sparseMatricesToDataFrame", function (object, simpleConversion, numericLabelColumn) standardGeneric("sparseMatricesToDataFrame") )
 
@@ -250,7 +250,7 @@ setMethod("aggregateOverTimeGrid",
             ##       find aggregate function values
             cat("\n\tFind aggregated values...\n")
             
-            aggrMRData <-
+            aggrERData <-
               object@compSpec@parameters %>%
               rowwise() %>%
               do( AggregateEventRecordsBySpec( .,
@@ -267,7 +267,7 @@ setMethod("aggregateOverTimeGrid",
             ## This was considered because 
             ## AggregateEventRecordsBySpec might modify the specification rows of object@compSpec@parameters
             ## for outlier handling.
-            # aggrMRData <-
+            # aggrERData <-
             #   ldply( 1:length(object@compSpec@parameters), function(i) {
             #     res <- 
             #       AggregateEventRecordsBySpec( object@compSpec@parameters[i,], eventRecords, object@entityAttributes, object@compSpec@aggrFuncSpecToFunc ) 
@@ -277,15 +277,15 @@ setMethod("aggregateOverTimeGrid",
             
             cat("\n\t\t...DONE\n")
             
-            aggrMRData
+            aggrERData
           }
 )
 
 
 ##---------------------------------------------------------
 setMethod("normalize",
-          signature = c(aggrMRData = "data.frame", object = "DataTransformer"), 
-          function(aggrMRData, object) {
+          signature = c(aggrERData = "data.frame", object = "DataTransformer"), 
+          function(aggrERData, object) {
             
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Normalization functions application." ) }
             
@@ -293,19 +293,19 @@ setMethod("normalize",
             
             ## So basically we do the same thing we did for the aggreation: rowwise() %>% do( ... ) .
             
-            aggrMRData <- 
+            aggrERData <- 
               object@compSpec@parameters %>% 
               rowwise() %>% 
               do( normalizeGroupsBySpec( ., 
                                          object,
-                                         aggrMRData, 
+                                         aggrERData, 
                                          object@entityAttributes, 
                                          object@compSpec@normalizationFuncSpecToFunc ) ) %>% 
               ungroup()
             
             cat("\n\t\t...DONE\n")
             
-            aggrMRData
+            aggrERData
           }
 )
 
@@ -427,10 +427,10 @@ setMethod("sparseMatricesToDataFrame",
 ## Related to the normalization step for the method "normalize". This is an intermediate step.
 #' @description Applies a normalization function to long form contingency matrix data and stores the results.
 #' @param object the current object
-#' @param aggrMRData aggregated event records in long form
+#' @param aggrERData aggregated event records in long form
 setMethod("aggregateAndAccumulateOverGroups",
-          signature = c(object = "DataTransformer", aggrMRData = "data.frame" ), 
-          function(object, aggrMRData) {
+          signature = c(object = "DataTransformer", aggrERData = "data.frame" ), 
+          function(object, aggrERData) {
             
             cat("\n\tAggregation over groups functions application (and accumulation)...\n")
             
@@ -446,7 +446,7 @@ setMethod("aggregateAndAccumulateOverGroups",
                 if ( specRow$Normalization.scope[[1]] == "Variable" ) {
                   
                   dfNormalizationValues <- 
-                    aggrMRData %>% 
+                    aggrERData %>% 
                     dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
                     dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
                     dplyr::mutate( Scope = "Variable", Attribute = NA ) %>% 
@@ -464,7 +464,7 @@ setMethod("aggregateAndAccumulateOverGroups",
                 } else if ( specRow$Normalization.scope[[1]] %in% allEntityAttributes ) {
                   
                   dfNormalizationValues <- 
-                    aggrMRData %>% 
+                    aggrERData %>% 
                     dplyr::filter( MatrixName == specRow$MatrixName ) %>%
                     dplyr::inner_join( object@entityAttributes[, c("EntityID", "Attribute")] %>% 
                                          dplyr::filter( Attribute == specRow$Normalization.scope[[1]] ),
