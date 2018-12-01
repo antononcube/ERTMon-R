@@ -157,7 +157,7 @@ ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
 #' Take feature name prefixes.
 #' @description Returns the prefixes of the column names of the feature matrix 
 #' using the computation spefication.
-#' @param ertObj an ERTMon object.
+#' @param ertObj An ERTMon object.
 #' @return A character vector. 
 #' @details The matrix is not computed; only the computation specification is needed.
 #' @export
@@ -232,6 +232,24 @@ ERTMonTakeFeatureMatrix <- function( ertObj ) {
   }
 }
 
+##-----------------------------------------------------------
+
+#' Take time cells interpretation.
+#' @description Returns a data frame with the interpretation of the time cells.
+#' @param ertObj An ERTMon object.
+#' @return A data frame. 
+#' @details Currently the entity time series can only be alligned to finish at 0. 
+#' Hence the interpretation times are non-positive.
+#' @export
+ERTMonTakeTimeCellsInterpretation <- function( ertObj ) {
+  if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) ) {
+    ERTMonFailureSymbol
+  } else if( is.null(ertObj$dtObj@timeCellsInterpretation) ) { 
+    ERTMonFailureSymbol 
+  } else { 
+    ertObj$dtObj@timeCellsInterpretation
+  }
+}
 
 ##===========================================================
 ## Data presence check
@@ -369,11 +387,21 @@ ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentif
   }
 
   ## In order to adhere ot ERTMon's requirements we have to provide a 'Label' attribute.
-  ertObj$EntityAttributes <- 
-    rbind( 
-      ertObj$EntityAttributes, 
-      data.frame( EntityID = unique(ertObj$EntityAttributes$EntityID), Attribute = "Label", Value = "Yes" )
-    )
+  noLabelIDs <- ertObj$EntityAttributes %>% dplyr::filter( Attribute == "Label" )
+
+  if( nrow(noLabelIDs) == 0 ) { 
+    noLabelIDs <- unique(ertObj$EntityAttributes$EntityID) 
+  } else {
+    noLabelIDs <- setdiff( unique(ertObj$EntityAttributes$EntityID), noLabelIDs$EntityID )   
+  }
+
+  if( length(noLabelIDs) > 0 ) { 
+    ertObj$EntityAttributes <- 
+      rbind( 
+        ertObj$EntityAttributes, 
+        data.frame( EntityID = noLabelIDs, Attribute = "Label", Value = "Yes" )
+      )
+  }
   
   ## Computation specification
   compSpecObj <- new( "ComputationSpecification" )

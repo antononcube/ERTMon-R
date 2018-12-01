@@ -7,7 +7,7 @@
 ERTMonTakeFeatureNamePrefixes(ertObj)
 }
 \arguments{
-\item{ertObj}{an ERTMon object.}
+\item{ertObj}{An ERTMon object.}
 }
 \value{
 A character vector.
