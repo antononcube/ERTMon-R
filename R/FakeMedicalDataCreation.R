@@ -170,7 +170,7 @@ if ( evaluateQ && ( evaluateAllQ || !exists("fakeMedicalRecords") ) ) {
           values <- nonCBVitalSignsMeans[[vSign]] * values
         }
         
-        ## "EntityID","Unit","ObservationTime","Variable","Value","ObservationTime"
+        ## "EntityID","LocationID","ObservationTime","Variable","Value","ObservationTime"
         data.frame( EntityID = x$EntityID, 
                     LocationID = "UKNWN", 
                     ObservationTimeString = timeGrid, 
