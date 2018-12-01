@@ -30,7 +30,7 @@ rm(list=ls())
 
 Load the package from the GitHub repository:
 
-```{r}
+```{r, eval=FALSE}
 library(devtools)
 install_github("antononcube/ERTMon-R")
 library(ERTMon)
@@ -39,8 +39,9 @@ library(ERTMon)
 
 # Data ingestion
 
+
 ```{r}
-dirName <- file.path( ".", "data", "FakeData")
+dirName <- if( grepl("vignettes", getwd()) ) { file.path( getwd(), "..", "data", "FakeData") } else { file.path( getwd(), "data", "FakeData")}
 dirName
 ```
 
