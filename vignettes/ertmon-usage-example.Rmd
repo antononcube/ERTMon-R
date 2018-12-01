@@ -124,6 +124,12 @@ smats[["HR.Mean"]][1:12,]
 ```{r}
 image(ertmon1 %>% ERTMonTakeFeatureMatrix)
 ```
+# Time cells interpretation
+
+```{r}
+ertmon1 %>% ERTMonTakeTimeCellsInterpretation
+```
+
 
 # Export the feature matrix
 
