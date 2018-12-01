@@ -50,11 +50,11 @@ library(stringi)
 library(Matrix)
 library(RcppRoll)
 
-library(devtools)
+#library(devtools)
 
 ## 
 #source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/DataConversionFunctions.R")
-source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/OutlierIdentifiers.R")
+#source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/OutlierIdentifiers.R")
 
 # source("~/MathematicaForPrediction/R/DataConversionFunctions.R")
 # source("~/MathematicaForPrediction/R/OutlierIdentifiers.R")
@@ -66,6 +66,8 @@ if( !exists("ertMonDirName") ) {
   ertMonDirName <- "~/ERTMon-R"
 }
 
+source( file.path( ertMonDirName, "R", "DataConversionFunctions.R") )
+source( file.path( ertMonDirName, "R", "OutlierIdentifiers.R") )
 source( file.path( ertMonDirName, "R", "DataIngestionFrameworkFunctions.R") )
 source( file.path( ertMonDirName, "R", "DataWrapperClass.R") )
 source( file.path( ertMonDirName, "R", "DataIngesterClass.R") )
