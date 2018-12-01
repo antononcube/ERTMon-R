@@ -71,6 +71,7 @@ setClass( "DataTransformer",
                         entityAttributes = "data.frame",
                         compSpec = "ComputationSpecification",
                         # dataObject = "DataWrapper",
+                        timeCellsInterpretation = "data.frame",
                         eventRecordsForCategoricalMatrices = "data.frame",
                         transformedData = "data.frame",
                         sparseMatrices = "vector",
@@ -84,6 +85,7 @@ setClass( "DataTransformer",
                             compSpec = NULL,
                             # dataObject = NULL,
                             entityAttributes = NULL,
+                            timeCellsInterpretation = NULL,
                             eventRecordsForCategoricalMatrices = NULL,
                             transformedData = NULL,
                             sparseMatrices = NULL,
@@ -150,8 +152,17 @@ setMethod("transformData",
             eventRecordsData <- 
               eventRecordsData %>%
               restrictToSpecifiedVariables(object) %>%
-              addTimeGrid(object) %>%
               aggregateOverTimeGrid(object)
+            
+            ## Time cells interpretations
+            object@timeCellsInterpretation <-
+              eventRecordsData %>% 
+              dplyr::select( MatrixName, TimeGridCell ) %>% 
+              dplyr::distinct() %>% 
+              dplyr::inner_join( compSpec@parameters, by = "MatrixName" ) %>% 
+              dplyr::mutate( StartTime = - TimeGridCell * Aggregation.interval.length ) %>% 
+              dplyr::mutate( EndTime = - (TimeGridCell + 1) * Aggregation.interval.length ) %>% 
+              dplyr::select( MatrixName, TimeGridCell, StartTime, EndTime )
             
             ## This is useful for making categorical matrices
             object@eventRecordsForCategoricalMatrices <- eventRecordsData
@@ -192,9 +203,13 @@ setMethod("restrictToSpecifiedVariables",
 )
 
 ##---------------------------------------------------------
+# Should not be used since it is based Variable-only granularity.
+# I.e. it does not do proper processing of the computation specifications.
 setMethod("addTimeGrid",
           signature = c(eventRecords = "data.frame", object = "DataTransformer"), 
           function(eventRecords, object) {
+            
+            assertthat::assert_that(FALSE)
             
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Find most recent observation date for each entity." ) }
             
@@ -249,7 +264,7 @@ setMethod("aggregateOverTimeGrid",
             ##     for each time grid cell 
             ##       find aggregate function values
             cat("\n\tFind aggregated values...\n")
-            
+
             aggrERData <-
               object@compSpec@parameters %>%
               rowwise() %>%
@@ -257,7 +272,8 @@ setMethod("aggregateOverTimeGrid",
                                                eventRecords,
                                                object@entityAttributes,
                                                object@compSpec@aggrFuncSpecToFunc,
-                                               object@outlierBoundaries ) ) %>%
+                                               object@outlierBoundaries, 
+                                               echoStepsQ = FALSE ) ) %>%
               ungroup()
             
             ## If we do not ungroup we will get

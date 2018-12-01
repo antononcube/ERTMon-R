@@ -110,9 +110,16 @@ ProcessDataSpecification <- function( dataSpec ) {
            MatrixName = paste( dataSpecDF$Variable, dataSpecDF$Aggregation.function, sep = "."), 
            stringsAsFactors = FALSE )
   
+  dataSpecDF$MatrixName <- gsub( "^Label.*$", "Label", dataSpecDF$MatrixName)
+  dataSpecDF$MatrixName <- gsub( "^LocationID.*$", "LocationID", dataSpecDF$MatrixName)
+  
   dataSpecDF$Aggregation.interval.length <- as.numeric(dataSpecDF$Aggregation.interval.length)
   dataSpecDF$Max.history.length <- as.numeric(dataSpecDF$Max.history.length)
   
+  dataSpecDF$Aggregation.interval.length[ is.na(dataSpecDF$Aggregation.interval.length) ] <- min(dataSpecDF$Aggregation.interval.length, na.rm = TRUE)
+  dataSpecDF$Max.history.length[ is.na(dataSpecDF$Max.history.length) ] <- min(dataSpecDF$Max.history.length, na.rm = TRUE)
+  
+
   if( "LocationID" %in% dataSpecDF$Variable ) {
     
     if( !is.numeric( dataSpecDF[ dataSpecDF$Variable == "LocationID", "Max.history.length"] ) ||
@@ -132,6 +139,52 @@ ProcessDataSpecification <- function( dataSpec ) {
 }
 
 
+#' @description Imposes a time grid over eventRecords subset according to specification row.
+#' @param eventRecordsData Event records data in long form.
+#' @param entityData A data frame entity specific data.
+#' @param maxHistoryLength A max history length.
+#' @param aggregationIntervalLength An aggregation interval length.
+#' @param echoStepsQ A logical should the steps be indicated with \code{cat}.
+#' @return A data frame (tibble) with columns c("EntityID","VarID","AValue","TimeGridCell", "MatrixName")
+AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLength, echoStepsQ = TRUE) {
+  
+  if( echoStepsQ ) { cat("\n\tFind most recent observation date for each entity...\n") }
+  
+  eventRecords <- 
+    dplyr::left_join(
+      dplyr::filter( dplyr::summarise( dplyr::group_by( dplyr::select( eventRecords, EntityID, ObservationTime ), EntityID ), 
+                                       MostRecentTimeEpoch = max(ObservationTime, na.rm = T) ), 
+                     !is.na(MostRecentTimeEpoch) ),
+      eventRecords, by = "EntityID")
+  
+  if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
+  
+  if( echoStepsQ ) { cat("\n\tCompute differences with max time...\n") }
+  
+  eventRecords <- dplyr::mutate( eventRecords, 
+                                 DiffToMaxObsTime = MostRecentTimeEpoch - ObservationTime )
+  
+  if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
+  
+  if( echoStepsQ ) { cat("\n\tRestrict event records to specfied maximal history length...\n") }
+  
+  eventRecords <- dplyr::mutate( eventRecords, DiffToMaxObsTime = as.numeric( DiffToMaxObsTime ) )
+  eventRecords <- dplyr::filter( eventRecords, DiffToMaxObsTime <= maxHistoryLength )
+  ## In order to make this work with Spark innter join has to be used (dplyr or SQL).
+  
+  if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
+  
+  if( echoStepsQ ) { cat("\n\tFor each of the specified variables find time grid intervals...\n") }
+  
+  eventRecords <- dplyr::mutate( eventRecords, TimeGridCell = floor( DiffToMaxObsTime / aggregationIntervalLength ) )
+  # timeCellOffset < 0
+  # eventRecords <- dplyr::mutate( eventRecords, TimeGridCell = TimeGridCell + timeCellOffset )
+  
+  if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
+  
+  eventRecords
+}
+
 #' @description Finds entity-vs-time-grid-cell aggregation values based on variable-related specification.
 #' @param specRow a speficication that has columns "Variable" and "Aggregation.function"
 #' @param eventRecordsData event records data in long form
@@ -139,39 +192,52 @@ ProcessDataSpecification <- function( dataSpec ) {
 #' @param aggrFuncSpecToFunc a named elements list of aggregation functions
 #' @param outlierBoundaries a data frame with columns c("Variable", "Lower", "Upper")
 #' @param outlierIdentifierFunc outlier identifier function
-#' @return a data frame (tibble) with columns c("EntityID","VarID","AValue")
-AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, aggrFuncSpecToFunc, outlierBoundaries = NULL, outlierIdentifierFunc = QuartileIdentifierParameters) {
+#' @param echoStepsQ A logical should the steps be echoed with \code{cat}.
+#' @return A data frame (tibble) with columns c(EntityID, TimeGridCell, VarID, AValue, MatrixName).
+AggregateEventRecordsBySpec <- function(specRow, 
+                                        eventRecordsData, entityData, 
+                                        aggrFuncSpecToFunc,
+                                        outlierBoundaries = NULL, outlierIdentifierFunc = QuartileIdentifierParameters,
+                                        echoStepsQ = TRUE) {
   ##print(paste(specRow,collapse = " "))
   func <- aggrFuncSpecToFunc[ specRow$Aggregation.function[[1]] ][[1]]
   mName <- paste( specRow$Variable, specRow$Aggregation.function, sep = ".")
+  
   if( specRow$Variable == "Attribute" ) {
+    
     entityData %>% 
+      dplyr::mutate( MatrixName = mName ) %>% 
       dplyr::mutate( VarID = paste("Attribute",Attribute,sep="."), TimeGridCell = 0 ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
-      dplyr::summarise( AValue = 1 ) %>%
-      dplyr::mutate( MatrixName = mName )
+      dplyr::summarise( AValue = 1 )
+    
   } else if( specRow$Variable == "Label" ) {
+
     entityData %>% 
       dplyr::filter( Attribute == "Label" ) %>% 
       dplyr::mutate( VarID = paste("Label", Value, sep="."), TimeGridCell = 0) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
-      dplyr::summarise( AValue = 1 ) %>%
+      dplyr::summarise( AValue = 1 ) %>% 
       dplyr::mutate( MatrixName = "Label" )
+    
   } else if( specRow$Variable == "LocationID" ) {
+
     ## Note the special time grid cells assignments for "LocationID",
     ## since "LocationID" is a separate column, not in "Variable" or entityAttributes .
     eventRecordsData %>% 
-      dplyr::select( EntityID, LocationID, DiffToMaxObsTime ) %>%
-      dplyr::filter( DiffToMaxObsTime <= specRow$Max.history.length ) %>%
-      dplyr::mutate( TimeGridCell = floor( DiffToMaxObsTime / specRow$Aggregation.interval.length ) ) %>%
+      AddTimeGrid( specRow$Max.history.length, specRow$Aggregation.interval.length, echoStepsQ = echoStepsQ ) %>% 
+      dplyr::select( EntityID, LocationID, DiffToMaxObsTime, TimeGridCell ) %>%
+      #dplyr::filter( DiffToMaxObsTime <= specRow$Max.history.length ) %>%
+      #dplyr::mutate( TimeGridCell = floor( DiffToMaxObsTime / specRow$Aggregation.interval.length ) ) %>%
       dplyr::mutate( VarID = paste(LocationID, TimeGridCell, sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
-      dplyr::summarise( AValue = func(LocationID) ) %>%
-      dplyr::mutate( MatrixName = mName )
+      dplyr::summarise( AValue = func(LocationID) ) %>% 
+      dplyr::mutate( MatrixName = mName ) 
+    
   } else if ( specRow$Aggregation.function %in% c( "OutliersCount", "OutCnt", "OutliersFraction", "OutFrc" ) ) {
     
     if ( !is.null(outlierBoundaries) && ( specRow$Variable %in% outlierBoundaries$Variable ) ) {
-      outBndrs <- outlierBoundaries[ outlierBoundaries$Variabl == specRow$Variable, ]
+      outBndrs <- outlierBoundaries[ outlierBoundaries$Variable == specRow$Variable, ]
       outBndrs <- c( outBndrs[1,"Lower"], outBndrs[1,"Upper"] )
     } else {
       ## This probably should not be happening.
@@ -211,12 +277,17 @@ AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, a
     if( nrow(res) > 0 ) { res$MatrixName <- mName }
     res
   } else {
+    
+    ## The standard case.
+    
     eventRecordsData %>% 
       dplyr::filter( Variable == specRow$Variable ) %>% 
+      AddTimeGrid( specRow$Max.history.length, specRow$Aggregation.interval.length, echoStepsQ = echoStepsQ ) %>% 
       dplyr::mutate( VarID = paste(Variable, TimeGridCell, sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
       dplyr::summarise( AValue = func(Value) ) %>%
       dplyr::mutate( MatrixName = mName )
+    
   }
   
 }
