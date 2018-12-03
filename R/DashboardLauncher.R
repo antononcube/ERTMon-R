@@ -81,4 +81,6 @@ if ( FALSE ) {
   
 
   runApp( file.path( ".", "R", "Dashboard") )  
+} else {
+  cat("\n\t\tDashboardLauncher.R: Evaluation is prevented; check the value of the if-statement clause.\n\n")
 }
