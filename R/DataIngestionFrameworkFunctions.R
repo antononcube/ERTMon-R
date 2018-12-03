@@ -379,6 +379,9 @@ VerifyDataDirectory <- function( directoryName ) {
 ## Empty computation specification row
 ##-----------------------------------------------------------
 
+#' Empty computation specification row.
+#' @description Gives a data frame with an "empty" computation specification row.
+#' @return A data frame with one row.
 EmptyComputationSpecificationRow <- function() {
   data.frame(
     "Variable" = NA,                    "Explanation" = "",

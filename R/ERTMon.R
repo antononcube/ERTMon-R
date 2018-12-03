@@ -465,7 +465,6 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
 }
 
 
-
 ##===========================================================
 ## Export (computed) 
 ##===========================================================
@@ -492,4 +491,45 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName ) {
   resDF <- setNames(resDF, c("EntityID", "TimeCell", "Value") )
   
   write.csv( x = resDF, file = fileName, row.names = FALSE )
+}
+
+##===========================================================
+## Support functions
+##===========================================================
+
+#' Verify does a directory have ERTMon data files.
+#' @description Verify does a diretory have the CSV files \code{eventRecords.csv} 
+#' and \code{entityAttributes.csv}.
+#' @param directoryName A directory name string.
+#' @return A logical value.
+#' @family Non-monadic functions.
+#' @export
+ERTMonVerifyDataDirectory <- function( directoryName ) {
+  if( !is.character(directoryName) ) {
+    stop("A string is expected for the argument directoryName.", call. = TRUE )
+  }
+  VerifyDataDirectory( directoryName )
+}
+
+ 
+#' Empty computation specification row.
+#' @description Gives a data frame with an "empty" computation specification row.
+#' @return A data frame with one row.
+#' @details Non-monadic function.
+#' @export
+ERTMonEmptyComputationSpecificationRow <- function() {
+  EmptyComputationSpecificationRow()
+}
+
+
+#' Empty computation specification.
+#' @description Gives a data frame with an "empty" computation specification row.
+#' @return A data frame with one row.
+#' @family Non-monadic functions.
+#' @export
+ERTMonEmptyComputationSpecification <- function( nrow = 1 ) {
+  if( !is.integer(nrow) ) {
+    stop("An integer is expected for the argument nrow.", call. = TRUE )
+  }
+  do.call(rbind, purrr::map(1:nrow, function(x) EmptyComputationSpecificationRow()))
 }
