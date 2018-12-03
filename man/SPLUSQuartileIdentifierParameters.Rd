@@ -7,8 +7,8 @@
 SPLUSQuartileIdentifierParameters(dataVec)
 }
 \arguments{
-\item{dataVec}{dataVec vector}
+\item{dataVec}{A data vector.}
 }
 \description{
-Find an SPLUS Quartile outlier for a data vector
+Find an SPLUS Quartile outlier for a data vector.
 }

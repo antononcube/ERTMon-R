@@ -18,7 +18,7 @@ ConvertMultiColumnDataFrameToSparseMatrix(multiColDF, itemColName,
 Convert multi-column data frame into a sparse matrix.
 }
 \details{
-This does not work if the tagTypeColNames have dash in them.
-I assume because of the string-to-formula conversion in SMRCreateItemTagMatrix.
-Obviously, the dependence of the SMRCreateItemTagMatrix can be removed.
+This does not work if the  \code{tagTypeColNames} have dash in them.
+I assume because of the string-to-formula conversion in  \code{SMRCreateItemTagMatrix}.
+Obviously, the dependence of the  \code{SMRCreateItemTagMatrix} can be removed.
 }

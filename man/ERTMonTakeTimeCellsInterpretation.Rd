@@ -16,6 +16,16 @@ A data frame.
 Returns a data frame with the interpretation of the time cells.
 }
 \details{
-Currently the entity time series can only be alligned to finish at 0. 
+Currently the entity time series can only be aligned to finish at 0. 
 Hence the interpretation times are non-positive.
 }
+\seealso{
+Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
+  \code{\link{ERTMonSetEntityAttributes}},
+  \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeFeatureMatrix}},
+  \code{\link{ERTMonTakeFeatureNamePrefixes}},
+  \code{\link{ERTMonTakeValue}}
+}
+\concept{Set/Take functions}

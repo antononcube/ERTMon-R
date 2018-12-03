@@ -12,5 +12,5 @@ BottomOutlierIdentifier(dataVec, lowerAndUpperThresholds)
 \item{lowerAndUpperThresholds}{outlier identifier parameters}
 }
 \description{
-Find the bottom outliers for a data vector
+Find the bottom outliers for a data vector.
 }

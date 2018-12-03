@@ -2,7 +2,7 @@
 % Please edit documentation in R/DataConversionFunctions.R
 \name{SummaryPartitioned}
 \alias{SummaryPartitioned}
-\title{Summary by columns parititioning.}
+\title{Summary by columns partitioning.}
 \usage{
 SummaryPartitioned(data, numberOfColumns = 3, ...)
 }

@@ -13,7 +13,7 @@ ERTMonVerifyDataDirectory(directoryName)
 A logical value.
 }
 \description{
-Verify does a diretory have the CSV files \code{eventRecords.csv} 
+Verify does a directory have the CSV files \code{eventRecords.csv} 
 and \code{entityAttributes.csv}.
 }
 \seealso{

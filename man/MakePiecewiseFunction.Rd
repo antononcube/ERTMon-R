@@ -2,21 +2,21 @@
 % Please edit documentation in R/DataConversionFunctions.R
 \name{MakePiecewiseFunction}
 \alias{MakePiecewiseFunction}
-\title{Piecewise functon constructor.}
+\title{Piecewise function constructor.}
 \usage{
 MakePiecewiseFunction(points, tags = NULL)
 }
 \arguments{
-\item{points}{a list of named values; if the values are not named automatic naming is used}
+\item{points}{A list of named values; if the values are not named automatic naming is used.}
 
-\item{tags}{the values to be returned for the ranges defined by points.}
+\item{tags}{The values to be returned for the ranges defined by points.}
 }
 \description{
 Make piecewise function for a list of values.
 The names of the values are used as function's result.
-If the names are NULL they are automatically assign to be ordinals starting from 1.
-Similar behavior is provided by the base function findInterval.
+If the names are NULL they are automatically assigned to be ordinals starting from 1.
+Similar behavior is provided by the base function \code{findInterval}.
 }
 \details{
-length(points) == length(tags) - 1
+\code{length(points) == length(tags) - 1}
 }

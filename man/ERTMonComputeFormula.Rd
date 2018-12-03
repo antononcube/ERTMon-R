@@ -21,5 +21,5 @@ Computes a formula with a given specification using the feature
 sub-matrices of an ERTMon object.
 }
 \details{
-The result matrix is assigned into ertObj$Value.
+The result matrix is assigned into \code{ertObj$Value}.
 }

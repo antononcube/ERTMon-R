@@ -13,5 +13,5 @@ A data frame with one row.
 Gives a data frame with an "empty" computation specification row.
 }
 \details{
-Non-monadic function.
+Non-monadic functions.
 }

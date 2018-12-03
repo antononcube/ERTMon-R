@@ -10,12 +10,22 @@ ERTMonTakeFeatureMatrix(ertObj)
 \item{ertObj}{An ERTMon object.}
 }
 \value{
-A (sparse) matrix or ERTMonFailureSymbol.
+A (sparse) matrix or \code{ERTMonFailureSymbol}.
 }
 \description{
 Returns the feature matrix.
 }
 \details{
-If the matrix does exists then ERTMonFailureSymbol is returned. 
+If the matrix does exists then \code{ERTMonFailureSymbol} is returned. 
 The row names correspond to entities; the column names to features.
 }
+\seealso{
+Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
+  \code{\link{ERTMonSetEntityAttributes}},
+  \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeFeatureNamePrefixes}},
+  \code{\link{ERTMonTakeTimeCellsInterpretation}},
+  \code{\link{ERTMonTakeValue}}
+}
+\concept{Set/Take functions}

@@ -14,8 +14,18 @@ A character vector.
 }
 \description{
 Returns the prefixes of the column names of the feature matrix 
-using the computation spefication.
+using the computation specification.
 }
 \details{
 The matrix is not computed; only the computation specification is needed.
 }
+\seealso{
+Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
+  \code{\link{ERTMonSetEntityAttributes}},
+  \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeFeatureMatrix}},
+  \code{\link{ERTMonTakeTimeCellsInterpretation}},
+  \code{\link{ERTMonTakeValue}}
+}
+\concept{Set/Take functions}

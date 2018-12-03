@@ -7,7 +7,7 @@
 TopOutlierIdentifier(dataVec, lowerAndUpperThresholds)
 }
 \arguments{
-\item{dataVec}{data vector}
+\item{dataVec}{A data vector.}
 
 \item{lowerAndUpperThresholds}{outlier identifier parameters}
 }

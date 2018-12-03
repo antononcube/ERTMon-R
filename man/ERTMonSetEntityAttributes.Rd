@@ -17,3 +17,13 @@ An ERTMon object.
 \description{
 Set an entity attributes data frame into the monad object.
 }
+\seealso{
+Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
+  \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeFeatureMatrix}},
+  \code{\link{ERTMonTakeFeatureNamePrefixes}},
+  \code{\link{ERTMonTakeTimeCellsInterpretation}},
+  \code{\link{ERTMonTakeValue}}
+}
+\concept{Set/Take functions}

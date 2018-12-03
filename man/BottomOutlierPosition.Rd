@@ -8,10 +8,10 @@ BottomOutlierPosition(dataVec,
   outlierIdentifier = HampelIdentifierParameters)
 }
 \arguments{
-\item{dataVec}{data vector}
+\item{dataVec}{A data vector.}
 
-\item{outlierIdentifier}{outlier identifier function}
+\item{outlierIdentifier}{An outlier identifier function.}
 }
 \description{
-Find the bottom outlier positions in a data vector
+Find the bottom outlier positions in a data vector.
 }

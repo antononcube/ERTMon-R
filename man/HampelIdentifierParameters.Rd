@@ -10,5 +10,5 @@ HampelIdentifierParameters(dataVec)
 \item{dataVec}{A data vector.}
 }
 \description{
-Find an Hampel outlier threshold for a data vector
+Find an Hampel outlier threshold for a data vector.
 }

@@ -10,5 +10,5 @@ TagBasketsMatrixIntoItemTagMatrix(itemTagMat)
 \item{itemTagMat}{item-tag table}
 }
 \description{
-Tag table (an R-matrix) into binary incedence sparse matrix
+Tag table (an R-matrix) into binary incidence sparse matrix
 }

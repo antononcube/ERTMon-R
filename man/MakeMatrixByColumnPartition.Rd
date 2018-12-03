@@ -15,7 +15,7 @@ MakeMatrixByColumnPartition(data, colNameForRows, colNameForColumns,
 
 \item{colNameForColumns}{a column name in data for the columns of the result matrix}
 
-\item{breaks}{the points over which the breaking of data[colNameForColumns] is done}
+\item{breaks}{the points over which the breaking of \code{data[colNameForColumns]} is done}
 
 \item{leftOverlap}{vector of weights for the neighboring columns to left}
 

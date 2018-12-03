@@ -7,8 +7,8 @@
 QuartileIdentifierParameters(dataVec)
 }
 \arguments{
-\item{dataVec}{dataVec vector}
+\item{dataVec}{A data vector.}
 }
 \description{
-Find an Quartile outlier for a data vector
+Find an Quartile outlier for a data vector.
 }

@@ -8,5 +8,5 @@ ERTMonObject(eventRecords = NULL, entityAttributes = NULL,
   compSpec = NULL)
 }
 \description{
-A synonym of ERTMonUnit.
+A synonym of \code{ERTMonUnit}.
 }

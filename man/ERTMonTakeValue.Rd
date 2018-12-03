@@ -10,8 +10,18 @@ ERTMonTakeValue(ertObj)
 \item{ertObj}{An ERTMon object.}
 }
 \value{
-Just ertObj$Value.
+Just \code{ertObj$Value}.
 }
 \description{
 Takes the value from ERTMon monad object.
 }
+\seealso{
+Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
+  \code{\link{ERTMonSetEntityAttributes}},
+  \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeFeatureMatrix}},
+  \code{\link{ERTMonTakeFeatureNamePrefixes}},
+  \code{\link{ERTMonTakeTimeCellsInterpretation}}
+}
+\concept{Set/Take functions}

@@ -56,7 +56,7 @@
 ##=======================================================================================
 
 #' Hampel identifier parameters.
-#' @description Find an Hampel outlier threshold for a data vector
+#' @description Find an Hampel outlier threshold for a data vector.
 #' @param dataVec A data vector.
 #' @export
 HampelIdentifierParameters <- function( dataVec ) {
@@ -66,8 +66,8 @@ HampelIdentifierParameters <- function( dataVec ) {
 }
 
 #' Quartile identifier parameters
-#' @description Find an Quartile outlier for a data vector
-#' @param dataVec dataVec vector
+#' @description Find an Quartile outlier for a data vector.
+#' @param dataVec A data vector.
 #' @export
 QuartileIdentifierParameters <- function( dataVec ) {
   res <- quantile( dataVec, c( 1/4, 1/2, 3/4 ) )
@@ -78,8 +78,8 @@ QuartileIdentifierParameters <- function( dataVec ) {
 }
 
 #' SPLUS quartile identifier parameters
-#' @description Find an SPLUS Quartile outlier for a data vector
-#' @param dataVec dataVec vector
+#' @description Find an SPLUS Quartile outlier for a data vector.
+#' @param dataVec A data vector.
 #' @export
 SPLUSQuartileIdentifierParameters <- function( dataVec ) {
   if ( length(dataVec) <=4 ) {
@@ -95,8 +95,8 @@ SPLUSQuartileIdentifierParameters <- function( dataVec ) {
 
 
 #' Outlier identifier.
-#' @description Find an outlier threshold for a data vector
-#' @param dataVec data vector
+#' @description Find an outlier threshold for a data vector.
+#' @param dataVec A data vector.
 #' @param lowerAndUpperThresholds outlier identifier parameters
 #' @export
 OutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
@@ -105,7 +105,7 @@ OutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
 
 #' Top outlier identifier.
 #' @description Find the top outliers for a data vector
-#' @param dataVec data vector
+#' @param dataVec A data vector.
 #' @param lowerAndUpperThresholds outlier identifier parameters
 #' @export
 TopOutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
@@ -113,7 +113,7 @@ TopOutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
 }
 
 #' Bottom outlier identifier.
-#' @description Find the bottom outliers for a data vector
+#' @description Find the bottom outliers for a data vector.
 #' @param dataVec data vector
 #' @param lowerAndUpperThresholds outlier identifier parameters
 #' @export
@@ -122,9 +122,9 @@ BottomOutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
 }
 
 #' Outlier positions finder.
-#' @description Find the outlier positions in a data vector
-#' @param dataVec data vector
-#' @param outlierIdentifier outlier identifier function
+#' @description Find the outlier positions in a data vector.
+#' @param dataVec A data vector.
+#' @param outlierIdentifier An outlier identifier function.
 #' @export
 OutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
   cls <- outlierIdentifier(dataVec)
@@ -132,9 +132,9 @@ OutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParame
 }
 
 #' Top outlier positions finder.
-#' @description Find the top outlier positions in a data vector
-#' @param dataVec data vector
-#' @param outlierIdentifier outlier identifier function
+#' @description Find the top outlier positions in a data vector.
+#' @param dataVec A data vector.
+#' @param outlierIdentifier An outlier identifier function.
 #' @export
 TopOutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
   cls <- outlierIdentifier(dataVec)
@@ -142,9 +142,9 @@ TopOutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierPar
 }
 
 #' Bottom outlier positions finder.
-#' @description Find the bottom outlier positions in a data vector
-#' @param dataVec data vector
-#' @param outlierIdentifier outlier identifier function
+#' @description Find the bottom outlier positions in a data vector.
+#' @param dataVec A data vector.
+#' @param outlierIdentifier An outlier identifier function.
 #' @export
 BottomOutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
   cls <- outlierIdentifier(dataVec)

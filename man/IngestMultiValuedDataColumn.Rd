@@ -10,9 +10,9 @@ IngestMultiValuedDataColumn(itemRows, tagTypeColName,
 \arguments{
 \item{itemRows}{a data frame of flat content data}
 
-\item{tagTypeColName}{column name of the relationship to be ingested inge in itemRows}
+\item{tagTypeColName}{column name of the relationship to be ingested in \code{itemRows}}
 
-\item{nTagsPerField}{number of tags per field of the column colName in itemRows}
+\item{nTagsPerField}{number of tags per field of the column \code{colName} in\code{itemRows}}
 
 \item{itemIDName}{}
 }

@@ -10,7 +10,7 @@ SplitColumnOfTags(dataColumn, numberOfSplits, sep = ",",
 \arguments{
 \item{dataColumn}{data vector}
 
-\item{numberOfSplits}{number of strings into which is field is splitted}
+\item{numberOfSplits}{number of strings into which is field is split}
 
 \item{emptyStringReplacement}{with what value empty strings are replaced}
 }

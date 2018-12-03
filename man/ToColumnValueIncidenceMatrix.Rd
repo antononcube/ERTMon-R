@@ -15,5 +15,5 @@ ToColumnValueIncidenceMatrix(mat, rowNames = TRUE, colNames = TRUE)
 }
 \description{
 Replaces each a column of a integer matrix with number of columns corresponding to the integer values.
-The matrix [[2,3],[1,2]] is converted to [[0,0,1,0,0,0,0,1],[0,1,0,0,0,0,1,0]] .
+The matrix \code{[[2,3],[1,2]]} is converted to \code{[[0,0,1,0,0,0,0,1],[0,1,0,0,0,0,1,0]]} .
 }

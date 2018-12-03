@@ -79,7 +79,7 @@ ERTMonUnit <- function( eventRecords = NULL, entityAttributes = NULL, compSpec =
 }
 
 #' Make a ERTMon unit.
-#' @description A synonym of ERTMonUnit.
+#' @description A synonym of \code{ERTMonUnit}.
 #' @export
 ERTMonObject <- ERTMonUnit
 
@@ -91,7 +91,8 @@ ERTMonObject <- ERTMonUnit
 #' Take the value in a ERTMon object.
 #' @description Takes the value from ERTMon monad object.
 #' @param ertObj An ERTMon object.
-#' @return Just ertObj$Value.
+#' @return Just \code{ertObj$Value}.
+#' @family Set/Take functions
 #' @export
 ERTMonTakeValue <- function( ertObj ) {
   ertObj$Value
@@ -104,6 +105,7 @@ ERTMonTakeValue <- function( ertObj ) {
 #' @param ertObj An ERTMon object.
 #' @param eRecs A data frame with event records.
 #' @return An ERTMon object.
+#' @family Set/Take functions
 #' @export
 ERTMonSetEventRecords <- function( ertObj, eRecs ) {
   expectedColNames <- c("EntityID", "LocationID", "ObservationTime", "Variable", "Value")
@@ -122,6 +124,7 @@ ERTMonSetEventRecords <- function( ertObj, eRecs ) {
 #' @param ertObj An ERTMon object.
 #' @param eAttrs A data frame with entity attributes.
 #' @return An ERTMon object.
+#' @family Set/Take functions
 #' @export
 ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
   expectedColNames <- c("EntityID", "Attribute", "Value")
@@ -140,6 +143,7 @@ ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
 #' @param ertObj An ERTMon object.
 #' @param compSpec A data frame that is a computation specification.
 #' @return An ERTMon object.
+#' @family Set/Take functions
 #' @export
 ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
   expectedColNames <- names(EmptyComputationSpecificationRow())
@@ -156,10 +160,11 @@ ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
 
 #' Take feature name prefixes.
 #' @description Returns the prefixes of the column names of the feature matrix 
-#' using the computation spefication.
+#' using the computation specification.
 #' @param ertObj An ERTMon object.
 #' @return A character vector. 
 #' @details The matrix is not computed; only the computation specification is needed.
+#' @family Set/Take functions
 #' @export
 ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
   if( is.null(ertObj$ComputationSpecification) ) {
@@ -173,11 +178,12 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 #' Take feature sub-matrices.
 #' @description Returns the sub-matrices of the feature matrix.
 #' @param ertObj An ERTMon object.
-#' @param smat If not NULL it is going to be used instead of ertObj$Value.
+#' @param smat If not NULL it is going to be used instead of \code{ertObj$Value}.
 #' @param noColumnPrefixes If TRUE the column names are just integers.
 #' @return A list of named matrices.
 #' @details The sub-matrices are extracted through the corresponding prefixes.
-#' An alternative is to use the sparse matrices that are in ertObj$dtObj.
+#' An alternative is to use the sparse matrices that are in \code{ertObj$dtObj}.
+#' @family Set/Take functions
 #' @export
 ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes = TRUE ) {
   
@@ -217,9 +223,10 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
 #' Take the feature matrix.
 #' @description Returns the feature matrix.
 #' @param ertObj An ERTMon object.
-#' @return A (sparse) matrix or ERTMonFailureSymbol.
-#' @details If the matrix does exists then ERTMonFailureSymbol is returned. 
+#' @return A (sparse) matrix or \code{ERTMonFailureSymbol}.
+#' @details If the matrix does exists then \code{ERTMonFailureSymbol} is returned. 
 #' The row names correspond to entities; the column names to features.
+#' @family Set/Take functions
 #' @export
 ERTMonTakeFeatureMatrix <- function( ertObj ) {
   
@@ -238,8 +245,9 @@ ERTMonTakeFeatureMatrix <- function( ertObj ) {
 #' @description Returns a data frame with the interpretation of the time cells.
 #' @param ertObj An ERTMon object.
 #' @return A data frame. 
-#' @details Currently the entity time series can only be alligned to finish at 0. 
+#' @details Currently the entity time series can only be aligned to finish at 0. 
 #' Hence the interpretation times are non-positive.
+#' @family Set/Take functions
 #' @export
 ERTMonTakeTimeCellsInterpretation <- function( ertObj ) {
   if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) ) {
@@ -446,7 +454,7 @@ ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentif
 #' @param formulaSpec A formula specification.
 #' @param reduceFunc Reduction function, one of "+" or "*".
 #' @return An ERTMon object.
-#' @details The result matrix is assigned into ertObj$Value.
+#' @details The result matrix is assigned into \code{ertObj$Value}.
 #' @export
 ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
   
@@ -498,7 +506,7 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName ) {
 ##===========================================================
 
 #' Verify does a directory have ERTMon data files.
-#' @description Verify does a diretory have the CSV files \code{eventRecords.csv} 
+#' @description Verify does a directory have the CSV files \code{eventRecords.csv} 
 #' and \code{entityAttributes.csv}.
 #' @param directoryName A directory name string.
 #' @return A logical value.
@@ -515,7 +523,7 @@ ERTMonVerifyDataDirectory <- function( directoryName ) {
 #' Empty computation specification row.
 #' @description Gives a data frame with an "empty" computation specification row.
 #' @return A data frame with one row.
-#' @details Non-monadic function.
+#' @details Non-monadic functions.
 #' @export
 ERTMonEmptyComputationSpecificationRow <- function() {
   EmptyComputationSpecificationRow()

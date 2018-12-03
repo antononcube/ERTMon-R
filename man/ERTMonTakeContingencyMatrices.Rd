@@ -10,7 +10,7 @@ ERTMonTakeContingencyMatrices(ertObj, smat = NULL,
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
-\item{smat}{If not NULL it is going to be used instead of ertObj$Value.}
+\item{smat}{If not NULL it is going to be used instead of \code{ertObj$Value}.}
 
 \item{noColumnPrefixes}{If TRUE the column names are just integers.}
 }
@@ -22,5 +22,15 @@ Returns the sub-matrices of the feature matrix.
 }
 \details{
 The sub-matrices are extracted through the corresponding prefixes.
-An alternative is to use the sparse matrices that are in ertObj$dtObj.
+An alternative is to use the sparse matrices that are in \code{ertObj$dtObj}.
 }
+\seealso{
+Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
+  \code{\link{ERTMonSetEntityAttributes}},
+  \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeFeatureMatrix}},
+  \code{\link{ERTMonTakeFeatureNamePrefixes}},
+  \code{\link{ERTMonTakeTimeCellsInterpretation}},
+  \code{\link{ERTMonTakeValue}}
+}
+\concept{Set/Take functions}

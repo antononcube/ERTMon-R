@@ -64,7 +64,7 @@ library(dplyr)
 #' Split column of tags.
 #' @description Partition combined columns
 #' @param dataColumn data vector
-#' @param numberOfSplits number of strings into which is field is splitted
+#' @param numberOfSplits number of strings into which is field is split
 #' @param emptyStringReplacement with what value empty strings are replaced
 #' @export
 SplitColumnOfTags <- function( dataColumn, numberOfSplits, sep = ",", emptyStringReplacement = "null"  ) {
@@ -77,7 +77,7 @@ SplitColumnOfTags <- function( dataColumn, numberOfSplits, sep = ",", emptyStrin
 }
 
 #' Tag baskets matrix into item tag matrix
-#' @description Tag table (an R-matrix) into binary incedence sparse matrix
+#' @description Tag table (an R-matrix) into binary incidence sparse matrix
 #' @param itemTagMat item-tag table
 #' @export
 TagBasketsMatrixIntoItemTagMatrix <- function( itemTagMat ) {
@@ -257,25 +257,25 @@ ImposeColumnIDs <- function( colIDs, smat ) {
   t( ImposeRowIDs( colIDs, t(smat)) )
 }
 
-#' Piecewise functon constructor.
+#' Piecewise function constructor.
 #' @description Make piecewise function for a list of values.
 #' The names of the values are used as function's result.
-#' If the names are NULL they are automatically assign to be ordinals starting from 1.
-#' Similar behavior is provided by the base function findInterval.
-#' @param points a list of named values; if the values are not named automatic naming is used
-#' @param tags the values to be returned for the ranges defined by points.
-#' @details length(points) == length(tags) - 1
+#' If the names are NULL they are automatically assigned to be ordinals starting from 1.
+#' Similar behavior is provided by the base function \code{findInterval}.
+#' @param points A list of named values; if the values are not named automatic naming is used.
+#' @param tags The values to be returned for the ranges defined by points.
+#' @details \code{length(points) == length(tags) - 1}
 MakePiecewiseFunction <- function( points, tags=NULL ) {
-  if ( length(points) ==0 || is.null(points) ) {
-    warning("NULL of an empty list is given as an argument.", call.=TRUE )
+  if ( length(points) == 0 || is.null(points) ) {
+    warning("NULL or an empty list is given as an argument.", call.=TRUE )
     return( NULL )
   }
   if ( !is.numeric(points) ) {
-    warning("The first argument is expected to be a numeric list.", call. =TRUE )
+    warning("The first argument, points, is expected to be a numeric list.", call. =TRUE )
     return( NULL )
   }
   if ( !is.null(tags) && !is.numeric(tags) ) {
-    warning("The second argument is expected to be NULL or a numeric list.", call.=TRUE )
+    warning("The second argument, tags, is expected to be NULL or a numeric list.", call.=TRUE )
     return( NULL )
   }
 
@@ -298,9 +298,9 @@ MakePiecewiseFunction <- function( points, tags=NULL ) {
 
 #' Multi-value column ingestion.
 #' @param itemRows a data frame of flat content data
-#' @param tagTypeColName column name of the relationship to be ingested inge in itemRows
+#' @param tagTypeColName column name of the relationship to be ingested in \code{itemRows}
 #' @param itemIDName 
-#' @param nTagsPerField number of tags per field of the column colName in itemRows
+#' @param nTagsPerField number of tags per field of the column \code{colName} in\code{itemRows}
 #' @export
 IngestMultiValuedDataColumn <- function( itemRows, tagTypeColName, itemIDColName = "ID", nTagsPerField = 12, split = "," ) {
 
@@ -336,9 +336,9 @@ IngestMovieDataColumn <- IngestMultiValuedDataColumn
 #' @param Multi-column data frame id-tag relationship
 #' @param idColName the column name of the item ID
 #' @param tagTypeColNames names of the tag type column names 
-#' @details This does not work if the tagTypeColNames have dash in them.
-#' I assume because of the string-to-formula conversion in SMRCreateItemTagMatrix.
-#' Obviously, the dependence of the SMRCreateItemTagMatrix can be removed.
+#' @details This does not work if the  \code{tagTypeColNames} have dash in them.
+#' I assume because of the string-to-formula conversion in  \code{SMRCreateItemTagMatrix}.
+#' Obviously, the dependence of the  \code{SMRCreateItemTagMatrix} can be removed.
 #' @export
 ConvertMultiColumnDataFrameToSparseMatrix <- function( multiColDF, itemColName, tagTypeColNames ) {
 
@@ -375,7 +375,7 @@ ConvertMultiColumnDataFrameToSparseMatrix <- function( multiColDF, itemColName, 
 #' @param data a data frame
 #' @param colNameForRows a column name in data for the rows of the result matrix
 #' @param colNameForColumns a column name in data for the columns of the result matrix
-#' @param breaks the points over which the breaking of data[colNameForColumns] is done
+#' @param breaks the points over which the breaking of \code{data[colNameForColumns]} is done
 #' @param leftOverlap vector of weights for the neighboring columns to left
 #' @param rightOverlap vector of weights for the neighboring columns to right
 #' @param colnamesPrefix prefix for the columns names
@@ -427,7 +427,7 @@ MakeMatrixByColumnPartition <- function( data, colNameForRows, colNameForColumns
 
 #' Convert to incidence matrix by column values.
 #' @description Replaces each a column of a integer matrix with number of columns corresponding to the integer values.
-#' The matrix [[2,3],[1,2]] is converted to [[0,0,1,0,0,0,0,1],[0,1,0,0,0,0,1,0]] .
+#' The matrix \code{[[2,3],[1,2]]} is converted to \code{[[0,0,1,0,0,0,0,1],[0,1,0,0,0,0,1,0]]} .
 #' @param mat an integer matrix to be converted to column value incidence matrix.
 #' @param rowNames boolean to assign or not the result matrix row names to be the argument matrix row names
 #' @param colNames boolean to assign or not the result matrix column names derived from the argument matrix column names
@@ -494,7 +494,7 @@ AddDateTags <- function( data, dateColumnName ) {
 ## Summary parititiong
 ##===========================================================
 
-#' Summary by columns parititioning.
+#' Summary by columns partitioning.
 #' @description Print the summary of data frame in a series of specified number of columns.
 #' @param data a data frame
 #' @param numberOfColumns number of columns for the partitioning
