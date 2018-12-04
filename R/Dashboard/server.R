@@ -253,7 +253,7 @@ function(input, output, session)  {
     if ( !is.null( values[["ertObj"]] ) ) {
       
       output$plotVariablesDistributions <- renderPlot({ 
-        ggplot( values$ertObj %>% ERTMonTakeEventRecords ) + geom_histogram( aes(x=Value) ) + facet_wrap( ~Variable )
+        ggplot( values$ertObj %>% ERTMonTakeEventRecords ) + geom_histogram( aes(x=Value) ) + facet_wrap( ~Variable, scales = "free" )
       })
       
     } else {
