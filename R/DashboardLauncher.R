@@ -56,6 +56,7 @@ if ( FALSE ) {
   library(shiny)
   library(DT)
   library(d3heatmap)
+  library(ggplot2)
   
   ## Here we create objects with default values that are going
   ## to be used in the dashboard.
