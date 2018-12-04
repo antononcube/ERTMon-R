@@ -46,11 +46,13 @@
 ## The "loading of classes" should not be needed. 
 ## Keeping this file for awhile in order to address possible problems.
 
+library(Matrix)
+
 library(plyr)
 library(dplyr)
+library(purrr)
 
 library(stringi)
-library(Matrix)
 library(RcppRoll)
 
 library(devtools)

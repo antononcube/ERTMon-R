@@ -235,15 +235,15 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
   rnames <- paste( ertObj$dtObj@compSpec@parameters$Variable, ertObj$dtObj@compSpec@parameters$Aggregation.function, sep = ".")
   
   res <-
-    map( rnames, function(x) smat[, grep(x, colnames(smat)), drop=F ] )
+    purrr::map( rnames, function(x) smat[, grep(x, colnames(smat)), drop=F ] )
   
   if( noColumnPrefixes ) {
     res <-
-      map( res,
-           function(x) {
-             if( !is.null(x) && ncol(x)>0) { colnames(x) <- 1:ncol(x) }
-             x
-           })
+      purrr::map( res,
+                  function(x) {
+                    if( !is.null(x) && ncol(x)>0) { colnames(x) <- 1:ncol(x) }
+                    x
+                  })
   }
   names(res) <- rnames
   
