@@ -68,7 +68,19 @@ if ( FALSE ) {
   testDataDirectoryName <- file.path( "..", "..", "data", "TestFakeData")
   specFileName <- file.path( directoryName, "computationSpecification.csv" )
   
+  ## Data ingester object for reading medical and patient data.
+  ## [ ] Ideally the type of this object can be replaced in the dashboard.
+  diObj <- new( "DataIngester")  
+  diTestObj <- NULL 
+  
+  ## Computational specifications object for reading and ingesting specifications.
+  ## I do not see why we would have different types for this object. (But of course we can.)
+  compSpecObj <- new( "ComputationSpecification" )
+  
+  ## ERTMon object.
+  
+
   runApp( file.path( ".", "R", "Dashboard") )  
 } else {
-  cat("\n\t\tDashboardLauncher.R: Evaluation is prevented; check the value of the if-statement clause.\n\n")
+  cat("\n\t\tDashboardLauncherOOP.R: Evaluation is prevented; check the value of the if-statement clause.\n\n")
 }

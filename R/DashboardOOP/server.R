@@ -94,12 +94,12 @@ function(input, output, session)  {
     
     if( file.exists( input$inSpecFileName ) ) {
       
-      ertMonCS <- ERTMonUnit() %>% ERTMonReadComputationSpecification( input$inSpecFileName )
-
-      values$compSpec <- ertMonCS %>% ERTMonTakeComputationSpecification
+      compSpecObj <- compSpecObj %>% readSpec( input$inSpecFileName ) %>% ingestSpec()
+      
+      values$compSpecObj <- compSpecObj
       
       output$compSpecDF <- DT::renderDataTable({ datatable({
-        values$compSpec
+        compSpecObj@parameters
       }, rownames = FALSE, filter = 'top', options = list(pageLength = 20, autoWidth = FALSE) ) })
       
     }
@@ -121,15 +121,38 @@ function(input, output, session)  {
       progress$set(message = "Read from directory", value = 0)
       on.exit(progress$close())
       
-      ertObj <- 
-        ERTMonUnit() %>% 
-        ERTMonReadDataFromDirectory( input$dataDirName )
+      diObj@progressObject <- progress
       
-      values$ertObj <- ertObj
+      diObj <- diObj %>% readDataFromDirectory( input$dataDirName ) %>% ingestData( "Label" )
       
-      output$eventRecordsDataSummary <- renderPrint({ summary( as.data.frame( unclass( ertObj %>% ERTMonTakeEventRecords ) ) ) })
+      ## Assignment of the labels according to specification
+      ccLabel <- values$compSpecObj@parameters[ values$compSpecObj@parameters$Variable == "Label", "Critical.label"]
       
-      output$entityAttributesDataSummary <- renderPrint({ summary( as.data.frame( unclass( ertObj %>% ERTMonTakeEntityAttributes ) ) ) })
+      values$compSpecObj@diedLabel <- ccLabel
+      values$compSpecObj@survivedLabel <- setdiff( diObj@dataObj@labels, ccLabel )
+      values$compSpecObj@labels <- c( DiedLabel = values$compSpecObj@diedLabel, SurvivedLabel = values$compSpecObj@survivedLabel)
+      
+      assertthat::assert_that( ccLabel %in% diObj@dataObj@labels )
+      
+      diObj@dataObj@diedLabel <- values$compSpecObj@diedLabel
+      diObj@dataObj@survivedLabel <- values$compSpecObj@survivedLabel
+      diObj@dataObj@labels <- values$compSpecObj@labels
+      
+      assertthat::assert_that( length(diObj@dataObj@survivedLabel) == 1 )
+      
+      assertthat::assert_that( mean( c(diObj@dataObj@diedLabel, diObj@dataObj@survivedLabel) %in% diObj@dataObj@labels ) == 1 )
+      
+      values$diObj <- diObj
+      
+      ## It is potentially slow to calculate summaries
+      # output$summaryData <- DT::renderDataTable({ datatable({
+      #     summary( diObj@dataObj@eventRecordsData )
+      # }, rownames = FALSE, filter = 'top', options = list(pageLength = 20, autoWidth = FALSE) ) })
+      # 
+      
+      output$eventRecordsDataSummary <- renderPrint({ summary( as.data.frame( unclass( diObj@dataObj@eventRecords ) ) ) })
+      
+      output$entityAttributesDataSummary <- renderPrint({ summary( as.data.frame( unclass( diObj@dataObj@entityAttributes ) ) ) })
       
     } else {
       
@@ -142,20 +165,32 @@ function(input, output, session)  {
   ## Transform event records data 
   observeEvent( input$transformDataAction, {
     
-    if ( !is.null( values$ertObj ) && !is.null( values$compSpec ) ) {
+    if ( !is.null( values$compSpecObj ) && !is.null( values$compSpecObj@parameters ) && 
+         !is.null( values$diObj ) && !is.null( values$diObj@dataObj ) ) {
       
       progress <- shiny::Progress$new()
       progress$set(message = "Transform data", value = 0)
       on.exit(progress$close())
       
-      values$ertObj <-
-        values$ertObj %>% 
-        ERTMonProcessEventRecords(echoStepsQ = TRUE, progressObject = progress )
+      dtObj <- new( "DataTransformer" )
       
-      transformedData <- values$ertObj$dtObj@transformedData
-        
-      output$transformedDataSummary <- renderPrint({ summary( as.data.frame( unclass( transformedData ) ) ) })
-
+      dtObj@compSpec <- values[["compSpecObj"]]
+      
+      dtObj@progressObject <- progress
+      
+      dtObj <- transformData( dtObj, values$compSpecObj, values$diObj@dataObj@eventRecords, values$diObj@dataObj@entityAttributes )
+      
+      # output$summaryData <- DT::renderDataTable({ datatable({
+      #   summary( dtObj@transformedData )
+      # }, rownames = FALSE, filter = 'top', options = list(pageLength = 20, autoWidth = FALSE) ) })
+      # 
+      
+      values[["dtObj"]] <- dtObj
+  
+      values[["dtCatObj"]] <- as( dtObj, "DataTransformerCatMatrices")
+      
+      output$transformedDataSummary <- renderPrint({ summary( as.data.frame( unclass( dtObj@transformedData ) ) ) })
+      
       progress
     } else {
       
@@ -185,17 +220,24 @@ function(input, output, session)  {
       progress$set(message = "Read test data from directory", value = 0)
       on.exit(progress$close())
       
-      ertTestObj <- 
-        ERTMonUnit() %>% 
-        ERTMonReadDataFromDirectory( input$dataDirName )
+      if( is.null(diTestObj) ) {
+        diTestObj <- new( "DataIngester" ) 
+      }
       
-      values$ertTestObj <- ertTestObj
+      diTestObj@progressObject <- progress
       
-      output$eventRecordsTestDataSummary <- renderPrint({ summary( as.data.frame( unclass( ertTestObj %>% ERTMonTakeEventRecords ) ) ) })
+      diTestObj <- diTestObj %>% readDataFromDirectory( input$dataDirName ) %>% ingestData( "Label" )
       
-      output$entityAttributesTestDataSummary <- renderPrint({ summary( as.data.frame( unclass( ertTestObj %>% ERTMonTakeEntityAttributes ) ) ) })
+      values$diTestObj <- diTestObj
       
-      progress
+      assertthat::assert_that( diTestObj@dataObj@labels[[1]] == values$diObj@dataObj@labels[[1]] )
+      assertthat::assert_that( diTestObj@dataObj@labels[[2]] == values$diObj@dataObj@labels[[2]] )
+      
+      
+      output$eventRecordsTestDataSummary <- renderPrint({ summary( as.data.frame( unclass( diTestObj@dataObj@eventRecordsData ) ) ) })
+      
+      output$entityAttributesTestDataSummary <- renderPrint({ summary( as.data.frame( unclass( diTestObj@dataObj@entityAttributesData ) ) ) })
+      
     } 
     
   })
@@ -214,13 +256,24 @@ function(input, output, session)  {
       progress$set(message = "Transform test data", value = 0)
       on.exit(progress$close())
       
-      values$ertTestObj <-
-        values$ertTestObj %>% 
-        ERTMonProcessEventRecords(echoStepsQ = TRUE, progressObject = progress )
+      dtObj <- values[["dtObj"]]
       
-      transformedData <- values$ertTestObj$dtObj@transformedData
+      ## The following object should be already assigned, and it is not needed.
+      #dtObj@compSpec <- values[["compSpecObj"]]
       
-      output$transformedTestDataSummary <- renderPrint({ summary( as.data.frame( unclass( transformedData ) ) ) })
+      dtObj@progressObject <- progress
+      
+      dtObj <- transformData( dtObj, values$compSpecObj, values$diObj@dataObj@eventRecordsData, values$diObj@dataObj@entityAttributesData, testDataRun = TRUE )
+      
+      # output$summaryData <- DT::renderDataTable({ datatable({
+      #   summary( dtObj@transformedData )
+      # }, rownames = FALSE, filter = 'top', options = list(pageLength = 20, autoWidth = FALSE) ) })
+      # 
+      
+      ## Note that this object is probably a shallow copy of values[["dtObj"]] :
+      values[["dtTestObj"]] <- dtObj
+      
+      output$transformedTestDataSummary <- renderPrint({ summary( as.data.frame( unclass( dtObj@transformedData ) ) ) })
       
       progress
     } else {
@@ -233,7 +286,8 @@ function(input, output, session)  {
   ## Remove test data 
   observeEvent( input$removeTestDataAction, {
     
-    values[["ertTestObj"]] <- NULL
+    values[["diTestObj"]] <- NULL
+    values[["dtTestObj"]] <- NULL
     
     output$eventRecordsTestDataSummary <- renderPrint({ NULL })
     output$entityAttributesTestDataSummary <- renderPrint({ NULL })
@@ -248,10 +302,10 @@ function(input, output, session)  {
   ## Sparse matrix image for the feature matrix
   observeEvent( input$plotFeatureMatrixImageAction, {
     
-    if ( !is.null( values[["ertObj"]] ) ) {
+    if ( !is.null( values[["dtObj"]] ) ) {
       
       output$plotFeatureMatrixImage <- renderPlot({ 
-        image( values[["ertObj"]] %>% ERTMonTakeFeatureMatrix )
+        image(values[["dtObj"]]@dataMat)
       })
       
     } else {
@@ -267,7 +321,7 @@ function(input, output, session)  {
     if ( !is.null( values[["dtObj"]] ) ) {
       
       output$plotFeatureMatrixHeatmap <- renderPlot({ 
-        renderD3heatmap(d3heatmap( values[["ertObj"]] %>% ERTMonTakeFeatureMatrix ))
+        renderD3heatmap(d3heatmap(values[["dtObj"]]@dataMat))
       })
       
     } else {
