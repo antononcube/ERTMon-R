@@ -163,6 +163,12 @@ setMethod("transformData",
               dplyr::mutate( StartTime = - TimeGridCell * Aggregation.interval.length ) %>% 
               dplyr::mutate( EndTime = - (TimeGridCell + 1) * Aggregation.interval.length ) %>% 
               dplyr::select( MatrixName, TimeGridCell, StartTime, EndTime )
+
+            ## Note that we are not saving the transformed event records in the slot "eventRecords".
+            ## That slot is reserved for the initial event records data.
+            ## We use the slots transformedData and eventRecordsForCategoricalMatrices.
+            ## I.e. do not do this:
+            ## object@eventRecords <- eventRecordsData
             
             ## This is useful for making categorical matrices
             object@eventRecordsForCategoricalMatrices <- eventRecordsData
@@ -203,12 +209,13 @@ setMethod("restrictToSpecifiedVariables",
 )
 
 ##---------------------------------------------------------
-# Should not be used since it is based Variable-only granularity.
+# Should not be used since it is based on Variable-only granularity.
 # I.e. it does not do proper processing of the computation specifications.
 setMethod("addTimeGrid",
           signature = c(eventRecords = "data.frame", object = "DataTransformer"), 
           function(eventRecords, object) {
             
+            ## NOTE THIS !
             assertthat::assert_that(FALSE)
             
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Find most recent observation date for each entity." ) }
