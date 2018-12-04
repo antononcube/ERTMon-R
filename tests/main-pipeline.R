@@ -2,6 +2,7 @@
 if(FALSE) {
   
   rm(list=ls())
+  library(ERTMon)
   
   dirName <- if( grepl("vignettes", getwd()) ) { file.path( getwd(), "..", "data", "FakeData") } else { file.path( getwd(), "data", "FakeData")}
   print(dirName)
