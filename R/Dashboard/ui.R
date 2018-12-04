@@ -46,6 +46,7 @@ dashboardPage(
     sidebarMenu(
       menuItem("Computation specifications", tabName = "CompSpec"),
       menuItem("Data", tabName = "Data"),
+      menuItem("Plots distributions", tabName = "PlotDistributions"),
       menuItem("Plot feature matrix", tabName = "PlotFeatureMatrix")
       #menuItem("Export feature matrix", tabName = "ExportFeatureMatrix")
     )
@@ -164,6 +165,35 @@ dashboardPage(
                    
                  )
                )
+      ),
+      
+      tabItem( tabName = "PlotDistributions",
+               
+               h2("Plot distributions"),
+               
+               hr(), 
+               
+               tabsetPanel( 
+                 tabPanel( "Variables distributions",
+                           h3("Variables distributions"),
+                           
+                           fluidRow(
+                             column(3, actionButton( "plotVariablesDistributionsAction", "Plot variables distributions"))
+                           ),
+                           
+                           plotOutput( "plotVariablesDistributions" )
+                 ),
+                 
+                 tabPanel( "Feature types distributions",          
+                           h3("Feature types distributions"),
+                           
+                           fluidRow(
+                             column(3, actionButton( "plotMatrixNameDistributionsAction", "Plot feature types distributions"))
+                           ),
+                           
+                           plotOutput( "plotMatrixNameDistributions" )
+                 )
+               )      
       ),
       
       tabItem( tabName = "PlotFeatureMatrix",

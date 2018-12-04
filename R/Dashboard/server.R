@@ -152,7 +152,7 @@ function(input, output, session)  {
         values$ertObj %>% 
         ERTMonProcessEventRecords(echoStepsQ = TRUE, progressObject = progress )
       
-      transformedData <- values$ertObj$dtObj@transformedData
+      transformedData <-  ERTMonTakeTrasformedData(values$ertObj)
         
       output$transformedDataSummary <- renderPrint({ summary( as.data.frame( unclass( transformedData ) ) ) })
 
@@ -200,25 +200,27 @@ function(input, output, session)  {
     
   })
   
-  ## Transform event records data 
+  ## Transform test event records data 
   observeEvent( input$transformTestDataAction, {
     
     if( is.null(values$dtObj) ) {
       
       warning( paste0( "Transform the training data first." ) )  
       
-    } else if ( !is.null( values$compSpecObj ) && !is.null( values$compSpecObj@parameters ) && 
-                !is.null( values$diTestObj ) && !is.null( values$diTestObj@dataObj ) ) {
+    } else if ( !is.null( values$ertObj ) && 
+                ERTMonDataTransformerCheck(values$ertObj, functionName = "server.R::transformTestDataAction", logicalResult = T) ) {
       
       progress <- shiny::Progress$new()
       progress$set(message = "Transform test data", value = 0)
       on.exit(progress$close())
       
+      values$ertTestObj <- values$ertObj
+      
       values$ertTestObj <-
         values$ertTestObj %>% 
-        ERTMonProcessEventRecords(echoStepsQ = TRUE, progressObject = progress )
+        ERTMonExtractFeatures(echoStepsQ = TRUE, progressObject = progress )
       
-      transformedData <- values$ertTestObj$dtObj@transformedData
+      transformedData <- ERTMonTakeTrasformedData(values$ertTestObj)
       
       output$transformedTestDataSummary <- renderPrint({ summary( as.data.frame( unclass( transformedData ) ) ) })
       
@@ -238,6 +240,42 @@ function(input, output, session)  {
     output$eventRecordsTestDataSummary <- renderPrint({ NULL })
     output$entityAttributesTestDataSummary <- renderPrint({ NULL })
     output$transformedTestDataSummary <- renderPrint({ NULL })
+    
+  })
+  
+  ##-------------------------------------------------------
+  ## Plots distributions
+  ##-------------------------------------------------------
+  
+  ## Plot variables distributions
+  observeEvent( input$plotVariablesDistributionsAction, {
+    
+    if ( !is.null( values[["ertObj"]] ) ) {
+      
+      output$plotVariablesDistributions <- renderPlot({ 
+        ggplot( values$ertObj %>% ERTMonTakeEventRecords ) + geom_histogram( aes(x=Value) ) + facet_wrap( ~Variable )
+      })
+      
+    } else {
+      
+      warning( "Missing data transformation object for testing data." )
+    }
+    
+  })
+  
+  ## Plot matrix names aggregated values distrubutions
+  observeEvent( input$plotMatrixNameDistributionsAction, {
+    
+    if ( !is.null( values[["ertObj"]] ) ) {
+      
+      output$plotMatrixNameDistributions <- renderPlot({ 
+        ggplot( values$ertObj %>% ERTMonTakeTrasformedData ) + geom_histogram( aes(x=AValue) ) + facet_wrap( ~MatrixName, scales = "free" )
+      })
+      
+    } else {
+      
+      warning( "Missing data transformation object for testing data." )
+    }
     
   })
   
@@ -264,7 +302,7 @@ function(input, output, session)  {
   ## Heatmap for the feature matrix
   observeEvent( input$plotFeatureMatrixImageAction, {
     
-    if ( !is.null( values[["dtObj"]] ) ) {
+    if ( !is.null( values[["ertObj"]] ) ) {
       
       output$plotFeatureMatrixHeatmap <- renderPlot({ 
         renderD3heatmap(d3heatmap( values[["ertObj"]] %>% ERTMonTakeFeatureMatrix ))
@@ -276,6 +314,7 @@ function(input, output, session)  {
     }
     
   })
+
 }
 
 
