@@ -55,8 +55,6 @@ library(RcppRoll)
 
 library(devtools)
 
-library(ERTMon)
-
 # fnames = list.files( path = ".", pattern = ".*Class.R" )
 # llply( fnames, source ) 
 # 
