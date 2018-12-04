@@ -55,7 +55,6 @@ library(RcppRoll)
 
 library(devtools)
 
-install_github("antononcube/ERTMon-R")
 library(ERTMon)
 
 # fnames = list.files( path = ".", pattern = ".*Class.R" )
