@@ -43,6 +43,9 @@
 # Start date: 2018-10-13
 #---
 
+## The "loading of classes" should not be needed. 
+## Keeping this file for awhile in order to address possible problems.
+
 library(plyr)
 library(dplyr)
 
@@ -50,30 +53,26 @@ library(stringi)
 library(Matrix)
 library(RcppRoll)
 
-#library(devtools)
+library(devtools)
 
-## 
-#source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/DataConversionFunctions.R")
-#source_url("https://raw.githubusercontent.com/antononcube/MathematicaForPrediction/master/R/OutlierIdentifiers.R")
-
-# source("~/MathematicaForPrediction/R/DataConversionFunctions.R")
-# source("~/MathematicaForPrediction/R/OutlierIdentifiers.R")
+install_github("antononcube/ERTMon-R")
+library(ERTMon)
 
 # fnames = list.files( path = ".", pattern = ".*Class.R" )
 # llply( fnames, source ) 
-
-if( !exists("ertMonDirName") ) {
-  ertMonDirName <- "~/ERTMon-R"
-}
-
-source( file.path( ertMonDirName, "R", "DataConversionFunctions.R") )
-source( file.path( ertMonDirName, "R", "OutlierIdentifiers.R") )
-source( file.path( ertMonDirName, "R", "DataIngestionFrameworkFunctions.R") )
-source( file.path( ertMonDirName, "R", "DataWrapperClass.R") )
-source( file.path( ertMonDirName, "R", "DataIngesterClass.R") )
-source( file.path( ertMonDirName, "R", "DataSplitterClass.R") )
-source( file.path( ertMonDirName, "R", "ComputationSpecificationClass.R") )
-source( file.path( ertMonDirName, "R", "DataTransformerClass.R") )
-source( file.path( ertMonDirName, "R", "DataTransformerCatMatricesClass.R") )
-source( file.path( ertMonDirName, "R", "ERTMon.R") )
-
+# 
+# if( !exists("ertMonDirName") ) {
+#   ertMonDirName <- "~/ERTMon-R"
+# }
+# 
+# source( file.path( ertMonDirName, "R", "DataConversionFunctions.R") )
+# source( file.path( ertMonDirName, "R", "OutlierIdentifiers.R") )
+# source( file.path( ertMonDirName, "R", "DataIngestionFrameworkFunctions.R") )
+# source( file.path( ertMonDirName, "R", "DataWrapperClass.R") )
+# source( file.path( ertMonDirName, "R", "DataIngesterClass.R") )
+# source( file.path( ertMonDirName, "R", "DataSplitterClass.R") )
+# source( file.path( ertMonDirName, "R", "ComputationSpecificationClass.R") )
+# source( file.path( ertMonDirName, "R", "DataTransformerClass.R") )
+# source( file.path( ertMonDirName, "R", "DataTransformerCatMatricesClass.R") )
+# source( file.path( ertMonDirName, "R", "ERTMon.R") )
+# 
