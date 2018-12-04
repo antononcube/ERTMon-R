@@ -101,7 +101,7 @@ ERTMonTakeValue <- function( ertObj ) {
 ##-----------------------------------------------------------
 
 #' Set event records.
-#' @description Set an event records data frame into the monad object.
+#' @description Sets an event records data frame into the monad object.
 #' @param ertObj An ERTMon object.
 #' @param eRecs A data frame with event records.
 #' @return An ERTMon object.
@@ -117,10 +117,21 @@ ERTMonSetEventRecords <- function( ertObj, eRecs ) {
   ertObj
 }
 
+#' Take event records.
+#' @description Takes the event records data frame from the monad object.
+#' @param ertObj An ERTMon object.
+#' @return A data frame.
+#' @family Set/Take functions
+#' @export
+ERTMonTakeEventRecords <- function( ertObj ) {
+  ertObj$EventRecords
+}
+
+
 ##-----------------------------------------------------------
 
 #' Set entity attributes.
-#' @description Set an entity attributes data frame into the monad object.
+#' @description Sets an entity attributes data frame into the monad object.
 #' @param ertObj An ERTMon object.
 #' @param eAttrs A data frame with entity attributes.
 #' @return An ERTMon object.
@@ -136,10 +147,21 @@ ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
   ertObj
 }
 
+#' Take entity attributes.
+#' @description Takes the entity attributes data frame from the monad object.
+#' @param ertObj An ERTMon object.
+#' @return A data frame.
+#' @family Set/Take functions
+#' @export
+ERTMonTakeEntityAttributes <- function( ertObj ) {
+  ertObj$EntityAttributes
+}
+
+
 ##-----------------------------------------------------------
 
 #' Set computation specification.
-#' @description Set a computation specification data frame into the monad object.
+#' @description Sets a computation specification data frame into the monad object.
 #' @param ertObj An ERTMon object.
 #' @param compSpec A data frame that is a computation specification.
 #' @return An ERTMon object.
@@ -154,6 +176,16 @@ ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
   }
   ertObj$ComputationSpecification <- compSpec
   ertObj
+}
+
+#' Take computation specification.
+#' @description Takes the computation specification data frame from the monad object.
+#' @param ertObj An ERTMon object.
+#' @return A data frame.
+#' @family Set/Take functions
+#' @export
+ERTMonTakeComputationSpecification <- function( ertObj ) {
+  ertObj$ComputationSpecification
 }
 
 ##-----------------------------------------------------------
@@ -386,9 +418,11 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' @param ertObj An ERTMon object.
 #' @param echoStepsQ Should the steps be echoed?
 #' @param outlierIdentifier Outlier parameters function.
+#' @param progressObject An object to be used in a progress guage.
+#' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @return An ERTMon object.
 #' @export
-ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentifier = SPLUSQuartileIdentifierParameters ) {
+ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentifier = SPLUSQuartileIdentifierParameters, progressObject = NULL ) {
   
   if( !ERTMonDataCheck( ertObj, "ERTMonProcessEventRecords", logicalResult = T ) ) {
     return(ERTMonFailureSymbol)
@@ -430,6 +464,8 @@ ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentif
   ## dtObj <- new( "DataTransformerCatMatrices" )
   dtObj <- new( "DataTransformer" )
   
+  dtObj@progressObject <- progressObject
+  
   dtObj <- transformData( dtObj,
                           compSpecObj,
                           dwObj@eventRecords,
@@ -440,6 +476,120 @@ ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentif
   ertObj$Value <- dtObj@dataMat
   
   ertObj
+}
+
+
+##===========================================================
+## Extract features
+##===========================================================
+
+#' Extract feature with an alredy made data transformer.
+#' @description Processes "unseen" data with an already made data transformer object.
+#' @param ertObj An ERTMon object.
+#' @param eventRecords A data frame with event records.
+#' @param entityAttributes A data frame with entity attributes.
+#' @return An ERTMon object.
+#' @details The result feature matrix is assigned to \code{ertObj$Value}.
+#' @export
+ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues = NULL ) {
+  
+  if( !ERTMonDataTransformerCheck(ertObj, functionName = "ERTMonExtractFeatures", logicalResult = TRUE) ) {
+    return(ERTMonFailureSymbol)
+  }
+    
+  if( is.null(eventRecords) && is.null(entityAttribues) ) {
+    
+    dtObj <- transformData( ertObj$dtObj, ertObj$compSpecObj, ertObj$eventRecords, ertObj$entityAttributes, testDataRun = TRUE )
+    
+  } else {
+    
+    dtObj <- transformData( ertObj$dtObj, ertObj$compSpecObj, eventRecords, entityAttributes, testDataRun = TRUE )
+    
+  }
+  
+  ## The result -- a contingency matrix
+  ertObj$Value <- dtObj@dataMat
+  
+  ertObj
+}
+
+
+##===========================================================
+## Read computation specification from a file
+##===========================================================
+
+#' Read a computation specification from a file.
+#' @description Reads a computation specification data frame from a file.
+#' @param ertObj An ERTMon object.
+#' @param file A directory name.
+#' @details The specified file is expected to be a CSV file.
+#' @return An ERTMon object.
+#' @export
+ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALSE ) {
+  
+  compSpecObj <- new( "ComputationSpecification" )
+  
+  if ( ingestQ ) {
+    
+    compSpecObj <- compSpecObj %>% readSpec( fileName ) %>% ingestSpec()
+    ertObj %>% ERTMonSetComputationSpecification( compSpecObj@parameters )
+    
+  } else {
+    
+    compSpecObj <- compSpecObj %>% readSpec( fileName )
+    ertObj %>% ERTMonSetComputationSpecification( compSpecObj@originalParameters )
+  }  
+}
+  
+
+##===========================================================
+## Read data from a directory
+##===========================================================
+
+#' Read data from a directory.
+#' @description Reads event records, entity attributes, and computation specification
+#' data frames from a directory.
+#' @param ertObj An ERTMon object.
+#' @param directoryName A directory name.
+#' @param compSpec A computation specification data frame; if NULL it is read from the directory.
+#' @param progressObject An object to use for a progress gauge.
+#' @details The specified directory is expected to have the files 
+#' \code{eventRecords.csv}, \code{entityAttributes.csv}, and \code{computationSpecification.csv}.
+#' @return An ERTMon object.
+#' @export
+ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = TRUE, progressObject = NULL ) {
+ 
+  ##---------------------------------------------------------
+  ## Data ingester
+  ##---------------------------------------------------------
+  diObj <- new( "DataIngester")  
+  
+  diObj@progressObject <- progressObject
+  
+  diObj <- diObj %>% readDataFromDirectory( directoryName ) %>% ingestData( "Label" )
+  
+  ##---------------------------------------------------------
+  ## Computation specificaiton
+  ##---------------------------------------------------------
+  compSpecObj <- new( "ComputationSpecification" )
+  
+  
+  if( readCompSpecQ ) {
+    
+    inSpecFileName <- file.path( directoryName, "computationSpecification.csv" )
+    compSpecObj <- compSpecObj %>% readSpec( inSpecFileName ) 
+
+    ertObj %>%
+      ERTMonSetEventRecords( diObj@dataObj@eventRecords ) %>% 
+      ERTMonSetEntityAttributes( diObj@dataObj@entityAttributes ) %>% 
+      ERTMonSetComputationSpecification( compSpecObj@originalParameters )
+    
+  } else {
+    
+    ertObj %>%
+      ERTMonSetEventRecords( diObj@dataObj@eventRecords ) %>% 
+      ERTMonSetEntityAttributes( diObj@dataObj@entityAttributes )
+  }    
 }
 
 

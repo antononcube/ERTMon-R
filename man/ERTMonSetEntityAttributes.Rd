@@ -15,12 +15,15 @@ ERTMonSetEntityAttributes(ertObj, eAttrs)
 An ERTMon object.
 }
 \description{
-Set an entity attributes data frame into the monad object.
+Sets an entity attributes data frame into the monad object.
 }
 \seealso{
 Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
   \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeComputationSpecification}},
   \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeEntityAttributes}},
+  \code{\link{ERTMonTakeEventRecords}},
   \code{\link{ERTMonTakeFeatureMatrix}},
   \code{\link{ERTMonTakeFeatureNamePrefixes}},
   \code{\link{ERTMonTakeTimeCellsInterpretation}},

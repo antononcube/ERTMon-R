@@ -15,12 +15,15 @@ ERTMonSetEventRecords(ertObj, eRecs)
 An ERTMon object.
 }
 \description{
-Set an event records data frame into the monad object.
+Sets an event records data frame into the monad object.
 }
 \seealso{
 Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
   \code{\link{ERTMonSetEntityAttributes}},
+  \code{\link{ERTMonTakeComputationSpecification}},
   \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeEntityAttributes}},
+  \code{\link{ERTMonTakeEventRecords}},
   \code{\link{ERTMonTakeFeatureMatrix}},
   \code{\link{ERTMonTakeFeatureNamePrefixes}},
   \code{\link{ERTMonTakeTimeCellsInterpretation}},

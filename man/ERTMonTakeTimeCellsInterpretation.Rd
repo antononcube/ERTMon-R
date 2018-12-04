@@ -23,7 +23,10 @@ Hence the interpretation times are non-positive.
 Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
   \code{\link{ERTMonSetEntityAttributes}},
   \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeComputationSpecification}},
   \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeEntityAttributes}},
+  \code{\link{ERTMonTakeEventRecords}},
   \code{\link{ERTMonTakeFeatureMatrix}},
   \code{\link{ERTMonTakeFeatureNamePrefixes}},
   \code{\link{ERTMonTakeValue}}

@@ -5,7 +5,8 @@
 \title{Process the data and make feature matrix.}
 \usage{
 ERTMonProcessEventRecords(ertObj, echoStepsQ = TRUE,
-  outlierIdentifier = SPLUSQuartileIdentifierParameters)
+  outlierIdentifier = SPLUSQuartileIdentifierParameters,
+  progressObject = NULL)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -13,10 +14,15 @@ ERTMonProcessEventRecords(ertObj, echoStepsQ = TRUE,
 \item{echoStepsQ}{Should the steps be echoed?}
 
 \item{outlierIdentifier}{Outlier parameters function.}
+
+\item{progressObject}{An object to be used in a progress guage.}
 }
 \value{
 An ERTMon object.
 }
 \description{
 Processes the set event records using the set computation specification in an ERTMon object.
+}
+\details{
+The result feature matrix is assigned to \code{ertObj$Value}.
 }

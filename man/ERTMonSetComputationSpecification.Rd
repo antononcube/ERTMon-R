@@ -15,12 +15,15 @@ ERTMonSetComputationSpecification(ertObj, compSpec)
 An ERTMon object.
 }
 \description{
-Set a computation specification data frame into the monad object.
+Sets a computation specification data frame into the monad object.
 }
 \seealso{
 Other Set/Take functions: \code{\link{ERTMonSetEntityAttributes}},
   \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeComputationSpecification}},
   \code{\link{ERTMonTakeContingencyMatrices}},
+  \code{\link{ERTMonTakeEntityAttributes}},
+  \code{\link{ERTMonTakeEventRecords}},
   \code{\link{ERTMonTakeFeatureMatrix}},
   \code{\link{ERTMonTakeFeatureNamePrefixes}},
   \code{\link{ERTMonTakeTimeCellsInterpretation}},
