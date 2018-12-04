@@ -450,21 +450,7 @@ ERTMonProcessEventRecords <- function( ertObj, outlierIdentifier = SPLUSQuartile
   }
 
   ## In order to adhere ot ERTMon's requirements we have to provide a 'Label' attribute.
-  noLabelIDs <- ertObj$EntityAttributes %>% dplyr::filter( Attribute == "Label" )
-
-  if( nrow(noLabelIDs) == 0 ) { 
-    noLabelIDs <- unique(ertObj$EntityAttributes$EntityID) 
-  } else {
-    noLabelIDs <- setdiff( unique(ertObj$EntityAttributes$EntityID), noLabelIDs$EntityID )   
-  }
-
-  if( length(noLabelIDs) > 0 ) { 
-    ertObj$EntityAttributes <- 
-      rbind( 
-        ertObj$EntityAttributes, 
-        data.frame( EntityID = noLabelIDs, Attribute = "Label", Value = "Yes" )
-      )
-  }
+  ertObj$EntityAttributes <- AddMissingLabelAttributes( ertObj$EntityAttributes, labelValue = "None" )
   
   ## Computation specification
   compSpecObj <- new( "ComputationSpecification" )

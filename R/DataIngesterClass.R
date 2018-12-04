@@ -172,9 +172,12 @@ setMethod( "ingestData",
                stop( "Read data first.", call. = TRUE )
              }
      
-             # assertthat::assert_that( labelAttributeName %in% colnames(object@dataObj@entityAttributes) )
-             assertthat::assert_that( labelAttributeName %in% object@dataObj@entityAttributes$Attribute  )
+             # assertthat::assert_that( labelAttributeName %in% unique(object@dataObj@entityAttributes$Attribute)  )
                                       
+             if( !(labelAttributeName %in% unique(object@dataObj@entityAttributes$Attribute)) ) {
+               object@dataObj@entityAttributes <- AddMissingLabelAttributes( object@dataObj@entityAttributes, labelValue = "None" )
+             }
+             
              qDF <- 
                object@dataObj@entityAttributes %>% 
                dplyr::filter( Attribute == labelAttributeName )

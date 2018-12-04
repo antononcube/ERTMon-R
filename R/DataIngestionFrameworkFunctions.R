@@ -138,6 +138,32 @@ ProcessDataSpecification <- function( dataSpec ) {
   dataSpecDF
 }
 
+#' @description Adds a label attribute row for each entity ID that does not have one.
+#' @param entityAttributes A data frame with entity attributes.
+#' @param labelValue A string to be used as Sa label attribute.
+#' @return A data frame.
+AddMissingLabelAttributes <- function( entityAttributes, labelValue = "None" ) {
+  
+  noLabelIDs <- 
+    entityAttributes %>% 
+    dplyr::filter( Attribute == "Label" )
+  
+  if( nrow(noLabelIDs) == 0 ) { 
+    noLabelIDs <- unique(entityAttributes$EntityID) 
+  } else {
+    noLabelIDs <- setdiff( unique(entityAttributes$EntityID), noLabelIDs$EntityID )   
+  }
+  
+  if( length(noLabelIDs) > 0 ) { 
+    entityAttributes <- 
+      rbind( 
+        entityAttributes, 
+        data.frame( EntityID = noLabelIDs, Attribute = "Label", Value = labelValue )
+      )
+  }
+  
+  entityAttributes
+}
 
 #' @description Imposes a time grid over eventRecords subset according to specification row.
 #' @param eventRecordsData Event records data in long form.
