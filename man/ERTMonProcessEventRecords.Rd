@@ -4,16 +4,16 @@
 \alias{ERTMonProcessEventRecords}
 \title{Process the data and make feature matrix.}
 \usage{
-ERTMonProcessEventRecords(ertObj, echoStepsQ = TRUE,
+ERTMonProcessEventRecords(ertObj,
   outlierIdentifier = SPLUSQuartileIdentifierParameters,
-  progressObject = NULL)
+  echoStepsQ = TRUE, progressObject = NULL)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
-\item{echoStepsQ}{Should the steps be echoed?}
-
 \item{outlierIdentifier}{Outlier parameters function.}
+
+\item{echoStepsQ}{Should the steps be echoed?}
 
 \item{progressObject}{An object to be used in a progress guage.}
 }

@@ -5,12 +5,16 @@
 \title{Extract feature with an alredy made data transformer.}
 \usage{
 ERTMonExtractFeatures(ertObj, eventRecords = NULL,
-  entityAttribues = NULL)
+  entityAttribues = NULL, echoStepsQ = TRUE, progressObject = NULL)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
 \item{eventRecords}{A data frame with event records.}
+
+\item{echoStepsQ}{Should the steps be echoed?}
+
+\item{progressObject}{An object to be used in a progress guage.}
 
 \item{entityAttributes}{A data frame with entity attributes.}
 }

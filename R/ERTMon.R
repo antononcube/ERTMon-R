@@ -273,6 +273,27 @@ ERTMonTakeFeatureMatrix <- function( ertObj ) {
 
 ##-----------------------------------------------------------
 
+#' Take transformed data.
+#' @description Takes the transformed data frame from the data transformer object 
+#' which is in the monad object.
+#' @param ertObj An ERTMon object.
+#' @return A data frame or \code{ERTMonFailureSymbol}.
+#' @family Set/Take functions
+#' @export
+ERTMonTakeTrasformedData <- function( ertObj ) {
+
+  if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeTrasformedData", logicalResult = TRUE) ) {
+    ERTMonFailureSymbol
+  } else if( is.null(ertObj$dtObj@transformedData) ) { 
+    ERTMonFailureSymbol 
+  } else { 
+    ertObj$dtObj@transformedData 
+  }
+}
+
+
+##-----------------------------------------------------------
+
 #' Take time cells interpretation.
 #' @description Returns a data frame with the interpretation of the time cells.
 #' @param ertObj An ERTMon object.
@@ -416,13 +437,13 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' Process the data and make feature matrix.
 #' @description Processes the set event records using the set computation specification in an ERTMon object. 
 #' @param ertObj An ERTMon object.
-#' @param echoStepsQ Should the steps be echoed?
 #' @param outlierIdentifier Outlier parameters function.
+#' @param echoStepsQ Should the steps be echoed?
 #' @param progressObject An object to be used in a progress guage.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @return An ERTMon object.
 #' @export
-ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentifier = SPLUSQuartileIdentifierParameters, progressObject = NULL ) {
+ERTMonProcessEventRecords <- function( ertObj, outlierIdentifier = SPLUSQuartileIdentifierParameters, echoStepsQ = TRUE, progressObject = NULL ) {
   
   if( !ERTMonDataCheck( ertObj, "ERTMonProcessEventRecords", logicalResult = T ) ) {
     return(ERTMonFailureSymbol)
@@ -488,22 +509,27 @@ ERTMonProcessEventRecords <- function( ertObj, echoStepsQ = TRUE, outlierIdentif
 #' @param ertObj An ERTMon object.
 #' @param eventRecords A data frame with event records.
 #' @param entityAttributes A data frame with entity attributes.
+#' @param echoStepsQ Should the steps be echoed?
+#' @param progressObject An object to be used in a progress guage.
 #' @return An ERTMon object.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @export
-ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues = NULL ) {
+ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues = NULL, echoStepsQ = TRUE, progressObject = NULL ) {
   
   if( !ERTMonDataTransformerCheck(ertObj, functionName = "ERTMonExtractFeatures", logicalResult = TRUE) ) {
     return(ERTMonFailureSymbol)
   }
-    
+   
+  dtObj <- transformData( ertObj$dtObj )
+  dtObj@progressObject <- progressObject
+                          
   if( is.null(eventRecords) && is.null(entityAttribues) ) {
     
-    dtObj <- transformData( ertObj$dtObj, ertObj$compSpecObj, ertObj$eventRecords, ertObj$entityAttributes, testDataRun = TRUE )
+    dtObj <- transformData( dtObj, ertObj$compSpecObj, ertObj$eventRecords, ertObj$entityAttributes, testDataRun = TRUE )
     
   } else {
     
-    dtObj <- transformData( ertObj$dtObj, ertObj$compSpecObj, eventRecords, entityAttributes, testDataRun = TRUE )
+    dtObj <- transformData( dtObj, ertObj$compSpecObj, eventRecords, entityAttributes, testDataRun = TRUE )
     
   }
   

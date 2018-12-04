@@ -25,6 +25,7 @@ Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
   \code{\link{ERTMonTakeFeatureMatrix}},
   \code{\link{ERTMonTakeFeatureNamePrefixes}},
   \code{\link{ERTMonTakeTimeCellsInterpretation}},
+  \code{\link{ERTMonTakeTrasformedData}},
   \code{\link{ERTMonTakeValue}}
 }
 \concept{Set/Take functions}
