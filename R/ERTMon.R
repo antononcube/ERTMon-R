@@ -438,12 +438,18 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' @description Processes the set event records using the set computation specification in an ERTMon object. 
 #' @param ertObj An ERTMon object.
 #' @param outlierIdentifier Outlier parameters function.
+#' @param alignmentSpec A time series alignment specification argument 
+#' with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number. 
 #' @param echoStepsQ Should the steps be echoed?
 #' @param progressObject An object to be used in a progress guage.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @return An ERTMon object.
 #' @export
-ERTMonProcessEventRecords <- function( ertObj, outlierIdentifier = SPLUSQuartileIdentifierParameters, echoStepsQ = TRUE, progressObject = NULL ) {
+ERTMonProcessEventRecords <- function( ertObj, 
+                                       outlierIdentifier = SPLUSQuartileIdentifierParameters, 
+                                       alignmentSpec = "MaxTime", 
+                                       echoStepsQ = TRUE, 
+                                       progressObject = NULL ) {
   
   if( !ERTMonDataCheck( ertObj, "ERTMonProcessEventRecords", logicalResult = T ) ) {
     return(ERTMonFailureSymbol)
@@ -476,7 +482,9 @@ ERTMonProcessEventRecords <- function( ertObj, outlierIdentifier = SPLUSQuartile
   dtObj <- transformData( dtObj,
                           compSpecObj,
                           dwObj@eventRecords,
-                          dwObj@entityAttributes )
+                          dwObj@entityAttributes,
+                          alignmentSpec = alignmentSpec,
+                          echoStepsQ = echoStepsQ )
   
   ertObj$compSpecObj <- compSpecObj
   ertObj$dtObj <- dtObj

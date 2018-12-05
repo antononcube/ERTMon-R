@@ -170,25 +170,51 @@ AddMissingLabelAttributes <- function( entityAttributes, labelValue = "None" ) {
 #' @param entityData A data frame entity specific data.
 #' @param maxHistoryLength A max history length.
 #' @param aggregationIntervalLength An aggregation interval length.
+#' @param alignmentSpec A time series alignment specification argument 
+#' with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number. 
 #' @param echoStepsQ A logical should the steps be indicated with \code{cat}.
 #' @return A data frame (tibble) with columns c("EntityID","VarID","AValue","TimeGridCell", "MatrixName")
-AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLength, echoStepsQ = TRUE) {
+#' @details If \code{alignmentSpec} is a non-negative number the alignment is done with by finding 
+#' the difference \code{ObservationTime - alignmentSpec} and keeping the records for which
+#' that difference is non-negative.
+AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLength, 
+                        alignmentSpec = "MaxTime",
+                        echoStepsQ = TRUE) {
   
   if( echoStepsQ ) { cat("\n\tFind most recent observation date for each entity...\n") }
   
   eventRecords <- 
     dplyr::left_join(
       dplyr::filter( dplyr::summarise( dplyr::group_by( dplyr::select( eventRecords, EntityID, ObservationTime ), EntityID ), 
-                                       MostRecentTimeEpoch = max(ObservationTime, na.rm = T) ), 
-                     !is.na(MostRecentTimeEpoch) ),
+                                       MaxTimeEpoch = max(ObservationTime, na.rm = T),
+                                       MinTimeEpoch = min(ObservationTime, na.rm = T)), 
+                     !is.na(MaxTimeEpoch) ),
       eventRecords, by = "EntityID")
   
   if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
   
   if( echoStepsQ ) { cat("\n\tCompute differences with max time...\n") }
   
-  eventRecords <- dplyr::mutate( eventRecords, 
-                                 DiffToMaxObsTime = MostRecentTimeEpoch - ObservationTime )
+  if( tolower(alignmentSpec) %in% c( "maxtime", "max") ) {
+    
+    eventRecords <- dplyr::mutate( eventRecords, 
+                                   DiffToMaxObsTime = MaxTimeEpoch - ObservationTime )
+    
+  } else if (  tolower(alignmentSpec) %in% c( "mintime", "min") ) {
+    
+    eventRecords <- dplyr::mutate( eventRecords, 
+                                   DiffToMaxObsTime = ObservationTime - MinTimeEpoch )
+    
+  } else if ( is.numeric(alignmentSpec) && alignmentSpec >= 0 ) {
+    
+    eventRecords <- 
+      eventRecords %>% 
+      dplyr::mutate( DiffToMaxObsTime = ObservationTime - alignmentSpec ) %>% 
+      dplyr::filter( DiffToMaxObsTime >= 0 )
+    
+  } else {
+    stop( "The argument alignmentSpec is expected to be \"MinTime\", \"MaxTime\", or a non-negative number.", call. = TRUE )
+  }
   
   if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
   
@@ -219,11 +245,15 @@ AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLengt
 #' @param outlierBoundaries a data frame with columns c("Variable", "Lower", "Upper")
 #' @param outlierIdentifierFunc outlier identifier function
 #' @param echoStepsQ A logical should the steps be echoed with \code{cat}.
+#' @param alignmentSpec A time series alignment specification argument 
+#' with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number. 
 #' @return A data frame (tibble) with columns c(EntityID, TimeGridCell, VarID, AValue, MatrixName).
+#' @details See the details of \code{AddTimeGrid} for clarifications for the argument \code{alignmentSpec}.
 AggregateEventRecordsBySpec <- function(specRow, 
                                         eventRecordsData, entityData, 
                                         aggrFuncSpecToFunc,
                                         outlierBoundaries = NULL, outlierIdentifierFunc = QuartileIdentifierParameters,
+                                        alignmentSpec = "MaxTime",
                                         echoStepsQ = TRUE) {
   ##print(paste(specRow,collapse = " "))
   func <- aggrFuncSpecToFunc[ specRow$Aggregation.function[[1]] ][[1]]
@@ -251,7 +281,7 @@ AggregateEventRecordsBySpec <- function(specRow,
     ## Note the special time grid cells assignments for "LocationID",
     ## since "LocationID" is a separate column, not in "Variable" or entityAttributes .
     eventRecordsData %>% 
-      AddTimeGrid( specRow$Max.history.length, specRow$Aggregation.interval.length, echoStepsQ = echoStepsQ ) %>% 
+      AddTimeGrid( specRow$Max.history.length, specRow$Aggregation.interval.length, alignmentSpec = alignmentSpec, echoStepsQ = echoStepsQ ) %>% 
       dplyr::select( EntityID, LocationID, DiffToMaxObsTime, TimeGridCell ) %>%
       #dplyr::filter( DiffToMaxObsTime <= specRow$Max.history.length ) %>%
       #dplyr::mutate( TimeGridCell = floor( DiffToMaxObsTime / specRow$Aggregation.interval.length ) ) %>%
@@ -298,7 +328,12 @@ AggregateEventRecordsBySpec <- function(specRow,
       entityOutliers %>% 
       dplyr::mutate( Variable = specRow$Variable )
     
-    res <- AggregateEventRecordsBySpec( specRow = specRow, eventRecordsData = entityOutliers, entityData = entityData, aggrFuncSpecToFunc = aggrFuncSpecToFunc )
+    res <- AggregateEventRecordsBySpec( specRow = specRow, 
+                                        eventRecordsData = entityOutliers, 
+                                        entityData = entityData,
+                                        aggrFuncSpecToFunc = aggrFuncSpecToFunc,
+                                        alignmentSpec = alignmentSpec, 
+                                        echoStepsQ = echoStepsQ )
     
     if( nrow(res) > 0 ) { res$MatrixName <- mName }
     res
@@ -308,7 +343,7 @@ AggregateEventRecordsBySpec <- function(specRow,
     
     eventRecordsData %>% 
       dplyr::filter( Variable == specRow$Variable ) %>% 
-      AddTimeGrid( specRow$Max.history.length, specRow$Aggregation.interval.length, echoStepsQ = echoStepsQ ) %>% 
+      AddTimeGrid( specRow$Max.history.length, specRow$Aggregation.interval.length, alignmentSpec = alignmentSpec, echoStepsQ = echoStepsQ ) %>% 
       dplyr::mutate( VarID = paste(Variable, TimeGridCell, sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
       dplyr::summarise( AValue = func(Value) ) %>%

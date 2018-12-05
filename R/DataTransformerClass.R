@@ -104,7 +104,7 @@ setGeneric("transformData", function (object, compSpec, eventRecordsData, entity
 ## Operation steps
 setGeneric("restrictToSpecifiedVariables", function (eventRecords, object) standardGeneric("restrictToSpecifiedVariables") )
 setGeneric("addTimeGrid", function (eventRecords, object) standardGeneric("addTimeGrid") )
-setGeneric("aggregateOverTimeGrid", function (eventRecords, object) standardGeneric("aggregateOverTimeGrid") )
+setGeneric("aggregateOverTimeGrid", function (eventRecords, object, ...) standardGeneric("aggregateOverTimeGrid") )
 setGeneric("aggregateAndAccumulateOverGroups", function (object, aggrERData) standardGeneric("aggregateAndAccumulateOverGroups") )
 setGeneric("normalize", function (aggrERData, object) standardGeneric("normalize") )
 setGeneric("makeSparseMatrices", function (object, ...) standardGeneric("makeSparseMatrices") )
@@ -119,9 +119,12 @@ setMethod("transformData",
           signature = c(object = "DataTransformer", compSpec = "ComputationSpecification", eventRecordsData = "data.frame", entityAttributes = "data.frame"), 
           function(object, compSpec, eventRecordsData, entityAttributes, ...) {
             
+            ## Processing additional arguments
             additionalArgs <- list(...)
             testDataRun <- FALSE
             outlierIdentifierParametersFunc <- QuartileIdentifierParameters
+            alignmentSpec <- "MaxTime"
+            echoStepsQ <- TRUE
             
             if( "testDataRun" %in% names(additionalArgs) ) { 
               testDataRun <- additionalArgs[["testDataRun"]] 
@@ -130,6 +133,15 @@ setMethod("transformData",
             if( "outlierIdentifierParameters" %in% names(additionalArgs) ) { 
               outlierIdentifierParametersFunc <- additionalArgs[["outlierIdentifierParameters"]] 
             } 
+          
+            if( "alignmentSpec" %in% names(additionalArgs) ) { 
+              alignmentSpec <- additionalArgs[["alignmentSpec"]] 
+            }
+            
+            if( "echoStepsQ" %in% names(additionalArgs) ) { 
+              echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+            }
+            
             
             ## Set data fields
             object@compSpec <- compSpec
@@ -151,17 +163,19 @@ setMethod("transformData",
             ## Main transformation computation
             eventRecordsData <- 
               eventRecordsData %>%
-              restrictToSpecifiedVariables(object) %>%
-              aggregateOverTimeGrid(object)
+              restrictToSpecifiedVariables( object ) %>%
+              aggregateOverTimeGrid( object, alignmentSpec = alignmentSpec, echoStepsQ = echoStepsQ )
             
             ## Time cells interpretations
+            if( tolower(alignmentSpec) %in% c("maxtime", "max") ) { tsSign = -1 } else { tsSign = 1}
+              
             object@timeCellsInterpretation <-
               eventRecordsData %>% 
               dplyr::select( MatrixName, TimeGridCell ) %>% 
               dplyr::distinct() %>% 
               dplyr::inner_join( compSpec@parameters, by = "MatrixName" ) %>% 
-              dplyr::mutate( StartTime = - TimeGridCell * Aggregation.interval.length ) %>% 
-              dplyr::mutate( EndTime = - (TimeGridCell + 1) * Aggregation.interval.length ) %>% 
+              dplyr::mutate( StartTime = tsSign * TimeGridCell * Aggregation.interval.length ) %>% 
+              dplyr::mutate( EndTime = tsSign * (TimeGridCell + 1) * Aggregation.interval.length ) %>% 
               dplyr::select( MatrixName, TimeGridCell, StartTime, EndTime )
 
             ## Note that we are not saving the transformed event records in the slot "eventRecords".
@@ -261,9 +275,21 @@ setMethod("addTimeGrid",
 ##---------------------------------------------------------
 setMethod("aggregateOverTimeGrid",
           signature = c(eventRecords = "data.frame", object = "DataTransformer"), 
-          function(eventRecords, object) {
+          function(eventRecords, object, ...) {
             
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Find aggregated values." ) }
+            
+            additionalArgs <- list(...)
+            alignmentSpec <- "MaxTime"
+            echoStepsQ <- TRUE
+            
+            if( "alignmentSpec" %in% names(additionalArgs) ) { 
+              alignmentSpec <- additionalArgs[["alignmentSpec"]] 
+            }
+            
+            if( "echoStepsQ" %in% names(additionalArgs) ) { 
+              echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+            }
             
             ##---------------------------------------------------------
             ## For each of the specified variables, 
@@ -280,7 +306,8 @@ setMethod("aggregateOverTimeGrid",
                                                object@entityAttributes,
                                                object@compSpec@aggrFuncSpecToFunc,
                                                object@outlierBoundaries, 
-                                               echoStepsQ = FALSE ) ) %>%
+                                               alignmentSpec = alignmentSpec,
+                                               echoStepsQ = echoStepsQ ) ) %>%
               ungroup()
             
             ## If we do not ungroup we will get
