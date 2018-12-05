@@ -3,6 +3,8 @@ if(FALSE) {
   
   rm(list=ls())
   library(ERTMon)
+  # source("./R/LoadClasses.R")
+  
   
   dirName <- if( grepl("vignettes", getwd()) ) { file.path( getwd(), "..", "data", "FakeData") } else { file.path( getwd(), "data", "FakeData")}
   print(dirName)
