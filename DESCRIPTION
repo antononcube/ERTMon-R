@@ -22,6 +22,7 @@ Collate:
     'DataTransformerCatMatricesClass.R'
     'DataWrapperClass.R'
     'ERTMon.R'
+    'SimpleTestDataCreation.R'
     'LoadClasses.R'
     'DashboardLauncher.R'
     'FakeMedicalDataCreation.R'
