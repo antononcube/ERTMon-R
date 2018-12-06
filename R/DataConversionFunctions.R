@@ -241,7 +241,7 @@ ImposeRowIDs <- function( rowIDs, smat ) {
     rownames(complMat) <- missingRows
     colnames(complMat) <- colnames(smat)
 
-    smat <- rBind( smat, complMat )
+    smat <- rbind( smat, complMat )
   }
   # At this point each element of rowIDs should have a corresponding row in the matrix
   smat[rowIDs,,drop=FALSE]
