@@ -74,4 +74,5 @@ library(devtools)
 # source( file.path( ertMonDirName, "R", "DataTransformerClass.R") )
 # source( file.path( ertMonDirName, "R", "DataTransformerCatMatricesClass.R") )
 # source( file.path( ertMonDirName, "R", "ERTMon.R") )
+# source( file.path( ertMonDirName, "R", "SimpleTestDataCreation.R") )
 
