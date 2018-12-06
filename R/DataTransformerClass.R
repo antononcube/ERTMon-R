@@ -133,7 +133,7 @@ setMethod("transformData",
             if( "outlierIdentifierParameters" %in% names(additionalArgs) ) { 
               outlierIdentifierParametersFunc <- additionalArgs[["outlierIdentifierParameters"]] 
             } 
-          
+            
             if( "alignmentSpec" %in% names(additionalArgs) ) { 
               alignmentSpec <- additionalArgs[["alignmentSpec"]] 
             }
@@ -168,7 +168,7 @@ setMethod("transformData",
             
             ## Time cells interpretations
             if( tolower(alignmentSpec) %in% c("maxtime", "max") ) { tsSign = -1 } else { tsSign = 1}
-              
+            
             object@timeCellsInterpretation <-
               eventRecordsData %>% 
               dplyr::select( MatrixName, TimeGridCell ) %>% 
@@ -177,7 +177,7 @@ setMethod("transformData",
               dplyr::mutate( StartTime = tsSign * TimeGridCell * Aggregation.interval.length ) %>% 
               dplyr::mutate( EndTime = tsSign * (TimeGridCell + 1) * Aggregation.interval.length ) %>% 
               dplyr::select( MatrixName, TimeGridCell, StartTime, EndTime )
-
+            
             ## Note that we are not saving the transformed event records in the slot "eventRecords".
             ## That slot is reserved for the initial event records data.
             ## We use the slots transformedData and eventRecordsForCategoricalMatrices.
@@ -297,7 +297,7 @@ setMethod("aggregateOverTimeGrid",
             ##     for each time grid cell 
             ##       find aggregate function values
             cat("\n\tFind aggregated values...\n")
-
+            
             aggrERData <-
               object@compSpec@parameters %>%
               rowwise() %>%
@@ -491,49 +491,52 @@ setMethod("aggregateAndAccumulateOverGroups",
             object@groupAggregatedValues <-
               ddply( object@compSpec@parameters, "MatrixName", function(specRow) { 
                 
-                func <- object@compSpec@aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
-                
-                if ( specRow$Normalization.scope[[1]] == "Variable" ) {
+                if( specRow$Normalization.function[[1]] != "None" ) {
                   
-                  dfNormalizationValues <- 
-                    aggrERData %>% 
-                    dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
-                    dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
-                    dplyr::mutate( Scope = "Variable", Attribute = NA ) %>% 
-                    dplyr::ungroup()
+                  func <- object@compSpec@aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
                   
-                  if( nrow(dfNormalizationValues) == 0 ) { 
-                    NULL 
-                  } else { 
-                    #print( colnames(object@groupAggregatedValues) )
-                    #print( cbind( MatrixName = specRow$MatrixName, dfNormalizationValues, stringsAsFactors = F ) )
-                    rbind( object@groupAggregatedValues, 
-                           cbind( MatrixName = specRow$MatrixName, dfNormalizationValues, stringsAsFactors = F ) ) 
+                  if ( specRow$Normalization.scope[[1]] == "Variable" ) {
+                    
+                    dfNormalizationValues <- 
+                      aggrERData %>% 
+                      dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
+                      dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
+                      dplyr::mutate( Scope = "Variable", Attribute = NA ) %>% 
+                      dplyr::ungroup()
+                    
+                    if( nrow(dfNormalizationValues) == 0 ) { 
+                      NULL 
+                    } else { 
+                      #print( colnames(object@groupAggregatedValues) )
+                      #print( cbind( MatrixName = specRow$MatrixName, dfNormalizationValues, stringsAsFactors = F ) )
+                      rbind( object@groupAggregatedValues, 
+                             cbind( MatrixName = specRow$MatrixName, dfNormalizationValues, stringsAsFactors = F ) ) 
+                    }
+                    
+                  } else if ( specRow$Normalization.scope[[1]] %in% allEntityAttributes ) {
+                    
+                    dfNormalizationValues <- 
+                      aggrERData %>% 
+                      dplyr::filter( MatrixName == specRow$MatrixName ) %>%
+                      dplyr::inner_join( object@entityAttributes[, c("EntityID", "Attribute")] %>% 
+                                           dplyr::filter( Attribute == specRow$Normalization.scope[[1]] ),
+                                         by = "EntityID" ) %>% 
+                      dplyr::group_by( Attribute ) %>% 
+                      dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
+                      dplyr::ungroup()
+                    
+                    if( nrow(dfNormalizationValues) == 0 ) { NULL }
+                    else { rbind( object@groupAggregatedValues, 
+                                  cbind( MatrixName = specRow$MatrixName, 
+                                         Scope = specRow$Normalization.scope[[1]], 
+                                         dfNormalizationValues, 
+                                         stringsAsFactors = F ) ) }
+                    
+                  } else {
+                    NULL
                   }
                   
-                } else if ( specRow$Normalization.scope[[1]] %in% allEntityAttributes ) {
-                  
-                  dfNormalizationValues <- 
-                    aggrERData %>% 
-                    dplyr::filter( MatrixName == specRow$MatrixName ) %>%
-                    dplyr::inner_join( object@entityAttributes[, c("EntityID", "Attribute")] %>% 
-                                         dplyr::filter( Attribute == specRow$Normalization.scope[[1]] ),
-                                       by = "EntityID" ) %>% 
-                    dplyr::group_by( Attribute ) %>% 
-                    dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
-                    dplyr::ungroup()
-                  
-                  if( nrow(dfNormalizationValues) == 0 ) { NULL }
-                  else { rbind( object@groupAggregatedValues, 
-                                cbind( MatrixName = specRow$MatrixName, 
-                                       Scope = specRow$Normalization.scope[[1]], 
-                                       dfNormalizationValues, 
-                                       stringsAsFactors = F ) ) }
-                  
-                } else {
-                  NULL
-                }
-                
+                }    
               })
             
             cat("\n\t\t...DONE\n")
@@ -597,12 +600,16 @@ setMethod("normalizeGroupsBySpec",
                         specRow$Normalization.function[[1]] %in% names(normalizationFuncSpecToFunc) ) {
               
               # cat( "in:", specRow$Normalization.function[[1]], "\n" )
-              func <- normalizationFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
-              matLongFormData %>% 
-                dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
-                group_by( EntityID ) %>% 
-                dplyr::mutate( AValue = AValue / func(AValue) ) %>% 
-                ungroup()
+              if( specRow$Normalization.function[[1]] != "None" ) {
+                
+                func <- normalizationFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
+                matLongFormData %>% 
+                  dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
+                  group_by( EntityID ) %>% 
+                  dplyr::mutate( AValue = AValue / func(AValue) ) %>% 
+                  ungroup()
+                
+              }
               
             } else {
               
