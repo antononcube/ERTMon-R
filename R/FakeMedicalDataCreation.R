@@ -1,5 +1,5 @@
 ##===========================================================
-## Event records transformations OOP fake medical data creation
+## Event records transformations monad fake medical data creation
 ##
 ## BSD 3-Clause License
 ## 
@@ -82,7 +82,7 @@
 ## Parameters
 ##===========================================================
 
-nEntitys <- 500
+nEntities <- 500
 outputDirName <- file.path( ".", "data", "FakeData")
 writeFilesQ <- FALSE
 evaluateAllQ <- FALSE
@@ -92,7 +92,7 @@ evaluateQ <- FALSE
 ## Load libraries
 ##===========================================================
 
-library(plyr)
+library(purrr)
 library(ggplot2)
 library(reshape2)
 library(lubridate)
@@ -106,19 +106,17 @@ if ( evaluateQ && ( evaluateAllQ || !exists("fakeEntityData") ) ) {
   
   ## The patients ages are normaly distributed and restricted to in the range [0,100]
  
-  ages <- round(rnorm( n = 2*nEntitys, mean = 50, sd = 20))
+  ages <- round(rnorm( n = 2*nEntities, mean = 50, sd = 20))
   ages <- ages[ 0 <= ages & ages <= 100 ]
-  ages <- sample( ages, nEntitys )
+  ages <- sample( ages, nEntities )
   ## hist(ages)
-  
-  length(ages)
   
   codes <- runif( n = length(ages), min = 0, max = 1 )
   codes <- ifelse( codes > 0.7, "CB", "Non.CB" )
   
   fakeEntityData <- data.frame( EntityID = 1:length(ages), Age = ages, Label = codes, stringsAsFactors = FALSE )
 
-  fakeEntityData <- melt( fakeEntityData, id.vars = "EntityID" )
+  fakeEntityData <- reshape2::melt( fakeEntityData, id.vars = "EntityID" )
   fakeEntityData <- setNames( fakeEntityData, c("EntityID", "Attribute", "Value" ) )
   fakeEntityData <- fakeEntityData[ order(fakeEntityData$EntityID), ]
   
@@ -154,14 +152,17 @@ if ( evaluateQ && ( evaluateAllQ || !exists("fakeMedicalRecords") ) ) {
   biasIndexes <- timeGridIndexes[(nIntervals-4):nIntervals]
 
   fakeMedicalRecords <- 
-    ldply( names(cbVitalSignsMeans), function(vSign) {
+    purrr::map_dfr( names(cbVitalSignsMeans), function(vSign) {
       
-      ddply( fakeEntityData[ fakeEntityData$Attribute == "Label", ] , "EntityID", function(x) {
+      purrr::pmap_dfr( as.list(fakeEntityData[ fakeEntityData$Attribute == "Label", ]), function(...) {
         
+        args <- list(...)
+        rowEntityID <- args$EntityID; rowValue <- args$Value;
+
         timeGrid <- Sys.time() + timeInterval * timeGridIndexes
         values <- round(runif(n = length(timeGrid), min = 0.8, max = 1.2 ))
         
-        if( x$Value == "CB" ) {
+        if( rowValue == "CB" ) {
           values <- cbVitalSignsMeans[[vSign]] * values
           if( runif(1) < 0.5 ) { values[biasIndexes] <- 1.4*values[biasIndexes] }
           else { values[biasIndexes] <- 0.4*values[biasIndexes] }
@@ -171,7 +172,7 @@ if ( evaluateQ && ( evaluateAllQ || !exists("fakeMedicalRecords") ) ) {
         }
         
         ## "EntityID","LocationID","ObservationTime","Variable","Value","ObservationTime"
-        data.frame( EntityID = x$EntityID, 
+        data.frame( EntityID = rowEntityID, 
                     LocationID = "UKNWN", 
                     ObservationTimeString = timeGrid, 
                     Variable = vSign, 
@@ -181,8 +182,8 @@ if ( evaluateQ && ( evaluateAllQ || !exists("fakeMedicalRecords") ) ) {
         
       })
       
-    }, .progress = "time" )
- 
+    })
+  
   
   print( summary( as.data.frame( unclass( fakeMedicalRecords ) ) ) )
   
