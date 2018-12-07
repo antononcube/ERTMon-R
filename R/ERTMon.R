@@ -441,7 +441,7 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' @param alignmentSpec A time series alignment specification argument 
 #' with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number. 
 #' @param echoStepsQ Should the steps be echoed?
-#' @param progressObject An object to be used in a progress guage.
+#' @param progressObject An object to be used in a progress gauge.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @return An ERTMon object.
 #' @export
@@ -504,7 +504,7 @@ ERTMonProcessEventRecords <- function( ertObj,
 #' @param eventRecords A data frame with event records.
 #' @param entityAttributes A data frame with entity attributes.
 #' @param echoStepsQ Should the steps be echoed?
-#' @param progressObject An object to be used in a progress guage.
+#' @param progressObject An object to be used in a progress gauge.
 #' @return An ERTMon object.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @export
@@ -650,16 +650,25 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
 #' Export the feature matrix into a CSV file.
 #' @description Exports the feature matrix into a CSV file.
 #' @param ertObj An ERTMon object.
-#' @param fileName A CSV file name. 
+#' @param fileName A CSV file name. If \code{NULL} no file is written.
+#' @param modelID A string; if \code{NULL} it is not used.
+#' @return A data frame.
+#' @details The value of the argument \code{modelID} (if not \code{NULL}) is
+#' added as the first column to the feature matrix data frame (to be exported).
 #' @export
-ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName ) {
+ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = NULL ) {
   
   if( !ERTMonFeatureMatrixCheck(ertObj, logicalResult = TRUE) ) {
     return(ERTMonFailureSymbol)
   }
   
-  if( !is.character(fileName) ) {
+  if( !( is.null(fileName) || is.character(fileName) ) ) {
     warning( "The argument fileName is expected to be a string that is a valid file name.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !( is.null(modelID) || is.character(modelID) ) ) {
+    warning( "The argument modelID is expected to be a string.", call. = TRUE )
     return(ERTMonFailureSymbol)
   }
   
@@ -667,8 +676,77 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName ) {
   fMat <- as(fMat,"dgCMatrix")
   resDF <- SparseMatrixToTriplets( fMat )
   resDF <- setNames(resDF, c("EntityID", "TimeCell", "Value") )
+
   
-  write.csv( x = resDF, file = fileName, row.names = FALSE )
+  if( is.character(modelID) ) {
+    resDF <- cbind( ModelID = modelID, resDF, stringsAsFactors = FALSE )
+  }     
+  
+  if( is.character(fileName) ) {
+    write.csv( x = resDF, file = fileName, row.names = FALSE )
+  }   
+  
+  resDF
+}
+
+#' Export processed data into CSV files.
+#' @description Exports the computation specification, the feature matrix, and time grid
+#' cells interepretation into CSV files. 
+#' @param ertObj An ERTMon object.
+#' @param directoryName A diretory name for the export.
+#' @param modelID A string.
+#' @param fileNamePrefix A string.
+#' @return An ERTMon object or \code{ERTMonFailureSymbol}.
+#' @details The CSV files are written in the specified directory \code{directoryName}. 
+#' The file name prefix \code{fileNamePrefix} is concatenated to the generic file names:
+#' "longFormComputationSpecification.csv", "featureMatrix.csv", and "timeCellsInterpretation.csv".
+#' The conversion into long form of the computation specification is considered to be 
+#' more convenient from a "model management" perspective. 
+#' @export
+ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste0(modelID,"-") ) {
+  
+  if( !ERTMonFeatureMatrixCheck(ertObj, logicalResult = TRUE) ) {
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !( is.character(directoryName) && file.exists(directoryName) ) ) {
+    warning( "The argument directoryName is expected to be a string that is a valid directory name.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !is.character(modelID) ) {
+    warning( "The argument modelID is expected to be a string.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !(is.null(fileNamePrefix) || is.character(fileNamePrefix) ) ) {
+    warning( "The argument fileNamePrefix is expected to be a string or NULL.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( is.null(fileNamePrefix) ) { fileNamePrefix <- "" }
+  
+  ## Export computation specification
+  compSpec <- ERTMonTakeComputationSpecification(ertObj)
+  rownames(compSpec) <- NULL
+
+  compSpec <- cbind( RowIndex = 1:nrow(compSpec), compSpec, stringsAsFactors = FALSE )  
+  compSpec <- reshape2::melt( compSpec, id.vars = "RowIndex" )
+  compSpec <- cbind( ModelID = modelID, compSpec, stringsAsFactors = FALSE )
+  
+  write.csv( x = compSpec, file = file.path( directoryName, paste0(fileNamePrefix, "longFormComputationSpecification.csv")), row.names = FALSE )
+  
+  ## Export feature matrix
+  ERTMonExportToCSVFeatureMatrix( ertObj, fileName = file.path( directoryName, paste0(fileNamePrefix, "featureMatrix.csv")), modelID = modelID )
+  
+  ## Export time grid cells interpretation
+  tsDF <- ERTMonTakeTimeCellsInterpretation( ertObj )
+  tsDF <- cbind( ModelID = modelID, tsDF, stringsAsFactors = FALSE )
+  
+  write.csv( x = tsDF, file = file.path( directoryName, paste0(fileNamePrefix, "timeCellsInterpretation.csv")), row.names = FALSE )
+  
+  ## Result
+  ertObj
 }
 
 ##===========================================================
