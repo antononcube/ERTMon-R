@@ -4,13 +4,22 @@
 \alias{ERTMonExportToCSVFeatureMatrix}
 \title{Export the feature matrix into a CSV file.}
 \usage{
-ERTMonExportToCSVFeatureMatrix(ertObj, fileName)
+ERTMonExportToCSVFeatureMatrix(ertObj, fileName = NULL, modelID = NULL)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
-\item{fileName}{A CSV file name.}
+\item{fileName}{A CSV file name. If \code{NULL} no file is written.}
+
+\item{modelID}{A string; if \code{NULL} it is not used.}
+}
+\value{
+A data frame.
 }
 \description{
 Exports the feature matrix into a CSV file.
+}
+\details{
+The value of the argument \code{modelID} (if not \code{NULL}) is
+added as the first column to the feature matrix data frame (to be exported).
 }

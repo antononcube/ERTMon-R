@@ -170,7 +170,7 @@ GenereateSimpleTestDataEventRecords <- function( entityAttributes,
 #' @param exportDirectoryName The name of the directory where the CSV files should be written.
 #' If \code{NULL} the files are not exported
 #' @return A list with named elements. 
-#' @details The element names corrspond to the exported files.
+#' @details The element names correspond to the exported files.
 #' The element names of the result are "EntityAttributes", "EventRecords", "ComputationSpecification".
 #' The function specified with \code{variableFunction} is applied to 
 #' the points of a generated regular time grid.

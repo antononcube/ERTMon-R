@@ -14,7 +14,7 @@ ERTMonExtractFeatures(ertObj, eventRecords = NULL,
 
 \item{echoStepsQ}{Should the steps be echoed?}
 
-\item{progressObject}{An object to be used in a progress guage.}
+\item{progressObject}{An object to be used in a progress gauge.}
 
 \item{entityAttributes}{A data frame with entity attributes.}
 }

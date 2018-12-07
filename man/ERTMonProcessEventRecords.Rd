@@ -19,7 +19,7 @@ with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number.}
 
 \item{echoStepsQ}{Should the steps be echoed?}
 
-\item{progressObject}{An object to be used in a progress guage.}
+\item{progressObject}{An object to be used in a progress gauge.}
 }
 \value{
 An ERTMon object.
