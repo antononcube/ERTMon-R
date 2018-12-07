@@ -6,7 +6,7 @@
 \usage{
 ERTMonSimpleTestData(numberOfEntities = 10, numberOfVariables = 3,
   timeInterval = 900, numberOfTimeCells = 36,
-  randomStartTimesQ = FALSE, dataType = "Linear",
+  randomStartTimesQ = FALSE, variableFunction = "Linear",
   exportDirectoryName = NULL)
 }
 \arguments{
@@ -20,7 +20,8 @@ ERTMonSimpleTestData(numberOfEntities = 10, numberOfVariables = 3,
 
 \item{randomStartTimesQ}{Should the starting times for different entities be different.}
 
-\item{dataType}{A data type specification string, one of "Constant" or "Linear",}
+\item{variableFunction}{A function or a function specification string, 
+one of "Constant", "Linear", or "Random".}
 
 \item{exportDirectoryName}{The name of the directory where the CSV files should be written.
 If \code{NULL} the files are not exported}
@@ -35,5 +36,7 @@ corresponding CSV files in a specified directory.
 \details{
 The element names corrspond to the exported files.
 The element names of the result are "EntityAttributes", "EventRecords", "ComputationSpecification".
+The function specified with \code{variableFunction} is applied to 
+the points of a generated regular time grid.
 }
 \concept{Non-monadic functions}

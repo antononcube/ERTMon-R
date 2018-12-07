@@ -2,13 +2,13 @@
 if(FALSE) {
   
   rm(list=ls())
-  # library(ERTMon)
-  source("./R/LoadClasses.R")
+  library(ERTMon)
+  #source("./R/LoadClasses.R")
  
   testData <-
     ERTMonSimpleTestData( numberOfEntities = 10, numberOfVariables = 3, 
                           timeInterval = 900, numberOfTimeCells = 36, randomStartTimesQ = TRUE, 
-                          dataType = "Linear", 
+                          variableFunction = "Linear", 
                           exportDirectoryName = NULL )
   
   # testData$ComputationSpecification$Normalization.function <- "Mean"

@@ -87,7 +87,7 @@ GenereateSimpleTestDataEventRecords <- function( entityAttributes,
                                                  timeInterval = 900, 
                                                  numberOfTimeCells = 36,
                                                  randomStartTimesQ = FALSE,
-                                                 dataType = "Linear" ) {
+                                                 variableFunction = "Linear" ) {
 
   if( !is.data.frame(entityAttributes) ) {
     stop( "The argument entityAttributes is expected to be a data frame.", call. = TRUE )
@@ -98,15 +98,19 @@ GenereateSimpleTestDataEventRecords <- function( entityAttributes,
     stop( "The argument numberOfVariables is expected to be a positive integer.", call. = TRUE )
   } 
   
-  knownDataTypes <- c( "Constant", "Linear" )
-  if( !( is.character(dataType) && ( tolower(dataType) %in% tolower(knownDataTypes) ) ) ) {
-    stop( paste( "The argument dataType is expected to be one of:", paste0( knownDataTypes, collapse = ",") ), call. = TRUE )
+  knownvariableFunctions <- c( "Constant", "Linear", "Random" )
+  if( !( is.function(variableFunction) || is.character(variableFunction) && ( tolower(variableFunction) %in% tolower(knownvariableFunctions) ) ) ) {
+    stop( paste( "The argument variableFunction is expected to be a function or one of:", paste0( knownvariableFunctions, collapse = ",") ), call. = TRUE )
   }  
   
-  if( tolower(dataType) == "constant" ) {
+  if( is.function(variableFunction) ) {
+    varFunc <- variableFunction
+  } else if( tolower(variableFunction) == "constant" ) {
     varFunc <- function(x) {1}
-  } else if( tolower(dataType) == "linear" ) {
+  } else if( tolower(variableFunction) == "linear" ) {
     varFunc <- function(x) {x/timeInterval}
+  } else if( tolower(variableFunction) == "random" ) {
+    varFunc <- function(x) {rnorm(n = 1, mean = 100, sd = 10)}
   }
   
   variableMeans <- runif( n = numberOfVariables, min = 0, max = 100 )
@@ -161,18 +165,21 @@ GenereateSimpleTestDataEventRecords <- function( entityAttributes,
 #' @param timeInterval The time interval corresponding to one time cell.
 #' @param numberOfTimeCells The number of time cells.
 #' @param randomStartTimesQ Should the starting times for different entities be different.
-#' @param dataType A data type specification string, one of "Constant" or "Linear",
+#' @param variableFunction A function or a function specification string, 
+#' one of "Constant", "Linear", or "Random".
 #' @param exportDirectoryName The name of the directory where the CSV files should be written.
 #' If \code{NULL} the files are not exported
 #' @return A list with named elements. 
 #' @details The element names corrspond to the exported files.
 #' The element names of the result are "EntityAttributes", "EventRecords", "ComputationSpecification".
+#' The function specified with \code{variableFunction} is applied to 
+#' the points of a generated regular time grid.
 #' @family Non-monadic functions
 #' @export
 ERTMonSimpleTestData <- function( numberOfEntities = 10,
                                   numberOfVariables = 3,
                                   timeInterval = 900, numberOfTimeCells = 36, randomStartTimesQ = FALSE,
-                                  dataType = "Linear", 
+                                  variableFunction = "Linear", 
                                   exportDirectoryName = NULL ) {
   
   fakeEntityAttributes <- GenereateSimpleTestDataEntityAttributes( numberOfEntities = numberOfEntities )
@@ -182,7 +189,7 @@ ERTMonSimpleTestData <- function( numberOfEntities = 10,
                                                            timeInterval = timeInterval, 
                                                            numberOfTimeCells = numberOfTimeCells,
                                                            randomStartTimesQ = randomStartTimesQ,
-                                                           dataType = dataType) 
+                                                           variableFunction = variableFunction) 
   
   fakeCompSpec <- ERTMonEmptyComputationSpecification( nrow = as.integer(3 * numberOfVariables) )
   fakeCompSpec$Variable <- sort( rep_len( unique(fakeEventRecords$Variable), length.out = nrow(fakeCompSpec) ) )
@@ -202,9 +209,6 @@ ERTMonSimpleTestData <- function( numberOfEntities = 10,
     write.csv( x = fakeCompSpec, file = file.path( exportDirectoryName, "computationSpecification.csv" ) )
   } 
     
-
-  
-  
   list( EntityAttributes = fakeEntityAttributes, 
         EventRecords = fakeEventRecords, 
         ComputationSpecification = fakeCompSpec )
@@ -220,7 +224,7 @@ if( FALSE ) {
   
   fakeEventRecords <- GenereateSimpleTestDataEventRecords( entityAttributes = fakeEntityAttributes, 
                                                            numberOfVariables = 10, 
-                                                           dataType = "Linear", 
+                                                           variableFunction = function(x) {runif(n=1)}, 
                                                            timeInterval = 900, 
                                                            numberOfTimeCells = 12,
                                                            randomStartTimesQ = TRUE)
@@ -238,12 +242,13 @@ if( FALSE ) {
   
   ERTMonSimpleTestData( numberOfEntities = 3, numberOfVariables = 12, 
                         timeInterval = 900, numberOfTimeCells = 12, randomStartTimesQ = TRUE, 
-                        dataType = "Constant", 
+                        variableFunction = "Constant", 
                         exportDirectoryName = file.path( ".", "data", "ConstantTestData") )
   
   ERTMonSimpleTestData( numberOfEntities = 10, numberOfVariables = 3, 
                         timeInterval = 900, numberOfTimeCells = 36, randomStartTimesQ = TRUE, 
-                        dataType = "Linear", 
+                        variableFunction = "Linear", 
                         exportDirectoryName = file.path( ".", "data", "LinearTestData") )
+
 }
 
