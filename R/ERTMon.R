@@ -652,9 +652,10 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
 #' @param ertObj An ERTMon object.
 #' @param fileName A CSV file name. If \code{NULL} no file is written.
 #' @param modelID A string; if \code{NULL} it is not used.
-#' @return A data frame.
+#' @return An ERTMon object or \code{ERTMonFailureSymbol}.
 #' @details The value of the argument \code{modelID} (if not \code{NULL}) is
 #' added as the first column to the feature matrix data frame (to be exported).
+#' That data frame is assigned to the result monad object \code{$Value}.
 #' @export
 ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = NULL ) {
   
@@ -686,7 +687,9 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
     write.csv( x = resDF, file = fileName, row.names = FALSE )
   }   
   
-  resDF
+  ertObj$Value <- resDF
+  
+  ertObj
 }
 
 #' Export processed data into CSV files.

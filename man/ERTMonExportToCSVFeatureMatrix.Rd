@@ -14,7 +14,7 @@ ERTMonExportToCSVFeatureMatrix(ertObj, fileName = NULL, modelID = NULL)
 \item{modelID}{A string; if \code{NULL} it is not used.}
 }
 \value{
-A data frame.
+An ERTMon object or \code{ERTMonFailureSymbol}.
 }
 \description{
 Exports the feature matrix into a CSV file.
@@ -22,4 +22,5 @@ Exports the feature matrix into a CSV file.
 \details{
 The value of the argument \code{modelID} (if not \code{NULL}) is
 added as the first column to the feature matrix data frame (to be exported).
+That data frame is assigned to the result monad object \code{$Value}.
 }
