@@ -386,7 +386,7 @@ setMethod("makeSparseMatrices",
                 }
                 
                 res <- xtabs( AValue ~ EntityID + VarID, x, sparse = T) 
-                colnames(res) <- paste( gsub(".","-",x$MatrixName[[1]],fixed = T), colnames(res), sep="-")
+                colnames(res) <- paste( x$MatrixName[[1]], colnames(res), sep="-")
                 res
               }) 
             
