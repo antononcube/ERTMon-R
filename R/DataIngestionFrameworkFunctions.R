@@ -539,3 +539,67 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   ## Result
   numeratorMat / denominatorMat
 }
+
+##-----------------------------------------------------------
+## Computation specification conversions and checks
+##-----------------------------------------------------------
+
+#' @description Checks is an object a computation specification.
+#' @param compSpec An object to be tested as computation specification.
+#' @return A logical.
+LongFormComputationSpecificationQ <- function( compSpec ) {
+  
+  if( !is.data.frame(compSpec) ) {
+    return(FALSE)
+  }
+  
+  # csColNames <- c("ModelID", "RowIndex", "ColumnName", "Value")
+  csColNames <- c("RowIndex", "ColumnName", "Value")
+  if( length( intersect( colnames(compSpec), csColNames ) ) < length(csColNames) ) {
+    return(FALSE)
+  }
+  
+  TRUE
+}
+
+#' @description Converts a wide form computation specification into a long form.
+#' @param compSpec A computation specification.
+#' @param modelID A string.
+#' @return A data frame.
+ComputationSpecificationToLongForm <- function( compSpec, modelID = NULL ) { 
+  
+  rownames(compSpec) <- NULL
+  
+  compSpec <- cbind( RowIndex = 1:nrow(compSpec), compSpec, stringsAsFactors = FALSE )  
+  compSpec <- reshape2::melt( compSpec, id.vars = "RowIndex" )
+  
+  if( !is.null(modelID) ) {
+    compSpec <- cbind( ModelID = modelID, compSpec, stringsAsFactors = FALSE )
+  }
+  
+  colnames(compSpec) <- gsub( pattern = "variable", replacement = "ColumnName", x = colnames(compSpec) )
+  colnames(compSpec) <- gsub( pattern = "value", replacement = "Value", x = colnames(compSpec) )
+  
+  compSpec 
+}
+
+
+#' @description Converts a wide form computation specification into a long form.
+#' @param compSpec A computation specification.
+#' @param modelID A string.
+#' @return A data frame.
+ComputationSpecificationToWideForm <- function( compSpec ) { 
+  
+  if( !LongFormComputationSpecificationQ(compSpec) ) {
+    stop( "A long form computation specification is expected as an argument.", call. = TRUE )
+  }
+  
+  compSpec <- reshape2::dcast( compSpec, formula =  RowIndex ~ ColumnName, value.var = "Value" )
+  
+  compSpec$Aggregation.interval.length <- as.numeric(compSpec$Aggregation.interval.length)
+  compSpec$Max.history.length <- as.numeric(compSpec$Max.history.length)
+  
+  compSpec[, -1]
+}
+
+
