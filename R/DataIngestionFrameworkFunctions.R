@@ -544,10 +544,40 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
 ## Computation specification conversions and checks
 ##-----------------------------------------------------------
 
-#' @description Checks is an object a computation specification.
+#' @description Finds the type of a given computation specification.
+#' @param compSpec An object to be tested as computation specification.
+#' @return A string, one of "LongForm", "WideForm", "Unknown".
+ComputationSpecificationType <- function( compSpec ) {
+  if( ComputationSpecificationLongFormQ(compSpec) ) {
+    "LongForm"
+  } else if ( ComputationSpecificationWideFormQ(compSpec) ) {
+    "WideForm"
+  } else {
+    "Unknown"
+  }
+}
+  
+#' @description Checks is an object a computation specification in wide form.
 #' @param compSpec An object to be tested as computation specification.
 #' @return A logical.
-LongFormComputationSpecificationQ <- function( compSpec ) {
+ComputationSpecificationWideFormQ <- function( compSpec ) {
+  
+  if( !is.data.frame(compSpec) ) {
+    return(FALSE)
+  }
+  
+  csColNames <- names( EmptyComputationSpecificationRow() )
+  if( length( intersect( colnames(compSpec), csColNames ) ) < length(csColNames) ) {
+    return(FALSE)
+  }
+  
+  TRUE
+}
+
+#' @description Checks is an object a computation specification in long form.
+#' @param compSpec An object to be tested as computation specification.
+#' @return A logical.
+ComputationSpecificationLongFormQ <- function( compSpec ) {
   
   if( !is.data.frame(compSpec) ) {
     return(FALSE)
@@ -590,7 +620,7 @@ ComputationSpecificationToLongForm <- function( compSpec, modelID = NULL ) {
 #' @return A data frame.
 ComputationSpecificationToWideForm <- function( compSpec ) { 
   
-  if( !LongFormComputationSpecificationQ(compSpec) ) {
+  if( !ComputationSpecificationLongFormQ(compSpec) ) {
     stop( "A long form computation specification is expected as an argument.", call. = TRUE )
   }
   
