@@ -168,12 +168,24 @@ ERTMonTakeEntityAttributes <- function( ertObj ) {
 #' @family Set/Take functions
 #' @export
 ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
-  expectedColNames <- names(EmptyComputationSpecificationRow())
-  if( ! ( is.data.frame(compSpec) && 
-          length(intersect( colnames(compSpec), expectedColNames )) == length(expectedColNames) ) ) { 
-    warning( paste("The argument compSpec is expected to be a data frame with columns:", paste(expectedColNames, collapse =","), "." ), call. = TRUE) 
+  
+  csType <- ComputationSpecificationType(compSpec)
+  
+  if( csType == "Unknown" ) {
+    expectedColNames1 <- names(ERTMonEmptyComputationSpecificationRow())
+    expectedColNames1 <- paste0("{", paste(expectedColNames1, collapse =", "), "}")
+    
+    expectedColNames2 <- c("RowIndex", "ColumnName", "Value")
+    expectedColNames2 <- paste0("{",paste(expectedColNames2, collapse =", "), "}")
+    
+    warning( paste("The argument compSpec is expected to be a data frame with columns:", expectedColNames2, ", or:", expectedColNames1, "." ), call. = TRUE) 
     return(ERTMonFailureSymbol)
   }
+  
+  if( csType == "LongForm" ) {
+    compSpec <- ComputationSpecificationToWideForm(compSpec)
+  }
+  
   ertObj$ComputationSpecification <- compSpec
   ertObj
 }
@@ -187,6 +199,7 @@ ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
 ERTMonTakeComputationSpecification <- function( ertObj ) {
   ertObj$ComputationSpecification
 }
+
 
 ##-----------------------------------------------------------
 
@@ -696,7 +709,7 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
 #' @description Exports the computation specification, the feature matrix, and time grid
 #' cells interepretation into CSV files. 
 #' @param ertObj An ERTMon object.
-#' @param directoryName A diretory name for the export.
+#' @param directoryName A directory name for the export. If \code{NULL} no files are written.
 #' @param modelID A string.
 #' @param fileNamePrefix A string.
 #' @return An ERTMon object or \code{ERTMonFailureSymbol}.
@@ -705,6 +718,7 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
 #' "longFormComputationSpecification.csv", "featureMatrix.csv", and "timeCellsInterpretation.csv".
 #' The conversion into long form of the computation specification is considered to be 
 #' more convenient from a "model management" perspective. 
+#' The data to be exported is assigned to result's \code{$Value}.
 #' @export
 ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste0(modelID,"-") ) {
   
@@ -712,8 +726,8 @@ ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste
     return(ERTMonFailureSymbol)
   }
   
-  if( !( is.character(directoryName) && file.exists(directoryName) ) ) {
-    warning( "The argument directoryName is expected to be a string that is a valid directory name.", call. = TRUE )
+  if( !( is.character(directoryName) && file.exists(directoryName) || is.null(directoryName) ) ) {
+    warning( "The argument directoryName is expected to be a string that is a valid directory name or NULL.", call. = TRUE )
     return(ERTMonFailureSymbol)
   }
   
@@ -734,16 +748,27 @@ ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste
  
   compSpec <- ComputationSpecificationToLongForm( compSpec, modelID = modelID )
   
-  write.csv( x = compSpec, file = file.path( directoryName, paste0(fileNamePrefix, "longFormComputationSpecification.csv")), row.names = FALSE )
+  if( !is.null(directoryName) ) {
+    write.csv( x = compSpec, file = file.path( directoryName, paste0(fileNamePrefix, "longFormComputationSpecification.csv")), row.names = FALSE )
+  }
   
   ## Export feature matrix
-  ERTMonExportToCSVFeatureMatrix( ertObj, fileName = file.path( directoryName, paste0(fileNamePrefix, "featureMatrix.csv")), modelID = modelID )
+  if( !is.null(directoryName) ) {
+    fileName <- file.path( directoryName, paste0(fileNamePrefix, "featureMatrix.csv"))
+  } else { 
+    fileName <- NULL 
+  }
+  ertObj <- ERTMonExportToCSVFeatureMatrix( ertObj, fileName = fileName, modelID = modelID )
   
   ## Export time grid cells interpretation
   tsDF <- ERTMonTakeTimeCellsInterpretation( ertObj )
   tsDF <- cbind( ModelID = modelID, tsDF, stringsAsFactors = FALSE )
   
-  write.csv( x = tsDF, file = file.path( directoryName, paste0(fileNamePrefix, "timeCellsInterpretation.csv")), row.names = FALSE )
+  if( !is.null(directoryName) ) {
+    write.csv( x = tsDF, file = file.path( directoryName, paste0(fileNamePrefix, "timeCellsInterpretation.csv")), row.names = FALSE )
+  }  
+  
+  ertObj$Value <- list( ComputationSpecification = compSpec, FeatureMatrix = ertObj$Value, TimeCellsInterpretation = tsDF )
   
   ## Result
   ertObj
