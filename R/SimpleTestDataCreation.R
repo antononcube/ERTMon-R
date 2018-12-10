@@ -62,9 +62,7 @@ library(lubridate)
 ##===========================================================
 GenereateSimpleTestDataEntityAttributes <- function( numberOfEntities ) {
   
-  groupIDs <- round(rnorm( n = 2*numberOfEntities, mean = 5, sd = 4))
-  groupIDs <- groupIDs[ 0 <= groupIDs & groupIDs <= 10 ]
-  groupIDs <- sample( groupIDs, numberOfEntities )
+  groupIDs <- runif( n = numberOfEntities, min = 0, max = 10 )
 
   locations <- runif( n = length(groupIDs), min = 0, max = 1 )
   locations <- ifelse( locations > 0.5, "far", "near" )
