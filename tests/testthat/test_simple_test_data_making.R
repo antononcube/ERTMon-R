@@ -93,6 +93,9 @@ test_that("Simple test linear data", {
                 length(unique(linearTestData$EntityAttributes$EntityID))
   )
   
+  ## This is one way of testing the expected linearity of the values.
+  ## The expected mean(res==1) value is 1, but for some reason it is not.
+  ## A possible explanation is the way the liear function is run over the time grid.
   expect_true(
     { res <- 
       linearTestData$EventRecords %>% 
