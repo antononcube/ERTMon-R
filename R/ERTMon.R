@@ -731,11 +731,8 @@ ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste
   
   ## Export computation specification
   compSpec <- ERTMonTakeComputationSpecification(ertObj)
-  rownames(compSpec) <- NULL
-
-  compSpec <- cbind( RowIndex = 1:nrow(compSpec), compSpec, stringsAsFactors = FALSE )  
-  compSpec <- reshape2::melt( compSpec, id.vars = "RowIndex" )
-  compSpec <- cbind( ModelID = modelID, compSpec, stringsAsFactors = FALSE )
+ 
+  compSpec <- ComputationSpecificationToLongForm( compSpec, modelID = modelID )
   
   write.csv( x = compSpec, file = file.path( directoryName, paste0(fileNamePrefix, "longFormComputationSpecification.csv")), row.names = FALSE )
   
