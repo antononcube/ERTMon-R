@@ -4,10 +4,13 @@
 \alias{ERTMonReadComputationSpecification}
 \title{Read a computation specification from a file.}
 \usage{
-ERTMonReadComputationSpecification(ertObj, fileName, ingestQ = FALSE)
+ERTMonReadComputationSpecification(ertObj, fileName, ingestQ = FALSE,
+  echoStepsQ = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
+
+\item{echoStepsQ}{Should the computational steps be proclaimed?}
 
 \item{file}{A directory name.}
 }

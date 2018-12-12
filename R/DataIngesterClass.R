@@ -79,8 +79,8 @@ setClass( "DataIngester",
 
 ##-----------------------------------------------------------
 ## Methods
-setGeneric( name="readDataFromDirectory", function( object, directoryName ) standardGeneric("readDataFromDirectory") )
-setGeneric( name="readData", function( object, fileNameRecords, fileNameAttributes ) standardGeneric("readData") )
+setGeneric( name="readDataFromDirectory", function( object, directoryName, ... ) standardGeneric("readDataFromDirectory") )
+setGeneric( name="readData", function( object, fileNameRecords, fileNameAttributes, ... ) standardGeneric("readData") )
 setGeneric( name="setEventRecords", function( object, eventRecords ) standardGeneric("setEventRecords") )
 setGeneric( name="setEntityAttributes", function( object, entityAttributes ) standardGeneric("setEntityAttributes") )
 setGeneric( name="ingestData", function( object, labelAttributeName ) standardGeneric("ingestData") )
@@ -93,7 +93,7 @@ setGeneric( name="ingestData", function( object, labelAttributeName ) standardGe
 ##-----------------------------------------------------------
 setMethod( "readDataFromDirectory",
            signature = c( "DataIngester", "character" ),
-           def = function(object, directoryName)
+           def = function(object, directoryName, ...)
            {
              if( !VerifyDataDirectory(directoryName) ) {
                stop( paste0("Not a valid data directory,", 
@@ -104,16 +104,24 @@ setMethod( "readDataFromDirectory",
              
              readData( object, 
                        file.path( directoryName, "eventRecords.csv" ), 
-                       file.path( directoryName, "entityAttributes.csv" ) )
+                       file.path( directoryName, "entityAttributes.csv" ),
+                       ...)
            }
 )
 
 
 setMethod( "readData",
            signature = c( "DataIngester", "character", "character" ),
-           def = function(object, fileNameRecords, fileNameAttributes)
+           def = function(object, fileNameRecords, fileNameAttributes, ...)
            {
-             cat("\n\tReading event records data and entity attributes data.\n")
+             additionalArgs <- list(...)
+             echoStepsQ <- TRUE
+             
+             if( "echoStepsQ" %in% names(additionalArgs) ) { 
+               echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+             }
+             
+             if( echoStepsQ ) { cat("\n\tReading event records data and entity attributes data.\n") }
           
              object@dataObj <- new( "DataWrapper" )
              
@@ -130,7 +138,7 @@ setMethod( "readData",
              object@fileNameEventRecords <- fileNameRecords
              object@fileNameEntityAttributes <- fileNameAttributes
              
-             cat("\n\t\t...DONE\n")
+             if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
              
              object
            }
@@ -166,7 +174,7 @@ setMethod("setEntityAttributes",
 
 setMethod( "ingestData",
            signature = c( "DataIngester", "character" ),
-           def = function(object, labelAttributeName )
+           def = function(object, labelAttributeName)
            {
              if ( is.null( object@dataObj ) ) {
                stop( "Read data first.", call. = TRUE )

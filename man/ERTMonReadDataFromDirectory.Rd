@@ -5,7 +5,7 @@
 \title{Read data from a directory.}
 \usage{
 ERTMonReadDataFromDirectory(ertObj, directoryName, readCompSpecQ = TRUE,
-  progressObject = NULL)
+  progressObject = NULL, echoStepsQ = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -13,6 +13,8 @@ ERTMonReadDataFromDirectory(ertObj, directoryName, readCompSpecQ = TRUE,
 \item{directoryName}{A directory name.}
 
 \item{progressObject}{An object to use for a progress gauge.}
+
+\item{echoStepsQ}{Should the computational steps be proclaimed?}
 
 \item{compSpec}{A computation specification data frame; if NULL it is read from the directory.}
 }

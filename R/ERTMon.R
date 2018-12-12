@@ -461,7 +461,7 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 ERTMonProcessEventRecords <- function( ertObj, 
                                        outlierIdentifier = SPLUSQuartileIdentifierParameters, 
                                        alignmentSpec = "MaxTime", 
-                                       echoStepsQ = TRUE, 
+                                       echoStepsQ = FALSE, 
                                        progressObject = NULL ) {
   
   if( !ERTMonDataCheck( ertObj, "ERTMonProcessEventRecords", logicalResult = T ) ) {
@@ -474,7 +474,7 @@ ERTMonProcessEventRecords <- function( ertObj,
   ## Computation specification
   compSpecObj <- new( "ComputationSpecification" )
   compSpecObj <- setSpec( compSpecObj,  ertObj$ComputationSpecification )
-  compSpecObj <- ingestSpec( compSpecObj )
+  compSpecObj <- ingestSpec( compSpecObj, echoStepsQ = echoStepsQ )
   
   ## Data ingesting
   diObj <- new( "DataIngester")
@@ -532,11 +532,11 @@ ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues 
                           
   if( is.null(eventRecords) && is.null(entityAttribues) ) {
     
-    dtObj <- transformData( dtObj, ertObj$compSpecObj, ertObj$eventRecords, ertObj$entityAttributes, testDataRun = TRUE )
+    dtObj <- transformData( dtObj, ertObj$compSpecObj, ertObj$eventRecords, ertObj$entityAttributes, testDataRun = TRUE, echoStepsQ = echoStepsQ )
     
   } else {
     
-    dtObj <- transformData( dtObj, ertObj$compSpecObj, eventRecords, entityAttributes, testDataRun = TRUE )
+    dtObj <- transformData( dtObj, ertObj$compSpecObj, eventRecords, entityAttributes, testDataRun = TRUE, echoStepsQ = echoStepsQ )
     
   }
   
@@ -558,18 +558,18 @@ ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues 
 #' @details The specified file is expected to be a CSV file.
 #' @return An ERTMon object.
 #' @export
-ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALSE ) {
+ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALSE, echoStepsQ = FALSE ) {
   
   compSpecObj <- new( "ComputationSpecification" )
   
   if ( ingestQ ) {
     
-    compSpecObj <- compSpecObj %>% readSpec( fileName ) %>% ingestSpec()
+    compSpecObj <- compSpecObj %>% readSpec( fileName, echoStepsQ = echoStepsQ ) %>% ingestSpec( echoStepsQ = echoStepsQ )
     ertObj %>% ERTMonSetComputationSpecification( compSpecObj@parameters )
     
   } else {
     
-    compSpecObj <- compSpecObj %>% readSpec( fileName )
+    compSpecObj <- compSpecObj %>% readSpec( fileName, echoStepsQ = echoStepsQ )
     ertObj %>% ERTMonSetComputationSpecification( compSpecObj@originalParameters )
   }  
 }
@@ -590,7 +590,7 @@ ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALS
 #' \code{eventRecords.csv}, \code{entityAttributes.csv}, and \code{computationSpecification.csv}.
 #' @return An ERTMon object.
 #' @export
-ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = TRUE, progressObject = NULL ) {
+ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = TRUE, progressObject = NULL, echoStepsQ = FALSE ) {
  
   ##---------------------------------------------------------
   ## Data ingester
@@ -599,7 +599,7 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
   
   diObj@progressObject <- progressObject
   
-  diObj <- diObj %>% readDataFromDirectory( directoryName ) %>% ingestData( "Label" )
+  diObj <- diObj %>% readDataFromDirectory( directoryName, echoStepsQ = echoStepsQ ) %>% ingestData( "Label" )
   
   ##---------------------------------------------------------
   ## Computation specificaiton
@@ -610,7 +610,7 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
   if( readCompSpecQ ) {
     
     inSpecFileName <- file.path( directoryName, "computationSpecification.csv" )
-    compSpecObj <- compSpecObj %>% readSpec( inSpecFileName ) 
+    compSpecObj <- compSpecObj %>% readSpec( inSpecFileName, echoStepsQ = echoStepsQ ) 
 
     ertObj %>%
       ERTMonSetEventRecords( diObj@dataObj@eventRecords ) %>% 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ERTMon.R
 \name{ERTMonExtractFeatures}
 \alias{ERTMonExtractFeatures}
-\title{Extract feature with an alredy made data transformer.}
+\title{Extract feature with an already made data transformer.}
 \usage{
 ERTMonExtractFeatures(ertObj, eventRecords = NULL,
   entityAttribues = NULL, echoStepsQ = TRUE, progressObject = NULL)
@@ -12,7 +12,7 @@ ERTMonExtractFeatures(ertObj, eventRecords = NULL,
 
 \item{eventRecords}{A data frame with event records.}
 
-\item{echoStepsQ}{Should the steps be echoed?}
+\item{echoStepsQ}{Should the computational steps be proclaimed?}
 
 \item{progressObject}{An object to be used in a progress gauge.}
 

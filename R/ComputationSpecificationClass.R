@@ -86,9 +86,9 @@ setClass( "ComputationSpecification",
 
 ##-----------------------------------------------------------
 ## Method signatures
-setGeneric("readSpec", function (object, fileName) standardGeneric("readSpec") )
+setGeneric("readSpec", function (object, fileName, ...) standardGeneric("readSpec") )
 setGeneric("setSpec", function (object, compSpec) standardGeneric("setSpec") )
-setGeneric("ingestSpec", function (object) standardGeneric("ingestSpec") )
+setGeneric("ingestSpec", function (object, ...) standardGeneric("ingestSpec") )
 
 ##===========================================================
 ## Method implementations
@@ -96,8 +96,16 @@ setGeneric("ingestSpec", function (object) standardGeneric("ingestSpec") )
 
 setMethod("readSpec",
           signature = c(object = "ComputationSpecification", fileName = "character" ), 
-          def = function(object, fileName) {
-            cat("\n\tRead specifications\n")
+          def = function(object, fileName, ...) {
+            
+            additionalArgs <- list(...)
+            echoStepsQ <- TRUE
+            
+            if( "echoStepsQ" %in% names(additionalArgs) ) { 
+              echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+            }
+            
+            if( echoStepsQ ) { cat("\n\tRead computation specification...\n") }
             
             if( file.exists(fileName) ) {
               object@originalParameters <- read.csv( file = fileName, stringsAsFactors = FALSE )
@@ -105,7 +113,7 @@ setMethod("readSpec",
               stop( "File does not exist.", call. = TRUE )
             }
             
-            cat("\n\t\t...DONE\n")
+            if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
             
             object
           }
@@ -121,8 +129,16 @@ setMethod("setSpec",
 
 setMethod("ingestSpec",
           signature = c(object = "ComputationSpecification" ), 
-          def = function(object) {
-            cat("\n\tProcess data specifications\n")
+          def = function(object, ...) {
+            
+            additionalArgs <- list(...)
+            echoStepsQ <- TRUE
+            
+            if( "echoStepsQ" %in% names(additionalArgs) ) { 
+              echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+            }
+            
+            if( echoStepsQ ) { cat("\n\tProcess computation specification...\n") }
 
             object@parameters <- ProcessDataSpecification( dataSpec = object@originalParameters )
             # dataSpecDF$Aggregation.interval.length = 5*60;
@@ -159,7 +175,7 @@ setMethod("ingestSpec",
             
             object@labels <- c(object@survivedLabel, object@diedLabel)
               
-            cat("\n\t\t...DONE\n")
+            if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
             
             object 
           }

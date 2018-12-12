@@ -102,11 +102,11 @@ setClass( "DataTransformer",
 setGeneric("transformData", function (object, compSpec, eventRecordsData, entityAttributes, ...) standardGeneric("transformData") )
 
 ## Operation steps
-setGeneric("restrictToSpecifiedVariables", function (eventRecords, object) standardGeneric("restrictToSpecifiedVariables") )
+setGeneric("restrictToSpecifiedVariables", function (eventRecords, object, ...) standardGeneric("restrictToSpecifiedVariables") )
 setGeneric("addTimeGrid", function (eventRecords, object) standardGeneric("addTimeGrid") )
 setGeneric("aggregateOverTimeGrid", function (eventRecords, object, ...) standardGeneric("aggregateOverTimeGrid") )
-setGeneric("aggregateAndAccumulateOverGroups", function (object, aggrERData) standardGeneric("aggregateAndAccumulateOverGroups") )
-setGeneric("normalize", function (aggrERData, object) standardGeneric("normalize") )
+setGeneric("aggregateAndAccumulateOverGroups", function (object, aggrERData, ...) standardGeneric("aggregateAndAccumulateOverGroups") )
+setGeneric("normalize", function (aggrERData, object, ...) standardGeneric("normalize") )
 setGeneric("makeSparseMatrices", function (object, ...) standardGeneric("makeSparseMatrices") )
 setGeneric("sparseMatricesToDataFrame", function (object, simpleConversion, numericLabelColumn) standardGeneric("sparseMatricesToDataFrame") )
 
@@ -124,7 +124,7 @@ setMethod("transformData",
             testDataRun <- FALSE
             outlierIdentifierParametersFunc <- QuartileIdentifierParameters
             alignmentSpec <- "MaxTime"
-            echoStepsQ <- TRUE
+            echoStepsQ <- FALSE
             
             if( "testDataRun" %in% names(additionalArgs) ) { 
               testDataRun <- additionalArgs[["testDataRun"]] 
@@ -163,7 +163,7 @@ setMethod("transformData",
             ## Main transformation computation
             eventRecordsData <- 
               eventRecordsData %>%
-              restrictToSpecifiedVariables( object ) %>%
+              restrictToSpecifiedVariables( object, echoStepsQ = echoStepsQ ) %>%
               aggregateOverTimeGrid( object, alignmentSpec = alignmentSpec, echoStepsQ = echoStepsQ )
             
             ## Time cells interpretations
@@ -189,15 +189,15 @@ setMethod("transformData",
             
             ## Find aggregate values over groups of records 
             if( !testDataRun ) {
-              object <- aggregateAndAccumulateOverGroups(object, eventRecordsData )
+              object <- aggregateAndAccumulateOverGroups(object, eventRecordsData, echoStepsQ = echoStepsQ )
             }
             
             ## Normalize
-            object@transformedData <- eventRecordsData %>% normalize(object)
+            object@transformedData <- eventRecordsData %>% normalize(object, echoStepsQ = echoStepsQ)
             
             ## Create a sparse matrices
             ## Note that this breaks the style of the transformation pipeline.
-            object <- makeSparseMatrices( object )
+            object <- makeSparseMatrices( object, echoStepsQ = echoStepsQ )
             
             object
           }
@@ -208,15 +208,22 @@ setMethod("transformData",
 ## Restrict event records
 setMethod("restrictToSpecifiedVariables",
           signature = c(eventRecords = "data.frame", object = "DataTransformer"), 
-          function(eventRecords, object) {
+          function(eventRecords, object, ...) {
             
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Restrict event records." ) }
             
-            cat("\n\tRestrict event records to specificed variables...\n")
+            additionalArgs <- list(...)
+            echoStepsQ <- TRUE
+            
+            if( "echoStepsQ" %in% names(additionalArgs) ) { 
+              echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+            }
+            
+            if( echoStepsQ ) { cat("\n\tRestrict event records to specificed variables...\n") }
             
             eventRecords <- dplyr::filter( eventRecords, Variable %in% object@compSpec@parameters$Variable )
             
-            cat("\n\t\t...DONE\n")
+            if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
             
             eventRecords
           }
@@ -296,7 +303,7 @@ setMethod("aggregateOverTimeGrid",
             ##   for each entity, 
             ##     for each time grid cell 
             ##       find aggregate function values
-            cat("\n\tFind aggregated values...\n")
+            if( echoStepsQ ) { cat("\n\tFind aggregated values...\n") }
             
             aggrERData <-
               object@compSpec@parameters %>%
@@ -325,7 +332,7 @@ setMethod("aggregateOverTimeGrid",
             #     res$Result
             #   })
             
-            cat("\n\t\t...DONE\n")
+            if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
             
             aggrERData
           }
@@ -335,11 +342,18 @@ setMethod("aggregateOverTimeGrid",
 ##---------------------------------------------------------
 setMethod("normalize",
           signature = c(aggrERData = "data.frame", object = "DataTransformer"), 
-          function(aggrERData, object) {
+          function(aggrERData, object, ...) {
             
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Normalization functions application." ) }
             
-            cat("\n\tNormalization functions application...\n")
+            additionalArgs <- list(...)
+            echoStepsQ <- TRUE
+
+            if( "echoStepsQ" %in% names(additionalArgs) ) { 
+              echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+            }
+            
+            if( echoStepsQ ) { cat("\n\tNormalization functions application...\n") }
             
             ## So basically we do the same thing we did for the aggreation: rowwise() %>% do( ... ) .
             
@@ -353,7 +367,7 @@ setMethod("normalize",
                                          object@compSpec@normalizationFuncSpecToFunc ) ) %>% 
               ungroup()
             
-            cat("\n\t\t...DONE\n")
+            if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
             
             aggrERData
           }
@@ -367,7 +381,14 @@ setMethod("makeSparseMatrices",
             
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Sparse matrix." ) }
             
-            cat("\n\tMake sparse matrices...\n")
+            additionalArgs <- list(...)
+            echoStepsQ <- TRUE
+            
+            if( "echoStepsQ" %in% names(additionalArgs) ) { 
+              echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+            }
+            
+            if( echoStepsQ ) { cat("\n\tMake sparse matrices...\n") }
             
             labelMat <- 
               xtabs( ~ EntityID + Value, 
@@ -419,7 +440,7 @@ setMethod("makeSparseMatrices",
             object@sparseMatrices <- smats
             object@dataMat <- do.call( cbind, smats )
             
-            cat("\n\t\t...DONE\n")
+            if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
             
             object
           }
@@ -480,11 +501,19 @@ setMethod("sparseMatricesToDataFrame",
 #' @param aggrERData aggregated event records in long form
 setMethod("aggregateAndAccumulateOverGroups",
           signature = c(object = "DataTransformer", aggrERData = "data.frame" ), 
-          function(object, aggrERData) {
-            
-            cat("\n\tAggregation over groups functions application (and accumulation)...\n")
+          function(object, aggrERData, ...) {
             
             if( !is.null(object@progressObject) ) { object@progressObject$inc( 1/6, detail = "Aggregate and accumulate over groups of records." ) }
+            
+            additionalArgs <- list(...)
+            echoStepsQ <- TRUE
+            
+            if( "echoStepsQ" %in% names(additionalArgs) ) { 
+              echoStepsQ <- additionalArgs[["echoStepsQ"]] 
+            }
+            
+            if( echoStepsQ ) { cat("\n\tAggregation over groups functions application (and accumulation)...\n") }
+            
             
             allEntityAttributes <- unique(object@entityAttributes$Attribute)
             
@@ -539,7 +568,7 @@ setMethod("aggregateAndAccumulateOverGroups",
                 }    
               })
             
-            cat("\n\t\t...DONE\n")
+            if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
             
             object
             

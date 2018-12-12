@@ -6,7 +6,7 @@
 \usage{
 ERTMonProcessEventRecords(ertObj,
   outlierIdentifier = SPLUSQuartileIdentifierParameters,
-  alignmentSpec = "MaxTime", echoStepsQ = TRUE,
+  alignmentSpec = "MaxTime", echoStepsQ = FALSE,
   progressObject = NULL)
 }
 \arguments{
@@ -17,7 +17,7 @@ ERTMonProcessEventRecords(ertObj,
 \item{alignmentSpec}{A time series alignment specification argument 
 with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number.}
 
-\item{echoStepsQ}{Should the steps be echoed?}
+\item{echoStepsQ}{Should the computational steps be proclaimed?}
 
 \item{progressObject}{An object to be used in a progress gauge.}
 }
