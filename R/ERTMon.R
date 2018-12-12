@@ -453,7 +453,7 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' @param outlierIdentifier Outlier parameters function.
 #' @param alignmentSpec A time series alignment specification argument 
 #' with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number. 
-#' @param echoStepsQ Should the steps be echoed?
+#' @param echoStepsQ Should the computational steps be proclaimed?
 #' @param progressObject An object to be used in a progress gauge.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @return An ERTMon object.
@@ -511,12 +511,12 @@ ERTMonProcessEventRecords <- function( ertObj,
 ## Extract features
 ##===========================================================
 
-#' Extract feature with an alredy made data transformer.
+#' Extract feature with an already made data transformer.
 #' @description Processes "unseen" data with an already made data transformer object.
 #' @param ertObj An ERTMon object.
 #' @param eventRecords A data frame with event records.
 #' @param entityAttributes A data frame with entity attributes.
-#' @param echoStepsQ Should the steps be echoed?
+#' @param echoStepsQ Should the computational steps be proclaimed?
 #' @param progressObject An object to be used in a progress gauge.
 #' @return An ERTMon object.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
@@ -555,6 +555,7 @@ ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues 
 #' @description Reads a computation specification data frame from a file.
 #' @param ertObj An ERTMon object.
 #' @param file A directory name.
+#' @param echoStepsQ Should the computational steps be proclaimed?
 #' @details The specified file is expected to be a CSV file.
 #' @return An ERTMon object.
 #' @export
@@ -586,6 +587,7 @@ ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALS
 #' @param directoryName A directory name.
 #' @param compSpec A computation specification data frame; if NULL it is read from the directory.
 #' @param progressObject An object to use for a progress gauge.
+#' @param echoStepsQ Should the computational steps be proclaimed?
 #' @details The specified directory is expected to have the files 
 #' \code{eventRecords.csv}, \code{entityAttributes.csv}, and \code{computationSpecification.csv}.
 #' @return An ERTMon object.
@@ -707,7 +709,7 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
 
 #' Export processed data into CSV files.
 #' @description Exports the computation specification, the feature matrix, and time grid
-#' cells interepretation into CSV files. 
+#' cells interpretation into CSV files. 
 #' @param ertObj An ERTMon object.
 #' @param directoryName A directory name for the export. If \code{NULL} no files are written.
 #' @param modelID A string.
