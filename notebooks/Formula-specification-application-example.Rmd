@@ -13,6 +13,8 @@ library(ERTMon)
 
 This notebook demonstrates the application of formula specification data frame onto a features matrix.
 
+***The exposition has to be improved with easier to plot example results.***
+
 # The feature sub-matrices
 
 Run the notebook "Event-records-transformations-main-use-case.Rmd" first. 
@@ -66,5 +68,5 @@ resMats <- fakeMon %>% ERTMonTakeValue()
 ```
 
 ```{r}
-image(resMat[[1]])
+image(resMats[[1]])
 ```
