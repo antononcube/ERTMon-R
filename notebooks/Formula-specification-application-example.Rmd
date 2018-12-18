@@ -5,6 +5,10 @@ date: 2018-10-31
 output: html_notebook
 ---
 
+```{r}
+library(ERTMon)
+```
+
 # Introduction
 
 This notebook demonstrates the application of formula specification data frame onto a features matrix.
@@ -17,7 +21,15 @@ Run the notebook "Event-records-transformations-main-use-case.Rmd" first.
 Here we take the feature matrix (sparse) sub-matrices from data transformation object (`dtObj`):
 
 ```{r}
-smats <- dtObj@sparseMatrices
+fakeMon <-
+  ERTMonUnit() %>% 
+  ERTMonReadDataFromDirectory( "../data/FakeData/" ) %>% 
+  ERTMonProcessEventRecords(echoStepsQ = FALSE)
+```
+
+```{r}
+smats <- fakeMon %>% ERTMonTakeContingencyMatrices()
+names(smats)
 ```
 
 # Specification
@@ -26,11 +38,14 @@ Here we make a fake formula specification for the fake medical data:
 
 ```{r}
 formulaSpecDF <- 
-  data.frame( "FeatureName" = c("HR.Mean", "HR.Range", "RR.Mean"), 
-              "Coefficient" = c(1, 1, 1), 
-              "Exponent" = c(1, 1, 2),
-              "RatioPart" = c( "Numerator", "Denominator", "Denominator"),
-              stringsAsFactors = FALSE)
+  data.frame( 
+    "FormulaID" = c(1),
+    "TermID" = c(1,1,1,2,2), 
+    "FeatureName" = c("HR.Mean", "NBP.M.Mean", "RR.Mean",  "NBP.M.Range", "NBP.M.Mean"),  
+    "Coefficient" = c(1, 1, 1, 1, 1.6), 
+    "Exponent" = c(1, 1, 2, 1, 1),
+    "RatioPart" = c( "Numerator", "Denominator", "Denominator", "Numerator", "Denominator"),
+    stringsAsFactors = FALSE)
 formulaSpecDF
 ```
 
@@ -46,9 +61,10 @@ $$formulaMat = \frac{reduceFunc[ \{ Coefficient[i] * smats[ FeatureName[i] ] ^ {
 The application of the formula specification is done with function `ApplyFormulaSpecification`.
 
 ```{r}
-resMat <- ApplyFormulaSpecification( smats = smats[-length(smats)], formulaSpec = formulaSpecDF, reduceFunc = "+" )
+fakeMon <- fakeMon %>% ERTMonComputeFormula( formulaSpec = formulaSpecDF, reduceFunc = "+" )
+resMats <- fakeMon %>% ERTMonTakeValue()
 ```
 
 ```{r}
-image(resMat)
+image(resMat[[1]])
 ```

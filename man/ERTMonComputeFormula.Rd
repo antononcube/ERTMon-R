@@ -21,5 +21,7 @@ Computes a formula with a given specification using the feature
 sub-matrices of an ERTMon object.
 }
 \details{
+The column names of \code{formulaSpec} are expected to include:
+\code{c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart")}.
 The result matrix is assigned into \code{ertObj$Value}.
 }

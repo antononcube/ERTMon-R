@@ -459,7 +459,7 @@ EmptyComputationSpecificationRow <- function() {
 ## Formula specification application to feature sub-matrices
 ##-----------------------------------------------------------
 
-#' @description Applies a formula specification to a list of sub-matrices that comprise a feature matrix.
+#' @description Applies a formula term specification to a list of sub-matrices that comprise a feature matrix.
 #' @param smats (sparse) matrices
 #' @param formulaSpec formula specification
 #' @param reduceFunc function to be applied when forming the numerator and denominator
@@ -473,23 +473,26 @@ EmptyComputationSpecificationRow <- function() {
 #'      reduceFunc[ Coefficient[i] * smats[ FeatureName[i] ] ^ Exponent[i], {i,NumeratorRows}] 
 #'      /
 #'      reduceFunc[ Coefficient[i] * smats[ FeatureName[i] ] ^ Exponent[i], {i,DenominatorRows}] 
-ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
+ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   
   ## Verification of mat
   if( class(smats) != "list" ) {
     stop( "The arument smats is expected to be a list named matrix elements.", call. = TRUE )
   }
   
-  dimsDF <- map_dfr( smats, function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
+  formulaSpec <- formulaSpec[ formulaSpec$FeatureName %in% names(smats), ]
+    
+  dimsDF <- map_dfr( smats[unique(formulaSpec$FeatureName)], function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
   if( mean( dimsDF$NRow == dimsDF$NRow[[1]] ) < 1 || mean( dimsDF$NCol == dimsDF$NCol[[1]] ) < 1 ) {
-    stop( "The matrices in the argument smats are expected to have same number of rows and columns.", call. = TRUE )
+    stop( "The matrices smats[unique(formulaSpec$FeatureName)] from the argument smats are expected to have same number of rows and columns.", call. = TRUE )
   }
   
   ## Verification of formulaSpec.
   ## Additional checks have to be done for the names and types of the columns.
+  expectedColumnNames <- c("FeatureName", "Coefficient", "Exponent", "RatioPart") 
   if( !( class(formulaSpec) == "data.frame" && 
-         colnames(formulaSpec) == c("FeatureName", "Coefficient", "Exponent", "RatioPart") ) ) {
-    stop( "The arument formulaSpec is expected to be a data frame with columns: c(\"FeatureName\", \"Coefficient\", \"Exponent\", \"RatioPart\").", call. = TRUE )
+         length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
+    stop( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
   }
   
   ## Verificatoin of reduceFunc
@@ -540,6 +543,24 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   numeratorMat / denominatorMat
 }
 
+#' @description Applies a formula term specification to a list of sub-matrices that comprise a feature matrix.
+#' @param smats (sparse) matrices
+#' @param formulaSpec formula specification
+#' @param reduceFunc function to be applied when forming the numerator and denominator
+#' @details The formula specification is expected to have the columns:
+#' c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") .
+ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
+  
+  expectedColumnNames <- c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") 
+  if( !( class(formulaSpec) == "data.frame" && 
+         length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
+    stop( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
+  }
+  
+  map( split(formulaSpec, formulaSpec$TermID), function(fs) ApplyFormulaTermSpecification(smats = smats, formulaSpec = fs, reduceFunc = reduceFunc) )
+}
+  
+  
 ##-----------------------------------------------------------
 ## Computation specification conversions and checks
 ##-----------------------------------------------------------

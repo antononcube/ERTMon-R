@@ -639,13 +639,16 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
 #' @param formulaSpec A formula specification.
 #' @param reduceFunc Reduction function, one of "+" or "*".
 #' @return An ERTMon object.
-#' @details The result matrix is assigned into \code{ertObj$Value}.
+#' @details The column names of \code{formulaSpec} are expected to include:
+#' \code{c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart")}.
+#' The result matrix is assigned into \code{ertObj$Value}.
 #' @export
 ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
   
-  if( !( is.data.frame(formulaSpec) && colnames(formulaSpec) == c("FeatureName", "Coefficient", "Exponent", "RatioPart") ) ) {
-    stop( paste("The argument formulaSpec is expected to be a data frame",
-                "with columns c(\"FeatureName\", \"Coefficient\", \"Exponent\", \"RatioPart\")."), call. = TRUE )
+  expectedColumnNames <- c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") 
+  if( !( class(formulaSpec) == "data.frame" && 
+         length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
+    stop( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
   }
   
   smats <- ERTMonTakeContingencyMatrices( ertObj, noColumnPrefixes = T )
