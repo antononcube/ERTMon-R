@@ -56,12 +56,13 @@ library(purrr)
 
 #' @description Process data specification to have actionable values for NULL, NA, or other 'automatic' values.
 #' @param dataSpec data specification
-ProcessDataSpecification <- function( dataSpec ) {
+#' @param addLabelRowQ A logical value should 'Label' variable be added if missing.
+ProcessDataSpecification <- function( dataSpec, addLabelRowQ = FALSE ) {
   
   dataSpecDF <- dataSpec
   
   ## Add 'Label' row if it does not exist.
-  if ( !( "Label" %in% dataSpecDF$Variable ) ) {
+  if ( addLabelRowQ && !( "Label" %in% dataSpecDF$Variable ) ) {
     
     warning( "No 'Label' row in given in the specification. Attempt to continue with automatically added 'Label' row.", call. = T)
     
@@ -138,9 +139,22 @@ ProcessDataSpecification <- function( dataSpec ) {
   dataSpecDF
 }
 
+#' @description Checks does computation specification .
+#' @param compSpec A computation specification data frame.
+#' @param labelVariable A string designating the variable attribute.
+#' @return A data frame.
+HasLabelRowQ <- function( compSpec, labelVariable = "Label" ) {
+  if ( is.data.frame(compSpec) && ( "Variable" %in% colnames(compSpec) ) ) {
+    sum( grep( pattern = labelVariable, x = compSpec$Variable ) ) > 0
+  } else {
+    FALSE
+  }
+}
+  
+  
 #' @description Adds a label attribute row for each entity ID that does not have one.
 #' @param entityAttributes A data frame with entity attributes.
-#' @param labelValue A string to be used as Sa label attribute.
+#' @param labelValue A string to be used as a label attribute.
 #' @return A data frame.
 AddMissingLabelAttributes <- function( entityAttributes, labelValue = "None" ) {
   
@@ -486,7 +500,7 @@ ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" 
     stop( "All feature names of the formula specification are unknown.", call. = TRUE )
   }
   
-  if( nrow(formulaSpec) > mean(inFeatures) ) {
+  if( nrow(formulaSpec) > sum(inFeatures) ) {
     warning( "Some feature names of the formula specification are not known.", call. = TRUE )
   }
     
