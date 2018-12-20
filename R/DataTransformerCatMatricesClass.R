@@ -88,25 +88,54 @@ setMethod("makeSparseMatrices",
             cat("\n\tMake categorical sparse matrices...\n")
             
             object <- callNextMethod( object )
+            
+            ## Find is the calculation of a label feature matrix specified?
+            findLabelMatQ <- HasLabelRowQ( object@compSpec@parameters )
+            
+            if ( findLabelMatQ ) {
               
-            labelMatInd <- grep( "Label", names(object@sparseMatrices) )
-            labelMatName <- names(object@sparseMatrices)[[labelMatInd]]
+              labelMatInd <- grep( "Label", names(object@sparseMatrices) )
+              labelMatName <- names(object@sparseMatrices)[[labelMatInd]]
+              
+              ## Exclude the labels matrix.
+              catSMats <- 
+                purrr::map( 
+                  names(object@sparseMatrices)[-labelMatInd], 
+                  function(nm) { 
+                    m <- object@sparseMatrices[[nm]]
+                    qs <- quantile( m@x, breaks )
+                    m@x <- as.numeric( findInterval( x = m@x, vec = qs, all.inside = T ) )
+                    m
+                  } )
+              names(catSMats) <- names(object@sparseMatrices)[-labelMatInd]
+              
+              catSMats <- llply( catSMats, function(x) { ToColumnValueIncidenceMatrix( mat = x, rowNames = TRUE, colNames = TRUE) } )
+              
+              object@sparseMatrices <- c( catSMats, object@sparseMatrices[[labelMatInd]] )
+              names(object@sparseMatrices) <- c( names(catSMats)[-(length(catSMats)+1)], labelMatName )
+              
+            } else {
+              
+              ## Just duplication of the code above without label columns.
+              ## I think it is easier to read the code that way.
+              
+              catSMats <- 
+                purrr::map( 
+                  names(object@sparseMatrices), 
+                  function(nm) { 
+                    m <- object@sparseMatrices[[nm]]
+                    qs <- quantile( m@x, breaks )
+                    m@x <- as.numeric( findInterval( x = m@x, vec = qs, all.inside = T ) )
+                    m
+                  } )
+              names(catSMats) <- names(object@sparseMatrices)
+              
+              catSMats <- llply( catSMats, function(x) { ToColumnValueIncidenceMatrix( mat = x, rowNames = TRUE, colNames = TRUE) } )
+              
+              object@sparseMatrices <- c( catSMats, object@sparseMatrices )
+              names(object@sparseMatrices) <- names(catSMats)
+            }
             
-            ## Exclude the labels matrix.
-            catSMats <- 
-              llply( names(object@sparseMatrices)[-labelMatInd], function(nm) { 
-                m <- object@sparseMatrices[[nm]]
-                qs <- quantile( m@x, breaks )
-                m@x <- as.numeric( findInterval( x = m@x, vec = qs, all.inside = T ) )
-                m
-              } )
-            names(catSMats) <- names(object@sparseMatrices)[-labelMatInd]
-            
-            catSMats <- llply( catSMats, function(x) { ToColumnValueIncidenceMatrix( mat = x, rowNames = TRUE, colNames = TRUE) } )
-            
-            object@sparseMatrices <- c( catSMats, object@sparseMatrices[[labelMatInd]] )
-            names(object@sparseMatrices) <- c( names(catSMats)[-(length(catSMats)+1)], labelMatName )
-
             object@dataMat <- do.call( cbind, object@sparseMatrices )
             
             cat("\n\t\t...DONE\n")

@@ -468,8 +468,17 @@ ERTMonProcessEventRecords <- function( ertObj,
     return(ERTMonFailureSymbol)
   }
 
+  ## Find is the calculation of a label feature matrix specified?
+  compSpec <- ertObj %>% ERTMonTakeComputationSpecification
+  findLabelMatQ <- FALSE
+  if ( is.data.frame(compSpec) ) {
+    findLabelMatQ <- HasLabelRowQ( compSpec )
+  }  
+  
   ## In order to adhere ot ERTMon's requirements we have to provide a 'Label' attribute.
-  ertObj$EntityAttributes <- AddMissingLabelAttributes( ertObj$EntityAttributes, labelValue = "None" )
+  if( findLabelMatQ ) {
+    ertObj$EntityAttributes <- AddMissingLabelAttributes( ertObj$EntityAttributes, labelValue = "None" )
+  }
   
   ## Computation specification
   compSpecObj <- new( "ComputationSpecification" )

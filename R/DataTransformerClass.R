@@ -348,7 +348,7 @@ setMethod("normalize",
             
             additionalArgs <- list(...)
             echoStepsQ <- TRUE
-
+            
             if( "echoStepsQ" %in% names(additionalArgs) ) { 
               echoStepsQ <- additionalArgs[["echoStepsQ"]] 
             }
@@ -390,50 +390,61 @@ setMethod("makeSparseMatrices",
             
             if( echoStepsQ ) { cat("\n\tMake sparse matrices...\n") }
             
-            labelMat <- 
-              xtabs( ~ EntityID + Value, 
-                     object@entityAttributes %>% dplyr::filter( Attribute == "Label" ), 
-                     sparse = T)
-            colnames(labelMat) <- paste( "Label", colnames(labelMat), sep="." )
-            labelMat@x[labelMat@x > 1 ] <- 1
+            ## Find is the calculation of a label feature matrix specified?
+            findLabelMatQ <- HasLabelRowQ( object@compSpec@parameters )
+            
+            if( findLabelMatQ ) {
+              labelMat <- 
+                xtabs( ~ EntityID + Value, 
+                       object@entityAttributes %>% dplyr::filter( Attribute == "Label" ), 
+                       sparse = T)
+              colnames(labelMat) <- paste( "Label", colnames(labelMat), sep="." )
+              labelMat@x[labelMat@x > 1 ] <- 1
+            }
             
             smats <- 
-              dlply( object@transformedData, c("MatrixName"), function(x) { 
-                
-                ## I am not sure this here is the best way to handle this.
-                if( sum( is.nan(x$AValue) ) ) {
-                  warning( paste0( "NaN values for the matrix", x$MatrixName[[1]], ". Attempting to continue by replacing each NaN with 0." ), call. = T )
-                  x$AValue[ is.nan(x$AValue) ] <- 0
-                }
-                
-                res <- xtabs( AValue ~ EntityID + VarID, x, sparse = T) 
-                colnames(res) <- paste( x$MatrixName[[1]], colnames(res), sep="-")
-                res
-              }) 
+              purrr::map( 
+                split( object@transformedData, object@transformedData$MatrixName ), 
+                function(x) { 
+                  
+                  ## I am not sure this here is the best way to handle this.
+                  if( sum( is.nan(x$AValue) ) ) {
+                    warning( paste0( "NaN values for the matrix", x$MatrixName[[1]], ". Attempting to continue by replacing each NaN with 0." ), call. = T )
+                    x$AValue[ is.nan(x$AValue) ] <- 0
+                  }
+                  
+                  res <- xtabs( AValue ~ EntityID + VarID, x, sparse = T) 
+                  colnames(res) <- paste( x$MatrixName[[1]], colnames(res), sep="-")
+                  res
+                }) 
             
             allRowIDs <- unique( unlist( llply( smats, rownames) ) )
             
-            smats <- llply( smats, function(x) ImposeRowIDs( rowIDs = allRowIDs, smat = x ) )
-            smats <- c( smats, Label = ImposeRowIDs( rowIDs = allRowIDs, smat = labelMat ) )
+            smats <- purrr::map( smats, function(x) ImposeRowIDs( rowIDs = allRowIDs, smat = x ) )
+            if( findLabelMatQ ) {
+              smats <- c( smats, Label = ImposeRowIDs( rowIDs = allRowIDs, smat = labelMat ) )
+            }
             
             ## Sort the columns of the sparse matrices
             smatNames <- names(smats)
             smats <- 
-              llply( smats, function(sm) {
-                if( sum( grepl( "\\.", colnames(sm)[[1]] ) ) == 0 ) { sm } 
-                else {
-                  ## Suppress warning messages while converting column names to corresponding values
-                  oldw <- getOption("warn"); options(warn = -1)
-                  colVals <- as.numeric( laply( strsplit( colnames(sm), "\\." ), function(x) x[[length(x)]] ) )
-                  options(warn = oldw)
-                  
-                  if ( sum( is.na( colVals ) ) > 0 || sort(colVals) != (1:ncol(sm)) ) { sm }
+              purrr::map( 
+                smats, 
+                function(sm) {
+                  if( sum( grepl( "\\.", colnames(sm)[[1]] ) ) == 0 ) { sm } 
                   else {
-                    colOrder <- order( colVals  )
-                    sm[, colOrder, drop = F]
+                    ## Suppress warning messages while converting column names to corresponding values
+                    oldw <- getOption("warn"); options(warn = -1)
+                    colVals <- as.numeric( laply( strsplit( colnames(sm), "\\." ), function(x) x[[length(x)]] ) )
+                    options(warn = oldw)
+                    
+                    if ( sum( is.na( colVals ) ) > 0 || sort(colVals) != (1:ncol(sm)) ) { sm }
+                    else {
+                      colOrder <- order( colVals  )
+                      sm[, colOrder, drop = F]
+                    }
                   }
-                }
-              })
+                })
             names(smats) <- smatNames
             
             ## Final result
@@ -457,7 +468,14 @@ setMethod("sparseMatricesToDataFrame",
             survivedLabel <- object@compSpec@survivedLabel
             dataMat <- object@dataMat 
             
-            if ( simpleConversion ) { 
+            ## Find is the calculation of a label feature matrix specified?
+            findLabelMatQ <- HasLabelRowQ( object@compSpec@parameters )
+            
+            if ( !findLabelMatQ && simpleConversion ) {             
+              
+              vsDF <- as.data.frame( as.matrix(dataMat), stringsAsFactors = T )
+              
+            } else if ( findLabelMatQ && simpleConversion ) { 
               ## Too simple, no NA handling.
               
               vsDF <- as.data.frame( as.matrix( dataMat[, -grep( "Label", colnames(dataMat) ) ] ), stringsAsFactors = T )
@@ -467,7 +485,17 @@ setMethod("sparseMatricesToDataFrame",
                 vsDF <- cbind( vsDF, Label = dataMat[,paste0("Label.",diedLabel)], stringsAsFactors = T ) 
               }
               
-            } else {  
+            } else if ( !findLabelMatQ && !simpleConversion ) {  
+              
+              ## Proper handling of NA's.
+              
+              vsMat <- matrix(NA, nrow = nrow(dataMat), ncol = ncol(dataMat) )
+              dataMatDF <- as.data.frame( summary(dataMat) )
+              vsMat[ as.matrix(dataMatDF[,1:2]) ] <- dataMatDF[,3]
+              rownames(vsMat) <- rownames(dataMat); colnames(vsMat) <- colnames(dataMat)
+              vsDF <- as.data.frame( vsMat )
+              
+            } else if ( findLabelMatQ && !simpleConversion ) {  
               
               ## Proper handling of NA's.
               
@@ -479,12 +507,12 @@ setMethod("sparseMatricesToDataFrame",
               lblCol <- ifelse( vsMat[,paste0("Label.",diedLabel)], diedLabel, survivedLabel )
               lblCol[is.na(lblCol)] <- survivedLabel
               vsDF <- cbind( vsDF, Label = lblCol  )
+              
             }
             
             ## This code is here is convenience.
-            ## The same code (transformation) is also in EntityClassifierH2OGLM.
             ## Note the assumption that the last column is the `Label` column. (See above.)
-            if ( numericLabelColumn ) {
+            if ( findLabelMatQ && numericLabelColumn ) {
               
               vsDF <- cbind( vsDF[,-ncol(vsDF)], Label = ifelse( dataMat[ , paste0("Label.", diedLabel) ], 1, 0 ) )
               
