@@ -480,9 +480,19 @@ ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" 
     stop( "The arument smats is expected to be a list named matrix elements.", call. = TRUE )
   }
   
-  formulaSpec <- formulaSpec[ formulaSpec$FeatureName %in% names(smats), ]
+  inFeatures <- formulaSpec$FeatureName %in% names(smats)
+
+  if( sum(inFeatures) == 0 ) {
+    stop( "All feature names of the formula specification are unknown.", call. = TRUE )
+  }
+  
+  if( nrow(formulaSpec) > mean(inFeatures) ) {
+    warning( "Some feature names of the formula specification are not known.", call. = TRUE )
+  }
     
-  dimsDF <- map_dfr( smats[unique(formulaSpec$FeatureName)], function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
+  formulaSpec <- formulaSpec[ inFeatures, ]
+  
+  dimsDF <- purrr::map_dfr( smats[unique(formulaSpec$FeatureName)], function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
   if( mean( dimsDF$NRow == dimsDF$NRow[[1]] ) < 1 || mean( dimsDF$NCol == dimsDF$NCol[[1]] ) < 1 ) {
     stop( "The matrices smats[unique(formulaSpec$FeatureName)] from the argument smats are expected to have same number of rows and columns.", call. = TRUE )
   }
@@ -550,16 +560,30 @@ ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" 
 #' @details The formula specification is expected to have the columns:
 #' c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") .
 ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
-  
+
   expectedColumnNames <- c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") 
   if( !( class(formulaSpec) == "data.frame" && 
          length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
     stop( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
   }
   
-  map( split(formulaSpec, formulaSpec$TermID), function(fs) ApplyFormulaTermSpecification(smats = smats, formulaSpec = fs, reduceFunc = reduceFunc) )
-}
+  res <- 
+    purrr::map( 
+      split(formulaSpec, formulaSpec$TermID), 
+      function(fs) ApplyFormulaTermSpecification(smats = smats, formulaSpec = fs, reduceFunc = reduceFunc) 
+    )
+
+  dimsDF <- purrr::map_dfr( res, function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
+  if( mean( dimsDF$NRow == dimsDF$NRow[[1]] ) < 1 || mean( dimsDF$NCol == dimsDF$NCol[[1]] ) < 1 ) {
+    warning( paste( "The obtained term matrices do not have the same number of rows and columns.", 
+                    "Returning the list of term matrices instead of their sum."), 
+             call. = TRUE )
+    return(res)
+  }
   
+  reduce( .x = res, .f = function(a,m) a+m, .init = 0)
+}
+
   
 ##-----------------------------------------------------------
 ## Computation specification conversions and checks
