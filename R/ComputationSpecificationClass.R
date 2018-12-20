@@ -140,7 +140,7 @@ setMethod("ingestSpec",
             
             if( echoStepsQ ) { cat("\n\tProcess computation specification...\n") }
 
-            object@parameters <- ProcessDataSpecification( dataSpec = object@originalParameters )
+            object@parameters <- ProcessDataSpecification( dataSpec = object@originalParameters, addLabelRowQ = FALSE )
             # dataSpecDF$Aggregation.interval.length = 5*60;
             
             ## View(object@parameters)
