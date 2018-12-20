@@ -41,7 +41,7 @@ formulaMat <- as.matrix( ertmon0 %>% ERTMonTakeValue )
 ## We get a matrix.
 test_that("Formula matrix", {
   expect_equal( mean( formulaSpecDF$FeatureName %in% names(cMats) ), 1 )
-  expect_type( formulaMat, "matrix" )
+  expect_is( formulaMat, "matrix" )
 })
 
 ## Compare with alternative computations.
