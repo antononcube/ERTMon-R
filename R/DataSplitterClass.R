@@ -87,7 +87,7 @@ setMethod("splitIndices",
             dataMatOne@x[ dataMatOne@x > 0 ] <- 1
             
             ## Currently NOT working.
-            ## These code has to generalized to arbitrary number of labels. 
+            ## These code has to be generalized to arbitrary number of labels. 
             if ( splitMethod == "LabelAndSizeProportional" ) {
               ## Not a faithful approach. To make this the sampling points should be of low descrepancy.
               ## E.g. sort the indices by history length, partition them by 3, pick randomly 2 for training, the rest for testing.
