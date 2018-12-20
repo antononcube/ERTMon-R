@@ -42,7 +42,7 @@
 # Start date: 2018-11-19
 #---
 
-#' @import plyr
+#' @import purrr
 #' @import dplyr
 #' @import magrittr
 #' @import stringi

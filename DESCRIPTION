@@ -27,7 +27,7 @@ Collate:
     'DashboardLauncher.R'
     'FakeMedicalDataCreation.R'
 Imports:
-    plyr,
+    purrr,
     dplyr,
     magrittr,
     RcppRoll,

@@ -50,7 +50,6 @@
 # Start date: 2018-10-07
 #---
 
-library(plyr)
 library(dplyr)
 library(purrr)
 
@@ -73,7 +72,7 @@ ProcessDataSpecification <- function( dataSpec, addLabelRowQ = FALSE ) {
   
   ## Defaults
   dataSpecDF <- 
-    ddply( dataSpecDF, c("Variable"), function(x) { 
+    purrr::map_dfr( split(dataSpecDF, dataSpecDF$Variable), function(x) { 
       if ( mean( is.na( x$Aggregation.interval.length ) ) == 1 ) { mval <- 1800 }
       else { mval <- min( x$Aggregation.interval.length, na.rm = T) }
       x$Aggregation.interval.length[ is.na(x$Aggregation.interval.length) ] <- mval

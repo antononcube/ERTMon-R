@@ -48,7 +48,6 @@
 
 library(Matrix)
 
-library(plyr)
 library(dplyr)
 library(purrr)
 

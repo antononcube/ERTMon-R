@@ -151,7 +151,7 @@ setMethod("transformData",
             outCompSpec <- compSpec@parameters[ compSpec@parameters$Aggregation.function %in% c(  "OutCnt", "OutFrc" ),  ]
             if( !testDataRun && nrow(outCompSpec) > 0 ) {
               object@outlierBoundaries <-
-                ddply( outCompSpec, "Variable", function(x) {
+                purrr::map_dfr( splut(outCompSpec, outComSpec$Variable), function(x) {
                   obs <-
                     eventRecordsData %>% 
                     dplyr::filter( Variable == x$Variable[[1]] )
@@ -418,7 +418,7 @@ setMethod("makeSparseMatrices",
                   res
                 }) 
             
-            allRowIDs <- unique( unlist( llply( smats, rownames) ) )
+            allRowIDs <- unique( unlist( purrr::map( smats, rownames) ) )
             
             smats <- purrr::map( smats, function(x) ImposeRowIDs( rowIDs = allRowIDs, smat = x ) )
             if( findLabelMatQ ) {
@@ -546,7 +546,7 @@ setMethod("aggregateAndAccumulateOverGroups",
             allEntityAttributes <- unique(object@entityAttributes$Attribute)
             
             object@groupAggregatedValues <-
-              ddply( object@compSpec@parameters, "MatrixName", function(specRow) { 
+              purrr::map_dfr( split( object@compSpec@parameters, object@compSpec@parameters$MatrixName), function(specRow) { 
                 
                 if( specRow$Normalization.function[[1]] != "None" ) {
                   

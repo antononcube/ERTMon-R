@@ -54,7 +54,7 @@
 ##=======================================================================================
 
 # Load libraries
-library(plyr)
+library(purrr)
 library(stringr)
 library(reshape2)
 library(Matrix)
@@ -82,15 +82,10 @@ SplitColumnOfTags <- function( dataColumn, numberOfSplits, sep = ",", emptyStrin
 #' @export
 TagBasketsMatrixIntoItemTagMatrix <- function( itemTagMat ) {
   # Convert to long form
-  itRows <-
-    adply(itemTagMat, c(1), function(x) {
-      row <- x[2:length(x)]
-      row <- row[ !is.na(row) ]
-      ldply( row, function(y) c(x[1], y))
-    })
-  itRows$V2[ itRows$V2 == "" ] <- "null"
+  itRows <- reshape2::melt( itemTagMat, id.vars = colnames(itemTagMat)[[1]] )
+  itRows$value[ itRows$value == "" ] <- "null"
   # Convert long form to sparse martix
-  SMRCreateItemTagMatrix( itRows, "V1", "V2" )
+  SMRCreateItemTagMatrix( itRows, "Var1", "Var2" )
 }
 
 #' File columns ingestion.
@@ -122,7 +117,7 @@ FileColumnsIngest <- function( fname, sep="\t", expectedColumns=3, header=TRUE, 
   }
 
   triplets <-
-    ldply( rawContent, function(x) {
+    purrr::map_dfr( rawContent, function(x) {
       if ( is.null(x) ) {
         NULL
       } else {
