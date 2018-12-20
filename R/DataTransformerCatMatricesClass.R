@@ -109,7 +109,7 @@ setMethod("makeSparseMatrices",
                   } )
               names(catSMats) <- names(object@sparseMatrices)[-labelMatInd]
               
-              catSMats <- llply( catSMats, function(x) { ToColumnValueIncidenceMatrix( mat = x, rowNames = TRUE, colNames = TRUE) } )
+              catSMats <- purrr::map( catSMats, function(x) { ToColumnValueIncidenceMatrix( mat = x, rowNames = TRUE, colNames = TRUE) } )
               
               object@sparseMatrices <- c( catSMats, object@sparseMatrices[[labelMatInd]] )
               names(object@sparseMatrices) <- c( names(catSMats)[-(length(catSMats)+1)], labelMatName )
@@ -130,7 +130,7 @@ setMethod("makeSparseMatrices",
                   } )
               names(catSMats) <- names(object@sparseMatrices)
               
-              catSMats <- llply( catSMats, function(x) { ToColumnValueIncidenceMatrix( mat = x, rowNames = TRUE, colNames = TRUE) } )
+              catSMats <- purrr::map( catSMats, function(x) { ToColumnValueIncidenceMatrix( mat = x, rowNames = TRUE, colNames = TRUE) } )
               
               object@sparseMatrices <- c( catSMats, object@sparseMatrices )
               names(object@sparseMatrices) <- names(catSMats)

@@ -82,28 +82,28 @@ ProcessDataSpecification <- function( dataSpec, addLabelRowQ = FALSE ) {
   
   dataSpecDF$Aggregation.function <- gsub( "^\\W*", "", dataSpecDF$Aggregation.function)
   dataSpecDF$Aggregation.function <- gsub( "\\W*$", "", dataSpecDF$Aggregation.function)
-  
+
   ## Process the aggreation function column ( NULL | NA ) -> Mean
   dataSpecDF$Aggregation.function <- ifelse( dataSpecDF$Aggregation.function == "NULL" | 
                                                dataSpecDF$Aggregation.function == "NA" |
-                                               laply( dataSpecDF$Aggregation.function, is.na ) ,
+                                               purrr::map_lgl( dataSpecDF$Aggregation.function, is.na ),
                                              "Mean", dataSpecDF$Aggregation.function )
   
   dataSpecDF$Normalization.scope <- gsub( "^\\W*", "", dataSpecDF$Normalization.scope)
   dataSpecDF$Normalization.scope <- gsub( "\\W*$", "", dataSpecDF$Normalization.scope)
   
   dataSpecDF$Normalization.scope <- ifelse( dataSpecDF$Normalization.scope == "NULL" | 
-                                        dataSpecDF$Normalization.scope == "NA" |
-                                        laply( dataSpecDF$Normalization.scope, is.na ) ,
-                                      "None", dataSpecDF$Normalization.scope )
+                                              dataSpecDF$Normalization.scope == "NA" |
+                                              purrr::map_lgl( dataSpecDF$Normalization.scope, is.na ) ,
+                                            "None", dataSpecDF$Normalization.scope )
   
   dataSpecDF$Normalization.function <- gsub( "^\\W*", "", dataSpecDF$Normalization.function)
   dataSpecDF$Normalization.function <- gsub( "\\W*$", "", dataSpecDF$Normalization.function)
   
   dataSpecDF$Normalization.function <- ifelse( dataSpecDF$Normalization.function == "NULL" | 
-                                              dataSpecDF$Normalization.function == "NA" |
-                                              laply( dataSpecDF$Normalization.function, is.na ) ,
-                                            "None", dataSpecDF$Normalization.function )
+                                                 dataSpecDF$Normalization.function == "NA" |
+                                                 purrr::map_lgl( dataSpecDF$Normalization.function, is.na ) ,
+                                               "None", dataSpecDF$Normalization.function )
   
   
   dataSpecDF <-
@@ -120,7 +120,7 @@ ProcessDataSpecification <- function( dataSpec, addLabelRowQ = FALSE ) {
   dataSpecDF$Aggregation.interval.length[ is.na(dataSpecDF$Aggregation.interval.length) ] <- min(dataSpecDF$Aggregation.interval.length, na.rm = TRUE)
   dataSpecDF$Max.history.length[ is.na(dataSpecDF$Max.history.length) ] <- min(dataSpecDF$Max.history.length, na.rm = TRUE)
   
-
+  
   if( "LocationID" %in% dataSpecDF$Variable ) {
     
     if( !is.numeric( dataSpecDF[ dataSpecDF$Variable == "LocationID", "Max.history.length"] ) ||
@@ -150,8 +150,8 @@ HasLabelRowQ <- function( compSpec, labelVariable = "Label" ) {
     FALSE
   }
 }
-  
-  
+
+
 #' @description Adds a label attribute row for each entity ID that does not have one.
 #' @param entityAttributes A data frame with entity attributes.
 #' @param labelValue A string to be used as a label attribute.
@@ -282,7 +282,7 @@ AggregateEventRecordsBySpec <- function(specRow,
       dplyr::summarise( AValue = 1 )
     
   } else if( specRow$Variable == "Label" ) {
-
+    
     entityData %>% 
       dplyr::filter( Attribute == "Label" ) %>% 
       dplyr::mutate( VarID = paste("Label", Value, sep="."), TimeGridCell = 0) %>% 
@@ -291,7 +291,7 @@ AggregateEventRecordsBySpec <- function(specRow,
       dplyr::mutate( MatrixName = "Label" )
     
   } else if( specRow$Variable == "LocationID" ) {
-
+    
     ## Note the special time grid cells assignments for "LocationID",
     ## since "LocationID" is a separate column, not in "Variable" or entityAttributes .
     eventRecordsData %>% 
@@ -376,7 +376,7 @@ AggregateEventRecordsBySpec <- function(specRow,
 NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, normalizationFuncSpecToFunc ) {
   
   func <- aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
-
+  
   allEntityAttrs <- unique(entityAttributes$Attribute)
   
   if ( ! ( specRow$Normalization.function[[1]] %in% names(normalizationFuncSpecToFunc) ) ) {
@@ -495,7 +495,7 @@ ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" 
   }
   
   inFeatures <- formulaSpec$FeatureName %in% names(smats)
-
+  
   if( sum(inFeatures) == 0 ) {
     stop( "All feature names of the formula specification are unknown.", call. = TRUE )
   }
@@ -503,7 +503,7 @@ ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" 
   if( nrow(formulaSpec) > sum(inFeatures) ) {
     warning( "Some feature names of the formula specification are not known.", call. = TRUE )
   }
-    
+  
   formulaSpec <- formulaSpec[ inFeatures, ]
   
   dimsDF <- purrr::map_dfr( smats[unique(formulaSpec$FeatureName)], function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
@@ -574,7 +574,7 @@ ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" 
 #' @details The formula specification is expected to have the columns:
 #' c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") .
 ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
-
+  
   expectedColumnNames <- c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") 
   if( !( class(formulaSpec) == "data.frame" && 
          length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
@@ -586,7 +586,7 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
       split(formulaSpec, formulaSpec$TermID), 
       function(fs) ApplyFormulaTermSpecification(smats = smats, formulaSpec = fs, reduceFunc = reduceFunc) 
     )
-
+  
   dimsDF <- purrr::map_dfr( res, function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
   if( mean( dimsDF$NRow == dimsDF$NRow[[1]] ) < 1 || mean( dimsDF$NCol == dimsDF$NCol[[1]] ) < 1 ) {
     warning( paste( "The obtained term matrices do not have the same number of rows and columns.", 
@@ -598,7 +598,7 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   reduce( .x = res, .f = function(a,m) a+m, .init = 0)
 }
 
-  
+
 ##-----------------------------------------------------------
 ## Computation specification conversions and checks
 ##-----------------------------------------------------------
@@ -615,7 +615,7 @@ ComputationSpecificationType <- function( compSpec ) {
     "Unknown"
   }
 }
-  
+
 #' @description Checks is an object a computation specification in wide form.
 #' @param compSpec An object to be tested as computation specification.
 #' @return A logical.

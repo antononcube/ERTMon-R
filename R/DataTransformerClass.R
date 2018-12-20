@@ -435,7 +435,7 @@ setMethod("makeSparseMatrices",
                   else {
                     ## Suppress warning messages while converting column names to corresponding values
                     oldw <- getOption("warn"); options(warn = -1)
-                    colVals <- as.numeric( laply( strsplit( colnames(sm), "\\." ), function(x) x[[length(x)]] ) )
+                    colVals <- as.numeric( purrr::map( strsplit( colnames(sm), "\\." ), function(x) x[[length(x)]] ) )
                     options(warn = oldw)
                     
                     if ( sum( is.na( colVals ) ) > 0 || sort(colVals) != (1:ncol(sm)) ) { sm }

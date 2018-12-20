@@ -112,7 +112,7 @@ FileColumnsIngest <- function( fname, sep="\t", expectedColumns=3, header=TRUE, 
   # for each line in rawContent
   # count the number of delims and compare that number to expectedColumns
   indexToOffenders <-
-    laply(rawContent, function(x) {
+    purrr::map_int(rawContent, function(x) {
       length(gregexpr(sep, x)[[1]]) != (expectedColumns-1)
     })
 
@@ -342,7 +342,7 @@ IngestMovieDataColumn <- IngestMultiValuedDataColumn
 #' @export
 ConvertMultiColumnDataFrameToSparseMatrix <- function( multiColDF, itemColName, tagTypeColNames ) {
 
-  emptyColumns <- laply( tagTypeColNames, function(tt) mean( is.na( multiColDF[,tt] ) ) == 1 )
+  emptyColumns <- purrr::map_lgl( tagTypeColNames, function(tt) mean( is.na( multiColDF[,tt] ) ) == 1 )
 
   if ( sum( !emptyColumns ) < 1 ) {
     stop( "All tag columns are empty.", call. = TRUE )
@@ -350,16 +350,17 @@ ConvertMultiColumnDataFrameToSparseMatrix <- function( multiColDF, itemColName, 
   tagTypeColNames <- tagTypeColNames[ !emptyColumns ]
 
   ## Find all the sub-matrices with for the tag types
-  gmats <- llply( tagTypeColNames, function( tt ) {
-    SMRCreateItemTagMatrix( dataRows = multiColDF, itemColumnName = itemColName, tagType = tt )
-  } )
+  gmats <- 
+    purrr::map( tagTypeColNames, function( tt ) {
+      SMRCreateItemTagMatrix( dataRows = multiColDF, itemColumnName = itemColName, tagType = tt )
+    } )
 
   ## Find all tags
-  allTags <- unique( unlist( llply( gmats, colnames ) ) )
-  allIDs <- unique( unlist( llply( gmats, rownames ) ) )
+  allTags <- unique( unlist( purrr::map( gmats, colnames ) ) )
+  allIDs <- unique( unlist( purrr::map( gmats, rownames ) ) )
 
   ## Impose the tags to all tags matrices
-  gmats <- llply( gmats, function(m) { ImposeRowIDs( allIDs, ImposeColumnIDs( allTags, m ) ) })
+  gmats <- purrr::map( gmats, function(m) { ImposeRowIDs( allIDs, ImposeColumnIDs( allTags, m ) ) })
 
   ## Sum the tag matrices into one matrix
   gmat <- gmats[[1]]
@@ -389,7 +390,7 @@ MakeMatrixByColumnPartition <- function( data, colNameForRows, colNameForColumns
 
   smat <- data[ , c(colNameForRows, colNameForColumns) ]
   qF <- MakePiecewiseFunction( breaks )
-  smat <- cbind( smat, parts = laply( smat[[colNameForColumns]], qF ) )
+  smat <- cbind( smat, parts = purrr:map_dbl( smat[[colNameForColumns]], qF ) )
   smat <- xtabs( as.formula( paste( "~", colNameForRows, "+ parts") ), smat, sparse = TRUE )
   colnames(smat) <- paste( colnamesPrefix, colnames(smat), sep="" )
 

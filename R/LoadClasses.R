@@ -58,7 +58,7 @@ library(RcppRoll)
 library(devtools)
 
 # fnames = list.files( path = ".", pattern = ".*Class.R" )
-# llply( fnames, source ) 
+# purrr::map( fnames, source ) 
 # 
 # if( !exists("ertMonDirName") ) {
 #   ertMonDirName <- "~/ERTMon-R"
