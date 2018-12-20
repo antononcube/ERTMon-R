@@ -64,9 +64,9 @@ The application of the formula specification is done with function `ApplyFormula
 
 ```{r}
 fakeMon <- fakeMon %>% ERTMonComputeFormula( formulaSpec = formulaSpecDF, reduceFunc = "+" )
-resMats <- fakeMon %>% ERTMonTakeValue()
+resMat <- fakeMon %>% ERTMonTakeValue()
 ```
 
 ```{r}
-image(resMats[[1]])
+image(resMat)
 ```
