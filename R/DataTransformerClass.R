@@ -151,7 +151,7 @@ setMethod("transformData",
             outCompSpec <- compSpec@parameters[ compSpec@parameters$Aggregation.function %in% c(  "OutCnt", "OutFrc" ),  ]
             if( !testDataRun && nrow(outCompSpec) > 0 ) {
               object@outlierBoundaries <-
-                purrr::map_dfr( split(outCompSpec, outComSpec$Variable), function(x) {
+                purrr::map_dfr( split(outCompSpec, outCompSpec$Variable), function(x) {
                   obs <-
                     eventRecordsData %>% 
                     dplyr::filter( Variable == x$Variable[[1]] )
