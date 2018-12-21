@@ -315,6 +315,38 @@ function(input, output, session)  {
     
   })
 
+  ##-------------------------------------------------------
+  ## Export of the feature matrix
+  ##-------------------------------------------------------
+  
+  observeEvent( input$exportDataAction, {
+    
+    if( file.exists( input$exportDirName ) ) {
+      
+      values$ertObj <- 
+        values$ertObj %>% 
+        ERTMonExport( directoryName = directoryName, modelID = input$exportModelID, fileNamePrefix = input$exportPrefix  )
+      
+      exportedData <- values$ertObj %>% ERTMonTakeValue
+      
+      compSpecDF <- exportedData$ComputationSpecification
+      featureMatrixDF <- exportedData$FeatureMatrix
+      tciDF <- exportedData$TimeCellsInterpretation
+      
+      output$exportedCompSpecSummary <- renderPrint({ summary( as.data.frame( unclass( compSpecDF ) ) ) })
+      
+      output$exportedFeatureMatrixSummary <- renderPrint({ summary( as.data.frame( unclass( featureMatrixDF ) ) ) })
+
+      output$exportedTimeGridCellsInterpretationSummary <- renderPrint({ summary( as.data.frame( unclass( tciDF ) ) ) })
+      
+    } else {
+      
+      warning( paste0( "The directory input$exportDirName does not exist: input$exportDirName = \"" , input$exportDirName, "\" ." ) )  
+      
+    }
+    
+  })
+  
 }
 
 

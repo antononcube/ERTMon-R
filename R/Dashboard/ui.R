@@ -47,8 +47,8 @@ dashboardPage(
       menuItem("Computation specifications", tabName = "CompSpec"),
       menuItem("Data", tabName = "Data"),
       menuItem("Plots distributions", tabName = "PlotDistributions"),
-      menuItem("Plot feature matrix", tabName = "PlotFeatureMatrix")
-      #menuItem("Export feature matrix", tabName = "ExportFeatureMatrix")
+      menuItem("Plot feature matrix", tabName = "PlotFeatureMatrix"),
+      menuItem("Export feature matrix", tabName = "ExportFeatureMatrix")
     )
   ),
   dashboardBody(
@@ -225,6 +225,46 @@ dashboardPage(
                            d3heatmapOutput( "plotFeatureMatrixHeatmap", width = "100%", height = "600px" )
                  )
                )      
+      ),
+      
+      tabItem( tabName = "ExportFeatureMatrix",
+            
+               column(12,
+                      
+                      h2("Export the feature matrix"),
+                      
+                      textInput( "exportDirName", label = "Export directory name:", 
+                                 value = directoryName, placeholder = "directory name for the CSV export files"),
+                      
+                      textInput( "exportModelID", label = "A string to be used as a model ID:", 
+                                 value = exportModelID, placeholder = "export model ID"),
+                      
+                      textInput( "exportPrefix", label = "Export-files name prefix:", 
+                                 value = exportFilePrefix, placeholder = "prefix"),
+                      
+                      verbatimTextOutput("exportDirName"),
+                      
+                      hr(), 
+
+                      fluidRow(
+                        column(3, actionButton( "exportDataAction", "Export data"))
+                      ),
+                      
+                      helpText("Press the button for export."),
+                      hr(),
+                      
+                      h4( "Computation specification summary" ),
+                      verbatimTextOutput("exportedCompSpecSummary"),
+                      hr(),
+                      
+                      h4( "Feature matrix summary" ),
+                      verbatimTextOutput("exportedFeatureMatrixSummary"),
+                      hr(),
+                      
+                      h4( "Time grid cells interpretation summary" ),
+                      verbatimTextOutput("exportedTimeGridCellsInterpretationSummary")
+                      
+               )
       )
       
     )

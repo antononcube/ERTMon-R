@@ -47,7 +47,7 @@
 ##===========================================================
 ## Create objects at play
 ##===========================================================
-if ( FALSE ) {
+if ( TRUE ) {
 
   source("./R/LoadClasses.R")
   
@@ -68,6 +68,9 @@ if ( FALSE ) {
   directoryName <- file.path( "..", "..", "data", "FakeData")
   testDataDirectoryName <- file.path( "..", "..", "data", "TestFakeData")
   specFileName <- file.path( directoryName, "computationSpecification.csv" )
+  exportModelID <- as.character( Sys.time() )
+  exportFilePrefix <- gsub( pattern = " ", replacement = "_", paste0( exportModelID, "_" ), fixed = TRUE)
+  exportFilePrefix <- gsub( pattern = ":", replacement = ".", paste0( exportModelID, "_" ), fixed = TRUE)
   
   runApp( file.path( ".", "R", "Dashboard") )  
 } else {
