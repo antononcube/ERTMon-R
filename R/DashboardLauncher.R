@@ -47,10 +47,8 @@
 ##===========================================================
 ## Create objects at play
 ##===========================================================
-if ( TRUE ) {
+if ( FALSE ) {
 
-  source("./R/LoadClasses.R")
-  
   library(shinydashboard)
   #library(rhandsontable)
   library(shiny)
