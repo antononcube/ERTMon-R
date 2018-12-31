@@ -20,7 +20,6 @@ formulaSpecDF <-
     "Exponent" = c(1.5, 1, 2, 1, 1),
     "RatioPart" = c( "Numerator", "Denominator", "Denominator", "Numerator", "Denominator"),
     stringsAsFactors = FALSE)
-formulaSpecDF
 
 ertmon0 <-
   ERTMonUnit() %>%
