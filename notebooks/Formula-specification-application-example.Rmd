@@ -6,6 +6,8 @@ output: html_notebook
 ---
 
 ```{r}
+library(dplyr)
+library(Matrix)
 library(ERTMon)
 ```
 
@@ -44,6 +46,7 @@ formulaSpecDF <-
     "FormulaID" = c(1),
     "TermID" = c(1,1,1,2,2), 
     "FeatureName" = c("HR.Mean", "NBP.M.Mean", "RR.Mean",  "NBP.M.Range", "NBP.M.Mean"),  
+    "ReduceFunction" = c( "+", "+", "+", "*", "*"),
     "Coefficient" = c(1, 1, 1, 1, 1.6), 
     "Exponent" = c(1, 1, 2, 1, 1),
     "RatioPart" = c( "Numerator", "Denominator", "Denominator", "Numerator", "Denominator"),
@@ -51,9 +54,9 @@ formulaSpecDF <-
 formulaSpecDF
 ```
 
-In order to apply the formula specification we have also choose a reduce function: "+" (summation) or "*" (multiplication).
+Each term in the formula specification has its own reduce function: "+" (summation) or "*" (multiplication).
 
-Here is the interpretation:
+Here is the interpretation (per term):
 
 $$formulaMat = \frac{reduceFunc[ \{ Coefficient[i] * smats[ FeatureName[i] ] ^ {Exponent[i]} : i \in NumeratorRows \} ]}{reduceFunc[ \{ Coefficient[i] * smats[ FeatureName[i] ] ^ {Exponent[i]} : i \in DenominatorRows \} ] }$$
 
@@ -63,10 +66,11 @@ $$formulaMat = \frac{reduceFunc[ \{ Coefficient[i] * smats[ FeatureName[i] ] ^ {
 The application of the formula specification is done with function `ApplyFormulaSpecification`.
 
 ```{r}
-fakeMon <- fakeMon %>% ERTMonComputeFormula( formulaSpec = formulaSpecDF, reduceFunc = "+" )
+fakeMon <- fakeMon %>% ERTMonComputeFormula( formulaSpec = formulaSpecDF )
 resMat <- fakeMon %>% ERTMonTakeValue()
 ```
 
 ```{r}
 image(resMat)
 ```
+
