@@ -170,7 +170,7 @@ AddMissingLabelAttributes <- function( entityAttributes, labelValue = "None" ) {
   if( length(noLabelIDs) > 0 ) { 
     entityAttributes <- 
       rbind( 
-        entityAttributes, 
+        entityAttributes[, c("EntityID", "Attribute", "Value")], 
         data.frame( EntityID = noLabelIDs, Attribute = "Label", Value = labelValue )
       )
   }
@@ -271,7 +271,7 @@ AggregateEventRecordsBySpec <- function(specRow,
   ##print(paste(specRow,collapse = " "))
   func <- aggrFuncSpecToFunc[ specRow$Aggregation.function[[1]] ][[1]]
   mName <- paste( specRow$Variable, specRow$Aggregation.function, sep = ".")
-  
+
   if( specRow$Variable == "Attribute" ) {
     
     entityData %>% 
