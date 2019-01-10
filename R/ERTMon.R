@@ -233,7 +233,7 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes = TRUE ) {
   
   if( is.null(smat) ) {
-    smat <- ertObj$Value
+    smat <- ERTMonTakeFeatureMatrix( ertObj )
   }
   
   if( !( class(smat) == "dgCMatrix") ) {
@@ -646,15 +646,14 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
 #' sub-matrices of an ERTMon object.
 #' @param ertObj An ERTMon object.
 #' @param formulaSpec A formula specification.
-#' @param reduceFunc Reduction function, one of "+" or "*".
 #' @return An ERTMon object.
 #' @details The column names of \code{formulaSpec} are expected to include:
-#' \code{c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart")}.
+#' \code{c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart")}.
 #' The result matrix is assigned into \code{ertObj$Value}.
 #' @export
-ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
+ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
   
-  expectedColumnNames <- c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") 
+  expectedColumnNames <- c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") 
   if( !( class(formulaSpec) == "data.frame" && 
          length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
     stop( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
@@ -662,7 +661,7 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec, reduceFunc = "+" ) {
   
   smats <- ERTMonTakeContingencyMatrices( ertObj, noColumnPrefixes = T )
   
-  resMat <- ApplyFormulaSpecification( smats = smats[ grep("Label", names(smats), invert = T) ], formulaSpec = formulaSpec, reduceFunc = reduceFunc )
+  resMat <- ApplyFormulaSpecification( smats = smats[ grep("Label", names(smats), invert = T) ], formulaSpec = formulaSpec )
   
   ertObj$Value <- resMat
   

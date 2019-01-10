@@ -571,10 +571,10 @@ ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" 
 #' @param formulaSpec formula specification
 #' @param reduceFunc function to be applied when forming the numerator and denominator
 #' @details The formula specification is expected to have the columns:
-#' c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") .
-ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
+#' c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") .
+ApplyFormulaSpecification <- function( smats, formulaSpec ) {
   
-  expectedColumnNames <- c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart") 
+  expectedColumnNames <- c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") 
   if( !( class(formulaSpec) == "data.frame" && 
          length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
     stop( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
@@ -583,7 +583,7 @@ ApplyFormulaSpecification <- function( smats, formulaSpec, reduceFunc = "+" ) {
   res <- 
     purrr::map( 
       split(formulaSpec, formulaSpec$TermID), 
-      function(fs) ApplyFormulaTermSpecification(smats = smats, formulaSpec = fs, reduceFunc = reduceFunc) 
+      function(fs) ApplyFormulaTermSpecification(smats = smats, formulaSpec = fs, reduceFunc = formulaSpec$ReduceFunction[[1]] ) 
     )
   
   dimsDF <- purrr::map_dfr( res, function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )
