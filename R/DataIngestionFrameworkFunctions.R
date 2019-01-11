@@ -232,7 +232,7 @@ AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLengt
   if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
   
   if( echoStepsQ ) { cat("\n\tRestrict event records to specfied maximal history length...\n") }
-  
+
   eventRecords <- dplyr::mutate( eventRecords, DiffToMaxObsTime = as.numeric( DiffToMaxObsTime ) )
   eventRecords <- dplyr::filter( eventRecords, DiffToMaxObsTime <= maxHistoryLength )
   ## In order to make this work with Spark innter join has to be used (dplyr or SQL).
