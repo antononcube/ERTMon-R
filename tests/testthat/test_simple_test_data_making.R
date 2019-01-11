@@ -32,10 +32,10 @@ test_that("Simple test data result names", {
   expect_type( randomTestData, "list" )
   expect_type( functionTestData, "list" )
   
-  expect_equal( sort(names(constantTestData)), sort(c("EntityAttributes", "EventRecords","ComputationSpecification")) )
-  expect_equal( sort(names(linearTestData)), sort(c("EntityAttributes", "EventRecords","ComputationSpecification")) )
-  expect_equal( sort(names(randomTestData)), sort(c("EntityAttributes", "EventRecords","ComputationSpecification")) )
-  expect_equal( sort(names(functionTestData)), sort(c("EntityAttributes", "EventRecords","ComputationSpecification")) )
+  expect_equal( sort(names(constantTestData)), sort(c("EntityAttributes", "EventRecords", "ComputationSpecification")) )
+  expect_equal( sort(names(linearTestData)), sort(c("EntityAttributes", "EventRecords", "ComputationSpecification")) )
+  expect_equal( sort(names(randomTestData)), sort(c("EntityAttributes", "EventRecords", "ComputationSpecification")) )
+  expect_equal( sort(names(functionTestData)), sort(c("EntityAttributes", "EventRecords", "ComputationSpecification")) )
 })
 
 test_that("Simple test data shapes", {
