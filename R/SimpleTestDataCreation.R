@@ -62,7 +62,7 @@ library(lubridate)
 ##===========================================================
 GenereateSimpleTestDataEntityAttributes <- function( numberOfEntities ) {
   
-  groupIDs <- runif( n = numberOfEntities, min = 0, max = 10 )
+  groupIDs <- round(runif( n = numberOfEntities, min = 0, max = 10 ))
 
   locations <- runif( n = length(groupIDs), min = 0, max = 1 )
   locations <- ifelse( locations > 0.5, "far", "near" )
@@ -247,6 +247,11 @@ if( FALSE ) {
                         timeInterval = 900, numberOfTimeCells = 36, randomStartTimesQ = TRUE, 
                         variableFunction = "Linear", 
                         exportDirectoryName = file.path( ".", "data", "LinearTestData") )
+  
+  ERTMonSimpleTestData( numberOfEntities = 5, numberOfVariables = 4, 
+                        timeInterval = 900, numberOfTimeCells = 24, randomStartTimesQ = TRUE, 
+                        variableFunction = "Random", 
+                        exportDirectoryName = file.path( ".", "data", "RandomTestData") )
 
 }
 
