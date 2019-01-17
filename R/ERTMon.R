@@ -63,7 +63,7 @@ ERTMonFailureSymbol <- NA
 #' Failure test for an ERTMon object.
 #' @description Test is an ERTMon object a failure symbol.
 #' @export
-ERTMonFailureQ <- function(x) { is.na(x) }
+ERTMonFailureQ <- function(x) { mean(is.na(x)) }
 
 
 ##===========================================================
@@ -705,6 +705,56 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
   ertObj
 }
 
+##===========================================================
+## Plot feature matrices
+##===========================================================
+
+#' Plot rows of feature sub-matrices as time series.
+#' @description Plots the rows of the feature sub-matrices of an ERTMon object as time series.
+#' @param ertObj An ERTMon object.
+#' @param matrixNames A character vector with matrix names to be plotted; NULL for all.
+#' @param entityIDs A character vector with entity ID's to be plotted; NULL for all.≈
+#' @param echoQ Should the result be plotted?
+#' @param ... Additional arguments for facet_wrap.
+#' @return An ERTMon object.
+#' @export
+ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, echoQ = TRUE, ... ) {
+  
+  ## Instead of using ERTMonTakeTransformedData we can use 
+  ## also ERTMonTakeContingencyMatrices and SparseMatrixToTriplets (not a better way.)
+  feMatDF <- ertObj %>% ERTMonTakeTrasformedData()
+  
+  testVals <- unique(feMatDF$MatrixName)
+  if( is.character(matrixNames) && sum( matrixNames %in% testVals ) == 0 ) {
+    warning( "None of the elements of the argument matrixNames is a feature sub-martix name." )
+    return(ERTMonFailureSymbol)
+  }
+  
+  testVals <- unique(feMatDF$EntityID)
+  if( is.character(entityIDs) && sum( entityIDs %in% testVals ) == 0 ) {
+    warning( "None of the elements of the argument entityIDs is an known entity ID." )
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !is.null(matrixNames) ) {
+    feMatDF <- feMatDF %>% dplyr::filter( MatrixName %in% matrixNames )
+  }
+  
+  if( !is.null(entityIDs) ) {
+    feMatDF <- feMatDF %>% dplyr::filter( EntityID %in% entityIDs )
+  }
+  
+  ertObj$Value <-
+    ggplot(feMatDF) +
+    geom_line( aes( x = TimeGridCell, y = AValue, color = MatrixName ) ) +
+    facet_wrap( ~EntityID, ... )
+  
+  if( echoQ ) {
+    print(ertObj$Value)
+  }
+  
+  ertObj
+}
 
 ##===========================================================
 ## Export (computed) 
