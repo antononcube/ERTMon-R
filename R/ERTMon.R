@@ -60,6 +60,12 @@ NULL
 #' @export
 ERTMonFailureSymbol <- NA
 
+#' Failure test for an ERTMon object.
+#' @description Test is an ERTMon object a failure symbol.
+#' @export
+ERTMonFailureQ <- function(x) { is.na(x) }
+
+
 ##===========================================================
 ## FE Unit
 ##===========================================================
@@ -75,6 +81,22 @@ ERTMonUnit <- function( eventRecords = NULL, entityAttributes = NULL, compSpec =
   
   res <- list( Value = NULL, EventRecords = eventRecords, EntityAttributes = entityAttributes, ComputationSpecification = compSpec )
   attr(res, "class") <- "ERTMon"
+  
+  if( !is.null(eventRecords) ) {
+    res <- ERTMonSetEventRecords( res, eventRecords )
+    if( ERTMonFailureQ(res) ) { return(ERTMonFailureSymbol) }
+  }
+  
+  if( !is.null(entityAttributes) ) {
+    res <- ERTMonSetEntityAttributes( res, entityAttributes )
+    if( ERTMonFailureQ(res) ) { return(ERTMonFailureSymbol) }
+  }
+  
+  if( !is.null(compSpec) ) {
+    res <- ERTMonSetComputationSpecification( res, compSpec )
+    if( ERTMonFailureQ(res) ) { return(ERTMonFailureSymbol) }
+  }
+  
   res
 }
 
@@ -111,6 +133,10 @@ ERTMonSetEventRecords <- function( ertObj, eRecs ) {
   expectedColNames <- c("EntityID", "LocationID", "ObservationTime", "Variable", "Value")
   if( ! ( is.data.frame(eRecs) && length(intersect( colnames(eRecs), expectedColNames)) == length(expectedColNames) ) ) { 
     warning( paste("The argument eRecs is expected to be a data frame with columns:", paste(expectedColNames, collapse =","), "."), call. = TRUE) 
+    return(ERTMonFailureSymbol)
+  }
+  if( !is.numeric(eRecs$ObservationTime) || !is.numeric(eRecs$Value) ) {
+    warning( "The columns 'ObservationTime' and 'Value' of the argument eRecs are expected to be numeric.", call. = TRUE) 
     return(ERTMonFailureSymbol)
   }
   ertObj$EventRecords <- eRecs[, expectedColNames]
@@ -484,6 +510,17 @@ ERTMonProcessEventRecords <- function( ertObj,
   compSpecObj <- new( "ComputationSpecification" )
   compSpecObj <- setSpec( compSpecObj,  ertObj$ComputationSpecification )
   compSpecObj <- ingestSpec( compSpecObj, echoStepsQ = echoStepsQ )
+  
+  ## Completeness  
+  if( mean(complete.cases(ertObj$EventRecords)) < 1 ) {
+    warning( "Some rows of 'EventRecords' are having missing values.", call. = TRUE )
+    ertObj$EventRecords <- ertObj$EventRecords[ complete.cases(ertObj$EventRecords), ] 
+  }
+  
+  if( mean(complete.cases(ertObj$EntityAttributes)) < 1 ) {
+    warning( "Some rows of 'EntityAttributes' are having missing values.", call. = TRUE )
+    ertObj$EntityAttributes <- ertObj$EntityAttributes[ complete.cases(ertObj$EntityAttributes), ]
+  }
   
   ## Data ingesting
   diObj <- new( "DataIngester")
