@@ -4,14 +4,12 @@
 \alias{ERTMonComputeFormula}
 \title{Compute specified formula.}
 \usage{
-ERTMonComputeFormula(ertObj, formulaSpec, reduceFunc = "+")
+ERTMonComputeFormula(ertObj, formulaSpec)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
 \item{formulaSpec}{A formula specification.}
-
-\item{reduceFunc}{Reduction function, one of "+" or "*".}
 }
 \value{
 An ERTMon object.
@@ -22,6 +20,6 @@ sub-matrices of an ERTMon object.
 }
 \details{
 The column names of \code{formulaSpec} are expected to include:
-\code{c("TermID", "FeatureName", "Coefficient", "Exponent", "RatioPart")}.
+\code{c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart")}.
 The result matrix is assigned into \code{ertObj$Value}.
 }
