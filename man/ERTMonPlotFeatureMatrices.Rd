@@ -5,16 +5,18 @@
 \title{Plot rows of feature sub-matrices as time series.}
 \usage{
 ERTMonPlotFeatureMatrices(ertObj, matrixNames = NULL, entityIDs = NULL,
-  echoQ = TRUE, ...)
+  echoQ = TRUE, facets = vars(EntityID), ...)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
 \item{matrixNames}{A character vector with matrix names to be plotted; NULL for all.}
 
-\item{entityIDs}{A character vector with entity ID's to be plotted; NULL for all.≈}
+\item{entityIDs}{A character vector with entity ID's to be plotted; NULL for all.}
 
 \item{echoQ}{Should the result be plotted?}
+
+\item{facets}{facets argument for the function \code{ggplot2::facet_wrap}.}
 
 \item{...}{Additional arguments for facet_wrap.}
 }

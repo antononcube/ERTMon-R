@@ -713,12 +713,13 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
 #' @description Plots the rows of the feature sub-matrices of an ERTMon object as time series.
 #' @param ertObj An ERTMon object.
 #' @param matrixNames A character vector with matrix names to be plotted; NULL for all.
-#' @param entityIDs A character vector with entity ID's to be plotted; NULL for all.≈
+#' @param entityIDs A character vector with entity ID's to be plotted; NULL for all.
 #' @param echoQ Should the result be plotted?
+#' @param facets facets argument for the function \code{ggplot2::facet_wrap}.
 #' @param ... Additional arguments for facet_wrap.
 #' @return An ERTMon object.
 #' @export
-ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, echoQ = TRUE, ... ) {
+ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, echoQ = TRUE, facets = vars(EntityID), ... ) {
   
   ## Instead of using ERTMonTakeTransformedData we can use 
   ## also ERTMonTakeContingencyMatrices and SparseMatrixToTriplets (not a better way.)
@@ -747,7 +748,7 @@ ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = N
   ertObj$Value <-
     ggplot(feMatDF) +
     geom_line( aes( x = TimeGridCell, y = AValue, color = MatrixName ) ) +
-    facet_wrap( ~EntityID, ... )
+    facet_wrap( facets = facets, ... )
   
   if( echoQ ) {
     print(ertObj$Value)
