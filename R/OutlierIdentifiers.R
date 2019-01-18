@@ -60,8 +60,8 @@
 #' @param dataVec A data vector.
 #' @export
 HampelIdentifierParameters <- function( dataVec ) {
-  x0 <- median(dataVec)
-  md <- 1.4826 * median(abs(dataVec - x0));
+  x0 <- median(dataVec, na.rm = TRUE )
+  md <- 1.4826 * median(abs(dataVec - x0), na.rm = TRUE );
   c(x0 - md, x0 + md)
 }
 
@@ -70,7 +70,7 @@ HampelIdentifierParameters <- function( dataVec ) {
 #' @param dataVec A data vector.
 #' @export
 QuartileIdentifierParameters <- function( dataVec ) {
-  res <- quantile( dataVec, c( 1/4, 1/2, 3/4 ) )
+  res <- quantile( dataVec, c( 1/4, 1/2, 3/4 ), na.rm = TRUE )
   xL <- res[[1]]
   x0 <- res[[2]]
   xU <- res[[3]]
@@ -83,10 +83,10 @@ QuartileIdentifierParameters <- function( dataVec ) {
 #' @export
 SPLUSQuartileIdentifierParameters <- function( dataVec ) {
   if ( length(dataVec) <=4 ) {
-    xL <- min(dataVec)
-    xU <- max(dataVec)
+    xL <- min(dataVec, na.rm = TRUE )
+    xU <- max(dataVec, na.rm = TRUE )
   } else {
-    res <- quantile( dataVec, c( 1/4, 3/4 ) )
+    res <- quantile( dataVec, c( 1/4, 3/4 ), na.rm = TRUE )
     xL <- res[[1]]
     xU <- res[[2]]
   }
