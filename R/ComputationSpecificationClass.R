@@ -156,10 +156,14 @@ setMethod("ingestSpec",
                 None = function(x) x,
                 Mean = function(x) mean(x,na.rm=T), 
                 Median = function(x) median(x,na.rm=T),
-                Max = function(x) max(x,na.rm=T), 
+                Max = function(x) max(x,na.rm=T),
+                MaxAbs = function(x) max(abs(x),na.rm=T),
                 Min = function(x) min(x,na.rm=T), 
+                MinAbs = function(x) min(abs(x),na.rm=T), 
                 Sum = function(x) sum(x,na.rm=T), 
-                Range = function(x) max(x) - min(x),
+                SumAbs = function(x) sum(abs(x),na.rm=T), 
+                Range = function(x) max(x,na.rm=T) - min(x,na.rm=T),
+                AbsRange = function(x) abs(max(x,na.rm=T) - min(x,na.rm=T)),
                 SD = function(x) sd(x,na.rm=T), 
                 IRQ = function(x) IRQ(x,na.rm=T),
                 Count = function(x) length(x),
@@ -169,7 +173,7 @@ setMethod("ingestSpec",
        
             ## Rules for known normalization functions     
             object@normalizationFuncSpecToFunc <- object@aggrFuncSpecToFunc
-              
+            
             ## Labels
             object@survivedLabel <- object@parameters[ object@parameters$Variable == "Label","Critical.label"]
             object@diedLabel <- paste0("Non.", object@survivedLabel)

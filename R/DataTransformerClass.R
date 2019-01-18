@@ -550,7 +550,7 @@ setMethod("aggregateAndAccumulateOverGroups",
                 
                 if( specRow$Normalization.function[[1]] != "None" ) {
                   
-                  func <- object@compSpec@aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
+                  func <- object@compSpec@normalizationFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
                   
                   if ( specRow$Normalization.scope[[1]] == "Variable" ) {
                     

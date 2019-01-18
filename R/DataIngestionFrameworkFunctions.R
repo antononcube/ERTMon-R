@@ -374,6 +374,8 @@ AggregateEventRecordsBySpec <- function(specRow,
 #' @details NOT USED ANYMORE. See the method "normalizeGroupsBySpec" of the class DataTransformer.
 NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, normalizationFuncSpecToFunc ) {
   
+  assertthat::assert_that(FALSE, msg = "NOT USED ANYMORE.")
+    
   func <- aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
   
   allEntityAttrs <- unique(entityAttributes$Attribute)
