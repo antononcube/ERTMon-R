@@ -10,6 +10,10 @@ testData <-
                         variableFunction = "Random", 
                         exportDirectoryName = NULL )
 
+testData$ComputationSpecification <-
+  testData$ComputationSpecification %>% 
+  dplyr::filter( Aggregation.function != "Range" )
+
 testData$ComputationSpecification$Aggregation.interval.length <- 3*900
 testData$ComputationSpecification$Max.history.length <- nIntervals * testData$ComputationSpecification$Aggregation.interval.length
 testData$ComputationSpecification$Normalization.scope <- "Variable"
@@ -26,7 +30,8 @@ ertmon0 <-
 
 qDF <- ertmon0 %>% ERTMonTakeTrasformedData()
 
-test_that("Values are all negative ", {
+test_that("Expected test data properties", {
+  expect_equal( mean( testData$ComputationSpecification$Aggregation.function %in% c("Max", "Mean", "Min") ), 1 )
   expect_equal( mean( testData$EventRecords$Value <= 0 ), 1 )
 }) 
 
