@@ -542,7 +542,6 @@ setMethod("aggregateAndAccumulateOverGroups",
             
             if( echoStepsQ ) { cat("\n\tAggregation over groups functions application (and accumulation)...\n") }
             
-            
             allEntityAttributes <- unique(object@entityAttributes$Attribute)
             
             object@groupAggregatedValues <-
@@ -550,6 +549,12 @@ setMethod("aggregateAndAccumulateOverGroups",
                 
                 if( specRow$Normalization.function[[1]] != "None" ) {
                   
+                  if( !( specRow$Normalization.function[[1]] %in% names(object@compSpec@normalizationFuncSpecToFunc) ) ) {
+                    stop( paste0( "Unknown normalization function \"", specRow$Normalization.function[[1]], "\" ", 
+                                  "in the computation specification."), 
+                          call. = TRUE )
+                  }
+            
                   func <- object@compSpec@normalizationFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
                   
                   if ( specRow$Normalization.scope[[1]] == "Variable" ) {
