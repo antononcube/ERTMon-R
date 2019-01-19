@@ -1,14 +1,17 @@
 context("Formula computations")
 library(ERTMon)
 
+numberOfEntities <- 10
+nIntervals <- 5
+
 testData <-
-  ERTMonSimpleTestData( numberOfEntities = 10, numberOfVariables = 5, 
-                        timeInterval = 900, numberOfTimeCells = 36, randomStartTimesQ = TRUE, 
+  ERTMonSimpleTestData( numberOfEntities = numberOfEntities, numberOfVariables = 5, 
+                        timeInterval = 900, numberOfTimeCells = 40, randomStartTimesQ = TRUE, 
                         variableFunction = "Linear", 
                         exportDirectoryName = NULL )
 
-
 testData$ComputationSpecification$Aggregation.interval.length <- 3*900
+testData$ComputationSpecification$Max.history.length <- nIntervals * testData$ComputationSpecification$Aggregation.interval.length
 
 formulaSpecDF <- 
   data.frame( 
@@ -55,6 +58,14 @@ test_that("Formula matrix with plus", {
 test_that("Formula matrix with times", {
   expect_equal( mean( formulaSpecMultDF$FeatureName %in% names(cMats) ), 1 )
   expect_is( formulaMultMat, "matrix" )
+})
+
+## Getting a matrix with expected dimensions.
+test_that("Expected dimensions of the feature matrix", {
+  expect_true( nrow(formulaMat) == numberOfEntities )
+  expect_true( ncol(formulaMat) <= nIntervals + 1 )
+  expect_true( nrow(formulaMat) == nrow(cMatRes) )
+  expect_true( ncol(formulaMat) == ncol(cMatRes) )
 })
 
 ## Compare with alternative computations.
