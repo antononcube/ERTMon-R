@@ -117,6 +117,9 @@ ERTMonObject <- ERTMonUnit
 #' @family Set/Take functions
 #' @export
 ERTMonTakeValue <- function( ertObj ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   ertObj$Value
 }
 
@@ -130,16 +133,22 @@ ERTMonTakeValue <- function( ertObj ) {
 #' @family Set/Take functions
 #' @export
 ERTMonSetEventRecords <- function( ertObj, eRecs ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   expectedColNames <- c("EntityID", "LocationID", "ObservationTime", "Variable", "Value")
   if( ! ( is.data.frame(eRecs) && length(intersect( colnames(eRecs), expectedColNames)) == length(expectedColNames) ) ) { 
     warning( paste("The argument eRecs is expected to be a data frame with columns:", paste(expectedColNames, collapse =","), "."), call. = TRUE) 
     return(ERTMonFailureSymbol)
   }
+  
   if( !is.numeric(eRecs$ObservationTime) || !is.numeric(eRecs$Value) ) {
     warning( "The columns 'ObservationTime' and 'Value' of the argument eRecs are expected to be numeric.", call. = TRUE) 
     return(ERTMonFailureSymbol)
   }
+  
   ertObj$EventRecords <- eRecs[, expectedColNames]
+  
   ertObj
 }
 
@@ -150,6 +159,9 @@ ERTMonSetEventRecords <- function( ertObj, eRecs ) {
 #' @family Set/Take functions
 #' @export
 ERTMonTakeEventRecords <- function( ertObj ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   ertObj$EventRecords
 }
 
@@ -164,12 +176,18 @@ ERTMonTakeEventRecords <- function( ertObj ) {
 #' @family Set/Take functions
 #' @export
 ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   expectedColNames <- c("EntityID", "Attribute", "Value")
+  
   if( ! ( is.data.frame(eAttrs) && length(intersect( colnames(eAttrs), expectedColNames)) == length(expectedColNames) ) ) { 
     warning( paste("The argument eAttrs is expected to be a data frame with columns:", paste(expectedColNames, collapse =","), "."), call. = TRUE) 
     return(ERTMonFailureSymbol)
   }
+  
   ertObj$EntityAttributes <- eAttrs[, expectedColNames]
+  
   ertObj
 }
 
@@ -180,6 +198,9 @@ ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
 #' @family Set/Take functions
 #' @export
 ERTMonTakeEntityAttributes <- function( ertObj ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   ertObj$EntityAttributes
 }
 
@@ -194,6 +215,8 @@ ERTMonTakeEntityAttributes <- function( ertObj ) {
 #' @family Set/Take functions
 #' @export
 ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
   csType <- ComputationSpecificationType(compSpec)
   
@@ -223,6 +246,9 @@ ERTMonSetComputationSpecification <- function( ertObj, compSpec ) {
 #' @family Set/Take functions
 #' @export
 ERTMonTakeComputationSpecification <- function( ertObj ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   ertObj$ComputationSpecification
 }
 
@@ -238,9 +264,13 @@ ERTMonTakeComputationSpecification <- function( ertObj ) {
 #' @family Set/Take functions
 #' @export
 ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   if( is.null(ertObj$ComputationSpecification) ) {
     stop( "Cannot find computation specification.", call. = TRUE )
   }
+  
   paste( ertObj$ComputationSpecification$Variable, ertObj$ComputationSpecification$Aggregation.function, sep = ".")
 }
 
@@ -257,6 +287,8 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 #' @family Set/Take functions
 #' @export
 ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes = TRUE ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
   if( is.null(smat) ) {
     smat <- ERTMonTakeFeatureMatrix( ertObj )
@@ -301,6 +333,8 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
 #' @export
 ERTMonTakeFeatureMatrix <- function( ertObj ) {
   
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) ) {
     ERTMonFailureSymbol
   } else if( is.null(ertObj$dtObj@dataMat) ) { 
@@ -321,6 +355,8 @@ ERTMonTakeFeatureMatrix <- function( ertObj ) {
 #' @export
 ERTMonTakeTrasformedData <- function( ertObj ) {
 
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeTrasformedData", logicalResult = TRUE) ) {
     ERTMonFailureSymbol
   } else if( is.null(ertObj$dtObj@transformedData) ) { 
@@ -342,6 +378,9 @@ ERTMonTakeTrasformedData <- function( ertObj ) {
 #' @family Set/Take functions
 #' @export
 ERTMonTakeTimeCellsInterpretation <- function( ertObj ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) ) {
     ERTMonFailureSymbol
   } else if( is.null(ertObj$dtObj@timeCellsInterpretation) ) { 
@@ -490,6 +529,8 @@ ERTMonProcessEventRecords <- function( ertObj,
                                        echoStepsQ = FALSE, 
                                        progressObject = NULL ) {
   
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   if( !ERTMonDataCheck( ertObj, "ERTMonProcessEventRecords", logicalResult = T ) ) {
     return(ERTMonFailureSymbol)
   }
@@ -569,6 +610,8 @@ ERTMonProcessEventRecords <- function( ertObj,
 #' @export
 ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues = NULL, echoStepsQ = TRUE, progressObject = NULL ) {
   
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   if( !ERTMonDataTransformerCheck(ertObj, functionName = "ERTMonExtractFeatures", logicalResult = TRUE) ) {
     return(ERTMonFailureSymbol)
   }
@@ -607,6 +650,8 @@ ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues 
 #' @export
 ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALSE, echoStepsQ = FALSE ) {
   
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   compSpecObj <- new( "ComputationSpecification" )
   
   if ( ingestQ ) {
@@ -640,6 +685,8 @@ ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALS
 #' @export
 ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = TRUE, progressObject = NULL, echoStepsQ = FALSE ) {
  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   ##---------------------------------------------------------
   ## Data ingester
   ##---------------------------------------------------------
@@ -690,6 +737,8 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
 #' @export
 ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
   
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   expectedColumnNames <- c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") 
   if( !( class(formulaSpec) == "data.frame" && 
          length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
@@ -720,6 +769,8 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
 #' @return An ERTMon object.
 #' @export
 ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, echoQ = TRUE, facets = vars(EntityID), ... ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
   ## Instead of using ERTMonTakeTransformedData we can use 
   ## also ERTMonTakeContingencyMatrices and SparseMatrixToTriplets (not a better way.)
@@ -773,6 +824,8 @@ ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = N
 #' @export
 ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = NULL ) {
   
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
   if( !ERTMonFeatureMatrixCheck(ertObj, logicalResult = TRUE) ) {
     return(ERTMonFailureSymbol)
   }
@@ -822,6 +875,8 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
 #' The data to be exported is assigned to result's \code{$Value}.
 #' @export
 ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste0(modelID,"-") ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
   if( !ERTMonFeatureMatrixCheck(ertObj, logicalResult = TRUE) ) {
     return(ERTMonFailureSymbol)
