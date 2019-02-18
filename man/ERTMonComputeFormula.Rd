@@ -20,6 +20,6 @@ sub-matrices of an ERTMon object.
 }
 \details{
 The column names of \code{formulaSpec} are expected to include:
-\code{c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart")}.
+\code{c("TermID", "TermCoefficient", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart")}.
 The result matrix is assigned into \code{ertObj$Value}.
 }

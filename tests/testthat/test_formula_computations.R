@@ -1,5 +1,5 @@
 context("Formula computations")
-library(ERTMon)
+devtools::load_all()
 
 numberOfEntities <- 10
 nIntervals <- 5
@@ -17,6 +17,7 @@ formulaSpecDF <-
   data.frame( 
     "FormulaID" = c(1),
     "TermID" = c(1,1,1,2,2), 
+    "TermCoefficient" = c( 0.5, 0.5, 0.5, 1.2, 1.2),
     "FeatureName" = c("Var.1.Mean", "Var.2.Mean", "Var.3.Mean", "Var.4.Mean", "Var.5.Mean"), 
     "ReduceFunction" = c("+"),
     "Coefficient" = c(1, 2, 3, 1, 1), 
@@ -37,9 +38,9 @@ ertmon0 <-
 cMats <- ertmon0 %>% ERTMonTakeContingencyMatrices
 
 ## Direct formula computation.
-cMatRes <- cMats$Var.1.Mean^1.5 / ( 2 * cMats$Var.2.Mean + 3 * cMats$Var.3.Mean^2 ) + cMats$Var.4.Mean / cMats$Var.5.Mean
+cMatRes <- 0.5 * cMats$Var.1.Mean^1.5 / ( 2 * cMats$Var.2.Mean + 3 * cMats$Var.3.Mean^2 ) + 1.2 * cMats$Var.4.Mean / cMats$Var.5.Mean
 
-cMatMultRes <- cMats$Var.1.Mean^1.5 / ( 2 * cMats$Var.2.Mean * 3 * cMats$Var.3.Mean^2 ) + cMats$Var.4.Mean / cMats$Var.5.Mean
+cMatMultRes <- 0.5 * cMats$Var.1.Mean^1.5 / ( 2 * cMats$Var.2.Mean * 3 * cMats$Var.3.Mean^2 ) + 1.2 * cMats$Var.4.Mean / cMats$Var.5.Mean
 
 ertmon0 <- ertmon0 %>% ERTMonComputeFormula( formulaSpec = formulaSpecDF )
 

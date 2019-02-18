@@ -45,6 +45,7 @@ formulaSpecDF <-
   data.frame( 
     "FormulaID" = c(1),
     "TermID" = c(1,1,1,2,2), 
+    "TermCoefficient" = c( 0.5, 0.5, 0.5, 1.2, 1.2),
     "FeatureName" = c("HR.Mean", "NBP.M.Mean", "RR.Mean",  "NBP.M.Range", "NBP.M.Mean"),  
     "ReduceFunction" = c( "+", "+", "+", "*", "*"),
     "Coefficient" = c(1, 1, 1, 1, 1.6), 

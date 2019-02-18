@@ -573,19 +573,31 @@ ApplyFormulaTermSpecification <- function( smats, formulaSpec, reduceFunc = "+" 
 #' @param formulaSpec formula specification
 #' @param reduceFunc function to be applied when forming the numerator and denominator
 #' @details The formula specification is expected to have the columns:
-#' c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") .
+#' c("TermID", "TermCoefficient", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") .
 ApplyFormulaSpecification <- function( smats, formulaSpec ) {
   
-  expectedColumnNames <- c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") 
+  expectedColumnNames <- c("TermID", "TermCoefficient", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") 
   if( !( class(formulaSpec) == "data.frame" && 
          length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
     stop( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
   }
   
+  termCoeffCheck <-
+    purrr::map_lgl( split(formulaSpec, formulaSpec$TermID), function(x) {
+      mean(x$TermCoefficient) == x$TermCoefficient[[1]]
+    })
+  
+  if( mean(termCoeffCheck) < 1 ) {
+    stop( "The rows of formulaSpec with the same \"TermID\" value should have the same \"TermCoefficient\" value.", call. = TRUE )
+  }
+    
   res <- 
     purrr::map( 
       split(formulaSpec, formulaSpec$TermID), 
-      function(fs) ApplyFormulaTermSpecification(smats = smats, formulaSpec = fs, reduceFunc = formulaSpec$ReduceFunction[[1]] ) 
+      function(fs) {
+        m <- ApplyFormulaTermSpecification(smats = smats, formulaSpec = fs, reduceFunc = formulaSpec$ReduceFunction[[1]] ) 
+        m * fs$TermCoefficient[[1]]
+      } 
     )
   
   dimsDF <- purrr::map_dfr( res, function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ) )

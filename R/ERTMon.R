@@ -732,17 +732,28 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
 #' @param formulaSpec A formula specification.
 #' @return An ERTMon object.
 #' @details The column names of \code{formulaSpec} are expected to include:
-#' \code{c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart")}.
+#' \code{c("TermID", "TermCoefficient", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart")}.
 #' The result matrix is assigned into \code{ertObj$Value}.
 #' @export
 ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
-  expectedColumnNames <- c("TermID", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") 
+  expectedColumnNames <- c("TermID", "TermCoefficient", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart") 
   if( !( class(formulaSpec) == "data.frame" && 
          length( intersect( colnames(formulaSpec), expectedColumnNames) ) == length(expectedColumnNames) ) ) {
-    stop( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
+    warning( paste( "The argument formulaSpec is expected to be a data frame with columns:", paste( expectedColumnNames, collapse = ", " ), "." ), call. = TRUE )
+    return(ERTMonFailureSymbol)
+  }
+  
+  termCoeffCheck <-
+    purrr::map_lgl( split(formulaSpec, formulaSpec$TermID), function(x) {
+      mean(x$TermCoefficient) == x$TermCoefficient[[1]]
+    })
+  
+  if( mean(termCoeffCheck) < 1 ) {
+    warning( "The rows of formulaSpec with the same \"TermID\" value should have the same \"TermCoefficient\" value.", call. = TRUE )
+    return(ERTMonFailureSymbol)
   }
   
   smats <- ERTMonTakeContingencyMatrices( ertObj, noColumnPrefixes = T )
