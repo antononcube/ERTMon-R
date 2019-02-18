@@ -2,7 +2,7 @@ Package: ERTMon
 Type: Package
 Title: Event Records Transformations Monad
 Version: 0.1.0
-Author@R: person("Anton", "Antonov", email = "antononcube@gmail.com", role = c("aut","cre"))
+Author: Anton Antonov <antononcube@gmail.com>
 Maintainer: Anton Antonov <antononcube@gmail.com>
 Description: This package has an implementation an Event Records Transformations Monad that
     converts event records data into a (sparse) feature matrix with a given computation
