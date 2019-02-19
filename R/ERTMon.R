@@ -51,6 +51,10 @@
 #' @import devtools
 NULL
 
+#' @include DataWrapperClass.R DataIngesterClass.R DataSplitterClass.R ComputationSpecificationClass.R DataTransformerClass.R DataTransformerCatMatricesClass.R
+NULL
+
+
 ##===========================================================
 ## ERT Monad failure symbol
 ##===========================================================
@@ -549,7 +553,7 @@ ERTMonProcessEventRecords <- function( ertObj,
   
   ## Computation specification
   compSpecObj <- new( "ComputationSpecification" )
-  compSpecObj <- setSpec( compSpecObj,  ertObj$ComputationSpecification )
+  compSpecObj <- setSpec( compSpecObj,  as.data.frame(ertObj$ComputationSpecification) )
   compSpecObj <- ingestSpec( compSpecObj, echoStepsQ = echoStepsQ )
   
   ## Completeness  
