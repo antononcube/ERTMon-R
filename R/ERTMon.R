@@ -612,17 +612,22 @@ ERTMonProcessEventRecords <- function( ertObj,
 #' @return An ERTMon object.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @export
-ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttribues = NULL, echoStepsQ = TRUE, progressObject = NULL ) {
+ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttributes = NULL, echoStepsQ = TRUE, progressObject = NULL ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
   if( !ERTMonDataTransformerCheck(ertObj, functionName = "ERTMonExtractFeatures", logicalResult = TRUE) ) {
     return(ERTMonFailureSymbol)
   }
+  
+  if( !is.logical(echoStepsQ) ) {
+    warning("The argument echoStepsQ is expected to be logical.", call. = TRUE)
+    return(ERTMonFailureSymbol)
+  }
    
-  dtObj <- transformData( ertObj$dtObj )
+  dtObj <- ertObj$dtObj
   dtObj@progressObject <- progressObject
-                          
+                   
   if( is.null(eventRecords) && is.null(entityAttribues) ) {
     
     dtObj <- transformData( dtObj, ertObj$compSpecObj, ertObj$eventRecords, ertObj$entityAttributes, testDataRun = TRUE, echoStepsQ = echoStepsQ )
