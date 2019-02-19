@@ -1,7 +1,6 @@
 context("Pipeline over linear test data")
 library(ERTMon)
 
-
 testData <-
   ERTMonSimpleTestData( numberOfEntities = 10, numberOfVariables = 3, 
                         timeInterval = 900, numberOfTimeCells = 36, randomStartTimesQ = TRUE, 

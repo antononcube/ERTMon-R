@@ -1,5 +1,5 @@
 context("Formula computations")
-devtools::load_all()
+library(ERTMon)
 
 numberOfEntities <- 10
 nIntervals <- 5
