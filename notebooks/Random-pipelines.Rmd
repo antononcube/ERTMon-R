@@ -68,20 +68,20 @@ randomPipelines <-
 ```
 
 ```{r}
-ertRes <- purrr::map( randomPipelines, purrr::safely(eval))
+system.time(
+  ertRes <- purrr::map( randomPipelines, purrr::safely(eval))
+)
+```
 
+```{r}
 checkRes <- purrr::map_lgl( ertRes, function(x) is.na(x$result) || is.list(x$result) && class(x$result) == "ERTMon" )
 ```
 
 ```{r}
-checkRes
+summary(checkRes)
 ```
-
 ```{r}
-which( checkRes %in% c(NA) ) 
+mean(is.na(purrr::map( ertRes, "result")))
 ```
-
-# Debug
-
 
 
