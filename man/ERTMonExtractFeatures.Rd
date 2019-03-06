@@ -5,18 +5,18 @@
 \title{Extract feature with an already made data transformer.}
 \usage{
 ERTMonExtractFeatures(ertObj, eventRecords = NULL,
-  entityAttribues = NULL, echoStepsQ = TRUE, progressObject = NULL)
+  entityAttributes = NULL, echoStepsQ = TRUE, progressObject = NULL)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
 \item{eventRecords}{A data frame with event records.}
 
+\item{entityAttributes}{A data frame with entity attributes.}
+
 \item{echoStepsQ}{Should the computational steps be proclaimed?}
 
 \item{progressObject}{An object to be used in a progress gauge.}
-
-\item{entityAttributes}{A data frame with entity attributes.}
 }
 \value{
 An ERTMon object.
@@ -27,3 +27,7 @@ Processes "unseen" data with an already made data transformer object.
 \details{
 The result feature matrix is assigned to \code{ertObj$Value}.
 }
+\seealso{
+Other Transformation functions: \code{\link{ERTMonProcessEventRecords}}
+}
+\concept{Transformation functions}

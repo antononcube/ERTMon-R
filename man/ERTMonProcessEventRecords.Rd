@@ -30,3 +30,7 @@ Processes the set event records using the set computation specification in an ER
 \details{
 The result feature matrix is assigned to \code{ertObj$Value}.
 }
+\seealso{
+Other Transformation functions: \code{\link{ERTMonExtractFeatures}}
+}
+\concept{Transformation functions}

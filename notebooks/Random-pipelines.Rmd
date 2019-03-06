@@ -44,7 +44,8 @@ formulaSpecDF <-
 ```{r}
 pipelineLevels <-
   list( level1 = c( "ERTMonUnit()", 
-                    "ERTMonUnit( testData$EventRecords, testData$EntityAttributes, testData$ComputationSpecification )"),
+                    "ERTMonUnit( testData$EventRecords, testData$EntityAttributes, testData$ComputationSpecification )",
+                    "ERTMonUnit( testData2$EventRecords, testData2$EntityAttributes, testData2$ComputationSpecification )"),
         level2 = c( "ERTMonSetEventRecords(testData$EventRecords)",
                     "ERTMonSetEntityAttributes(testData$EntityAttributes)",
                     "ERTMonSetComputationSpecification(testData$ComputationSpecification)" ),
@@ -83,5 +84,46 @@ summary(checkRes)
 ```{r}
 mean(is.na(purrr::map( ertRes, "result")))
 ```
+
+```{r}
+obj<-
+  ERTMonUnit() %>% 
+  ERTMonSetEventRecords(testData$EventRecords) %>% 
+  ERTMonSetEntityAttributes(testData$EntityAttributes) %>% 
+  ERTMonSetComputationSpecification(testData$ComputationSpecification) %>% 
+  ERTMonProcessEventRecords( alignmentSpec = 'MinTime', echoStepsQ = FALSE ) %>% 
+  ERTMonExtractFeatures( testData2$EventRecords, testData2$EntityAttributes, echoStepsQ = FALSE ) %>% 
+  ERTMonPlotFeatureMatrices() %>% 
+  (function( ertMon ) {  
+    print( 
+      ggplot( ertMon %>% ERTMonTakeTrasformedData ) +
+        geom_histogram( aes(x=AValue) ) + 
+        facet_wrap( ~MatrixName, scales = "free" ) 
+    )
+    ertMon
+  }) %>% 
+  ERTMonExport(directoryName = "~/Desktop", modelID = "DemoModMed2")
+```
+```{r}
+ ggplot( obj %>% ERTMonTakeTrasformedData ) + geom_histogram( aes(x=AValue) ) + facet_wrap( ~MatrixName, scales = "free" )
+```
+
+```{r}
+obj <- ERTMonUnit()
+obj <- ERTMonSetEventRecords(obj, testData$EventRecords) 
+obj <- ERTMonSetEntityAttributes(obj, testData$EntityAttributes)
+obj <- ERTMonSetComputationSpecification(obj, testData$ComputationSpecification)
+obj <- ERTMonProcessEventRecords( obj, alignmentSpec = 'MinTime', echoStepsQ = FALSE )
+ERTMonTakeFeatureMatrix(obj)
+```
+
+
+
+
+
+
+
+
+
 
 

@@ -12,15 +12,10 @@ output: html_notebook
 library(stringi)
 library(stringr)
 library(RcppRoll)
-
-
-source("~/ERTMon-R/R/LoadClasses.R")
-
-source("~/MathematicaForPrediction/R/DataConversionFunctions.R")
-source("~/MathematicaForPrediction/R/DocumentTermWeightFunctions.R")
-source("~/MathematicaForPrediction/R/SparseMatrixRecommender.R")
-source("~/MathematicaForPrediction/R/OutlierIdentifiers.R")
-source("~/MathematicaForPrediction/R/VariableImportanceByClassifiers.R" )
+library(devtools)
+library(SparseMatrixRecommender)
+#library(ERTMon)
+devtools::load_all()
 ```
 
 
@@ -29,7 +24,11 @@ source("~/MathematicaForPrediction/R/VariableImportanceByClassifiers.R" )
 Here we specify the directory with data and transformations specifications:
 
 ```{r}
-directoryName <- "~/ERTMon-R/FakeData/" # "~/ERTMon-R/WineQualityData/"
+directoryName <- if( grepl("testthat", getwd()) ) { 
+  file.path( getwd(), "..", "..", "data", "FakeData") 
+} else { 
+  file.path( getwd(), "..", "data", "FakeData")
+}
 ```
 
 
@@ -205,6 +204,11 @@ transformedTestDataMat <- dtObj@dataMat
 Make a Sparse Matrix Recommender (SMR) object.
 
 ```{r}
-clSMRFreq <- SMRCreateFromMatrices( matrices = dtObj@sparseMatrices, tagTypes = names(dtObj@sparseMatrices), itemColumnName = "EntityID" )
+smats <- dtObj@sparseMatrices
+smats <- setNames( purrr::map(names(smats), function(x) {m<-smats[[x]]; colnames(m)<-paste(x,colnames(m)); m}), names(smats))
+```
+
+```{r}
+clSMRFreq <- SMRCreateFromMatrices( matrices = smats, tagTypes = names(smats), itemColumnName = "EntityID" )
 ```
 

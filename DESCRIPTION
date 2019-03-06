@@ -33,6 +33,7 @@ Imports:
     RcppRoll,
     stringi,
     devtools,
+    ggplot2,
     Matrix
 Suggests: 
     knitr,

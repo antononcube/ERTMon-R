@@ -526,6 +526,7 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' @param progressObject An object to be used in a progress gauge.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
 #' @return An ERTMon object.
+#' @family Transformation functions
 #' @export
 ERTMonProcessEventRecords <- function( ertObj, 
                                        outlierIdentifier = SPLUSQuartileIdentifierParameters, 
@@ -611,6 +612,7 @@ ERTMonProcessEventRecords <- function( ertObj,
 #' @param progressObject An object to be used in a progress gauge.
 #' @return An ERTMon object.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
+#' @family Transformation functions
 #' @export
 ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttributes = NULL, echoStepsQ = TRUE, progressObject = NULL ) {
   
@@ -656,6 +658,7 @@ ERTMonExtractFeatures <- function( ertObj, eventRecords = NULL, entityAttributes
 #' @param echoStepsQ Should the computational steps be proclaimed?
 #' @details The specified file is expected to be a CSV file.
 #' @return An ERTMon object.
+#' @family Data ingestion functions
 #' @export
 ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALSE, echoStepsQ = FALSE ) {
   
@@ -691,6 +694,7 @@ ERTMonReadComputationSpecification <- function( ertObj, fileName, ingestQ = FALS
 #' @details The specified directory is expected to have the files 
 #' \code{eventRecords.csv}, \code{entityAttributes.csv}, and \code{computationSpecification.csv}.
 #' @return An ERTMon object.
+#' @family Data ingestion functions
 #' @export
 ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = TRUE, progressObject = NULL, echoStepsQ = FALSE ) {
  
@@ -774,6 +778,7 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
   ertObj
 }
 
+
 ##===========================================================
 ## Plot feature matrices
 ##===========================================================
@@ -784,9 +789,11 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
 #' @param matrixNames A character vector with matrix names to be plotted; NULL for all.
 #' @param entityIDs A character vector with entity ID's to be plotted; NULL for all.
 #' @param echoQ Should the result be plotted?
-#' @param facets facets argument for the function \code{ggplot2::facet_wrap}.
+#' @param facets facets argument for the function \code{\link{ggplot2::facet_wrap}}.
 #' @param ... Additional arguments for facet_wrap.
 #' @return An ERTMon object.
+#' @details In order to plot each feature matrix time series(es) separately use
+#' \code{facets=vars(MatrixName)}.
 #' @export
 ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, echoQ = TRUE, facets = vars(EntityID), ... ) {
   
@@ -817,9 +824,9 @@ ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = N
   }
   
   ertObj$Value <-
-    ggplot(feMatDF) +
-    geom_line( aes( x = TimeGridCell, y = AValue, color = MatrixName ) ) +
-    facet_wrap( facets = facets, ... )
+    ggplot2::ggplot(feMatDF) +
+    ggplot2::geom_line( ggplot2::aes( x = TimeGridCell, y = AValue, color = MatrixName ) ) +
+    ggplot2::facet_wrap( facets = facets, ... )
   
   if( echoQ ) {
     print(ertObj$Value)

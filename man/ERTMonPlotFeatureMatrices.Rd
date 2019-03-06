@@ -16,7 +16,7 @@ ERTMonPlotFeatureMatrices(ertObj, matrixNames = NULL, entityIDs = NULL,
 
 \item{echoQ}{Should the result be plotted?}
 
-\item{facets}{facets argument for the function \code{ggplot2::facet_wrap}.}
+\item{facets}{facets argument for the function \code{\link{ggplot2::facet_wrap}}.}
 
 \item{...}{Additional arguments for facet_wrap.}
 }
@@ -25,4 +25,8 @@ An ERTMon object.
 }
 \description{
 Plots the rows of the feature sub-matrices of an ERTMon object as time series.
+}
+\details{
+In order to plot each feature matrix time series(es) separately use
+\code{facets=vars(MatrixName)}.
 }

@@ -29,3 +29,7 @@ data frames from a directory.
 The specified directory is expected to have the files 
 \code{eventRecords.csv}, \code{entityAttributes.csv}, and \code{computationSpecification.csv}.
 }
+\seealso{
+Other Data ingestion functions: \code{\link{ERTMonReadComputationSpecification}}
+}
+\concept{Data ingestion functions}
