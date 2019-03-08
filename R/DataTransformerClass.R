@@ -598,7 +598,10 @@ setMethod("aggregateAndAccumulateOverGroups",
                     NULL
                   }
                   
-                }    
+                } else {
+                  NULL
+                }
+                
               })
             
             if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
