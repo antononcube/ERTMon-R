@@ -47,8 +47,8 @@ NULL
 ## UI function
 ##===========================================================
 
-#' Event records transformation dashboard UI
-#' @description Creates the Shiny UI function for an 
+#' Event records transformation dashboard user interface
+#' @description Creates the Shiny user interface function for an 
 #' event records transformations interface. 
 #' @param dataDirectoryName A directory name with data.
 #' @param testDataDirectoryName A directory name with test data.
@@ -306,6 +306,12 @@ ERTMonMakeUI <- function( dataDirectoryName = "./",
 ## Server function
 ##===========================================================
 
+#' Event records transformation server function
+#' @description Creates the Shiny server function for an 
+#' event records transformations interface
+#' @return Shiny server function
+#' @family Interface functions
+#' @export
 ERTMonMakeServerFunction <- function() {
   
   
