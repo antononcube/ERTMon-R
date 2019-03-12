@@ -5,7 +5,7 @@
 \title{Plot rows of feature sub-matrices as time series.}
 \usage{
 ERTMonPlotFeatureMatrices(ertObj, matrixNames = NULL, entityIDs = NULL,
-  echoQ = TRUE, facets = vars(EntityID), ...)
+  origin = NULL, echoQ = TRUE, facets = vars(EntityID), ...)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -14,11 +14,16 @@ ERTMonPlotFeatureMatrices(ertObj, matrixNames = NULL, entityIDs = NULL,
 
 \item{entityIDs}{A character vector with entity ID's to be plotted; NULL for all.}
 
+\item{origin}{If NULL the time grid cell indexes are used.
+If a date-time object or something that can be coerced to such object,
+then the time grid cells are≈ interpreted as (date-)times.
+See the argument \code{origin} of \code{\link{as.POSIXct}}.}
+
 \item{echoQ}{Should the result be plotted?}
 
 \item{facets}{facets argument for the function \code{\link{ggplot2::facet_wrap}}.}
 
-\item{...}{Additional arguments for facet_wrap.}
+\item{...}{Additional arguments for \code{\link{ggplot2::facet_wrap}}.}
 }
 \value{
 An ERTMon object.
