@@ -21,7 +21,7 @@ testData$ComputationSpecification <-
 ertmon0 <-
   ERTMonUnit() %>%
   ERTMonSetEventRecords( testData$EventRecords ) %>%
-  ERTMonSetEntityAttributes( testData$EntityAttr ) %>%
+  ERTMonSetEntityAttributes( testData$EntityAttributes ) %>%
   ERTMonSetComputationSpecification( testData$ComputationSpecification ) %>% 
   ERTMonProcessEventRecords( alignmentSpec = "MinTime" )
 
