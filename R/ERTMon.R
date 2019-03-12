@@ -48,7 +48,7 @@
 #' @import stringi
 #' @import Matrix
 #' @import RcppRoll
-#' @import devtools
+#' @import ggplot2
 NULL
 
 #' @include DataWrapperClass.R DataIngesterClass.R DataSplitterClass.R ComputationSpecificationClass.R DataTransformerClass.R DataTransformerCatMatricesClass.R
@@ -788,14 +788,20 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
 #' @param ertObj An ERTMon object.
 #' @param matrixNames A character vector with matrix names to be plotted; NULL for all.
 #' @param entityIDs A character vector with entity ID's to be plotted; NULL for all.
+#' @param origin If NULL the time grid cell indexes are used.
+#' If a date-time object or something that can be coerced to such object,
+#' then the time grid cells are≈ interpreted as (date-)times.
+#' See the argument \code{origin} of \code{\link{as.POSIXct}}.
 #' @param echoQ Should the result be plotted?
 #' @param facets facets argument for the function \code{\link{ggplot2::facet_wrap}}.
-#' @param ... Additional arguments for facet_wrap.
+#' @param ... Additional arguments for \code{\link{ggplot2::facet_wrap}}.
 #' @return An ERTMon object.
 #' @details In order to plot each feature matrix time series(es) separately use
 #' \code{facets=vars(MatrixName)}.
 #' @export
-ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, echoQ = TRUE, facets = vars(EntityID), ... ) {
+ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, 
+                                       origin = NULL, echoQ = TRUE, 
+                                       facets = vars(EntityID), ... ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
@@ -821,6 +827,17 @@ ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = N
   
   if( !is.null(entityIDs) ) {
     feMatDF <- feMatDF %>% dplyr::filter( EntityID %in% entityIDs )
+  }
+  
+  if( !is.null(origin) ) {
+    
+    timeGridCellsDF <- ertObj %>% ERTMonTakeTimeCellsInterpretation
+    timeGridCellsDF$MidDateTime <- as.POSIXct( (timeGridCellsDF$StartTime + timeGridCellsDF$EndTime) / 2, origin = origin )
+
+    feMatDF <-
+      feMatDF %>% 
+      dplyr::inner_join( timeGridCellsDF, by = c( "MatrixName", "TimeGridCell") ) %>% 
+      dplyr::mutate( TimeGridCell = MidDateTime )
   }
   
   ertObj$Value <-
