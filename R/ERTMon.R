@@ -308,9 +308,9 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
   
   ## Or use ERTMonTakeFeatureNames(ertObj) .
   rnames <- paste( ertObj$dtObj@compSpec@parameters$Variable, ertObj$dtObj@compSpec@parameters$Aggregation.function, sep = ".")
-  
+
   res <-
-    purrr::map( rnames, function(x) smat[, grep(x, colnames(smat)), drop=F ] )
+    purrr::map( rnames, function(x) smat[, grep(x, colnames(smat), fixed=T), drop=F ] )
   
   if( noColumnPrefixes ) {
     res <-
