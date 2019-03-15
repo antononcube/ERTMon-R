@@ -173,9 +173,26 @@ setMethod("transformData",
               eventRecordsData %>% 
               dplyr::select( MatrixName, TimeGridCell ) %>% 
               dplyr::distinct() %>% 
-              dplyr::inner_join( compSpec@parameters, by = "MatrixName" ) %>% 
-              dplyr::mutate( StartTime = tsSign * TimeGridCell * Aggregation.interval.length ) %>% 
-              dplyr::mutate( EndTime = tsSign * (TimeGridCell + 1) * Aggregation.interval.length ) %>% 
+              dplyr::inner_join( compSpec@parameters, by = "MatrixName" )
+            
+            if( tsSign > 0 ) {
+              
+              object@timeCellsInterpretation <-
+                object@timeCellsInterpretation %>% 
+                dplyr::mutate( StartTime = tsSign * TimeGridCell * Aggregation.interval.length ) %>% 
+                dplyr::mutate( EndTime = tsSign * (TimeGridCell + 1) * Aggregation.interval.length )
+              
+            } else {
+              
+              object@timeCellsInterpretation <-
+                object@timeCellsInterpretation %>% 
+                dplyr::mutate( StartTime = tsSign * (TimeGridCell + 1) * Aggregation.interval.length ) %>% 
+                dplyr::mutate( EndTime = tsSign * TimeGridCell * Aggregation.interval.length )
+              
+            }
+            
+            object@timeCellsInterpretation <-
+              object@timeCellsInterpretation %>% 
               dplyr::select( MatrixName, TimeGridCell, StartTime, EndTime )
             
             ## Note that we are not saving the transformed event records in the slot "eventRecords".
