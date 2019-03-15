@@ -29,6 +29,9 @@ Processes the set event records using the set computation specification in an ER
 }
 \details{
 The result feature matrix is assigned to \code{ertObj$Value}.
+If \code{alignmentSpec} is a non-negative number the alignment is done by finding 
+the difference \code{ObservationTime - alignmentSpec} and keeping the event records for which
+that difference is non-negative.
 }
 \seealso{
 Other Transformation functions: \code{\link{ERTMonExtractFeatures}}

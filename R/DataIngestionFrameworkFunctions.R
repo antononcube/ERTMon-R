@@ -187,7 +187,7 @@ AddMissingLabelAttributes <- function( entityAttributes, labelValue = "None" ) {
 #' with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number. 
 #' @param echoStepsQ A logical should the steps be indicated with \code{cat}.
 #' @return A data frame (tibble) with columns c("EntityID","VarID","AValue","TimeGridCell", "MatrixName")
-#' @details If \code{alignmentSpec} is a non-negative number the alignment is done with by finding 
+#' @details If \code{alignmentSpec} is a non-negative number the alignment is done by finding 
 #' the difference \code{ObservationTime - alignmentSpec} and keeping the records for which
 #' that difference is non-negative.
 AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLength, 

@@ -525,6 +525,9 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' @param echoStepsQ Should the computational steps be proclaimed?
 #' @param progressObject An object to be used in a progress gauge.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
+#' If \code{alignmentSpec} is a non-negative number the alignment is done by finding 
+#' the difference \code{ObservationTime - alignmentSpec} and keeping the event records for which
+#' that difference is non-negative.
 #' @return An ERTMon object.
 #' @family Transformation functions
 #' @export
