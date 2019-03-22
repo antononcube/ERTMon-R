@@ -35,3 +35,8 @@ Plots the rows of the feature sub-matrices of an ERTMon object as time series.
 In order to plot each feature matrix time series(es) separately use
 \code{facets=vars(MatrixName)}.
 }
+\seealso{
+Other Feature matrices: \code{\link{ERTMonCollapseFeatureMatrices}},
+  \code{\link{ERTMonStackFeatureMatrices}}
+}
+\concept{Feature matrices}

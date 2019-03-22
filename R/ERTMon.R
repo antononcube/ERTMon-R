@@ -738,6 +738,183 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
 
 
 ##===========================================================
+## Collapse feature sub-matrices
+##===========================================================
+
+#' Get feature sub-matrices collapsed.
+#' @details Collapses specified feature sub-matrices with a specified function.
+#' The collapse function can be one of \code{rowSums, rowMeans, colSums, colMeans} 
+#' or any other function that can be applied
+#' @param ertObj An ERTMon object.
+#' @param matrixNames A character vector with names of feature sub-matrices to be collapsed.
+#' If NULL then all feature sub-matrices are collapsed.
+#' @param entityIDs A character vector with entity ID's (that feature sub-matrices row names.)
+#' If NULL then all entity ID's are used.
+#' @param collapseFunction A function that can be applied to a sparse matrix. 
+#' @return An ERTMon object.
+#' @details The obtained list of collapsed matrices is assigned to \code{ertObj$Value}.
+#' This function is fairly simple -- it was programmed in order to have 
+#' the corresponding operation explicitly named in formula computation workflows.
+#' @family Feature matrices 
+#' @export
+ERTMonCollapseFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, collapseFunction = colSums ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
+  if( !ERTMonFeatureMatrixCheck(ertObj, logicalResult = TRUE) ) {
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !( is.character(matrixNames) || is.null(matrixNames) ) ) {
+    warning( "The argument matrixNames is expected to be a character vector or NULL.", call. = T )
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !( is.character(entityIDs) || is.null(entityIDs) ) ) {
+    warning( "The argument entityIDs is expected to be a character vector or NULL.", call. = T )
+    return(ERTMonFailureSymbol)
+  }
+  
+  feMats <- ertObj %>% ERTMonTakeContingencyMatrices
+
+  if( is.null(matrixNames) ) { matrixNames <- names(feMats) }
+  
+  knownMats <- matrixNames %in% names(feMats)
+  
+  if( sum(knownMats) == 0 ) {
+    warning( "None of the specified matrix names is known.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  } 
+  
+  if( mean(knownMats) < 1 ) {
+    warning( "Some of the specified matrix names are not known.", call. = TRUE )
+  } 
+  
+  if( is.null(entityIDs) ) { entityIDs <- rownames(feMats[[1]]) }
+  
+  knownEntityIDs <- entityIDs %in% rownames(feMats[[1]])
+  
+  if( sum(knownEntityIDs) == 0 ) {
+    warning( "None of the specified entity ID's is known.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  } 
+  
+  if( mean(knownEntityIDs) < 1 ) {
+    warning( "Some of the specified entity ID's are not known.", call. = TRUE )
+  } 
+  
+  entityIDs <- entityIDs[knownEntityIDs]
+  
+  if( !is.null(matrixNames) ) {
+    feMats <- feMats[ names(feMats) %in% matrixNames ]
+  }
+  
+  feMats <- 
+    setNames( 
+      purrr::map( feMats, function(x) { collapseFunction( x[entityIDs, , drop=F] ) } ), 
+      names(feMats) 
+    )
+  
+  ertObj$Value <- feMats
+  
+  ertObj
+}
+
+
+##===========================================================
+## Stack feature sub-matrices
+##===========================================================
+
+#' Make a stack of feature sub-matrices.
+#' @details Stacks the feature sub-matrices (using \code{rbind}.)
+#' @param ertObj An ERTMon object.
+#' @param matrixNames A character vector with names of feature sub-matrices to be collapsed.
+#' If NULL then all feature sub-matrices are collapsed.
+#' @param entityIDs A character vector with entity ID's (that feature sub-matrices row names.)
+#' If NULL then all entity ID's are used.
+#' @param sep A separator string.
+#' @param dropEmptyRowsQ Should the empty rows be dropped or not?
+#' @details The obtained matrix is assigned to \code{ertObj$Value}.
+#' The entity ID's are concatenated with matrix names using the separator \code{sep}.
+#' The rows that are "empty" (without elements) are removed by default.
+#' @family Feature matrices 
+#' @export
+ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, sep = ".", dropEmptyRowsQ = TRUE ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
+  if( !ERTMonFeatureMatrixCheck(ertObj, logicalResult = TRUE) ) {
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !( is.character(matrixNames) || is.null(matrixNames) ) ) {
+    warning( "The argument matrixNames is expected to be a character vector or NULL.", call. = T )
+    return(ERTMonFailureSymbol)
+  }
+  
+  if( !( is.character(entityIDs) || is.null(entityIDs) ) ) {
+    warning( "The argument entityIDs is expected to be a character vector or NULL.", call. = T )
+    return(ERTMonFailureSymbol)
+  }
+  
+  feMats <- ertObj %>% ERTMonTakeContingencyMatrices
+  
+  if( is.null(matrixNames) ) { matrixNames <- names(feMats) }
+  
+  knownMats <- matrixNames %in% names(feMats)
+  
+  if( sum(knownMats) == 0 ) {
+    warning( "None of the specified matrix names is known.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  } 
+  
+  if( mean(knownMats) < 1 ) {
+    warning( "Some of the specified matrix names are not known.", call. = TRUE )
+  } 
+  
+  if( is.null(entityIDs) ) { entityIDs <- rownames(feMats[[1]]) }
+  
+  knownEntityIDs <- entityIDs %in% rownames(feMats[[1]])
+  
+  if( sum(knownEntityIDs) == 0 ) {
+    warning( "None of the specified entity ID's is known.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  } 
+  
+  if( mean(knownEntityIDs) < 1 ) {
+    warning( "Some of the specified entity ID's are not known.", call. = TRUE )
+  } 
+  
+  entityIDs <- entityIDs[knownEntityIDs]
+  
+  if( !is.null(matrixNames) ) {
+    feMats <- feMat[ names(feMats) %in% matrixNames ]
+  }
+  
+  feMats <- 
+    setNames(
+      purrr::map( names(feMats), function(x) {
+        mat <- feMats[[x]]
+        rownames(mat) <- paste( x, rownames(mat), sep=".")
+        mat
+      }), 
+      names(feMats)
+    )
+  
+  allColumnNames <- unique( unlist( purrr::map( feMats, colnames ) ) )
+  
+  feMats <- purrr::map( feMats, function(x) ImposeColumnIDs( colIDs = allColumnNames, x ) )
+  
+  resMat <- do.call(rbind, feMats)
+  resMat <- qMat[rowSums(abs(resMat)) > 0, ]
+
+  ertObj$Value <- resMat
+  
+  ertObj
+}
+
+
+##===========================================================
 ## Compute formula (with a formula spec)
 ##===========================================================
 
@@ -801,6 +978,7 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
 #' @return An ERTMon object.
 #' @details In order to plot each feature matrix time series(es) separately use
 #' \code{facets=vars(MatrixName)}.
+#' @family Feature matrices
 #' @export
 ERTMonPlotFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, 
                                        origin = NULL, echoQ = TRUE, 
