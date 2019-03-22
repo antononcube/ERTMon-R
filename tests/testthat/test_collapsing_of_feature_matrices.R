@@ -18,6 +18,8 @@ ertmon0 <-
   ERTMonSetComputationSpecification( testData$ComputationSpecification ) %>% 
   ERTMonProcessEventRecords( alignmentSpec = "MinTime" )
 
+feMats <- ertmon0 %>% ERTMonTakeContingencyMatrices
+
 focusMatNames <- grep( "Mean$", ertmon0 %>% ERTMonTakeFeatureNamePrefixes, value = T )
   
 ertmon0 <- 
@@ -38,6 +40,8 @@ test_that("Collapse feature sub-matrices with colSums (default).", {
   
   expect_true( length(resMats1) == length(focusMatNames) )
   expect_equal( mean( purrr::map_chr( resMats1, class ) == "numeric" ), 1 )
+  
+  expect_equal( mean( purrr::map2_dbl( resMats1, purrr::map( feMats[focusMatNames], colSums), function(x,y) mean(x==y) ) ), 1 )
 })
 
 test_that("Collapse feature sub-matrices with rowSums.", {
@@ -46,4 +50,6 @@ test_that("Collapse feature sub-matrices with rowSums.", {
   
   expect_true( length(resMats2) == length(focusMatNames) )
   expect_equal( mean( purrr::map_chr( resMats2, class ) == "numeric" ), 1 )
+  
+  expect_equal( mean( purrr::map2_dbl( resMats2, purrr::map( feMats[focusMatNames], rowSums), function(x,y) mean(x==y) ) ), 1 )
 })
