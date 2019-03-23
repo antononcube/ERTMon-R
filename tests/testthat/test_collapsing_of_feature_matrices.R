@@ -10,14 +10,13 @@ library(ERTMon)
 ## More tests are needed: 
 ## 1) [ ] with that other collapse functions, 
 ## 2) [ ] with specified entity ID's,
-## 3) [ ] with specifications that produce feature sub-matrices with different numbers of columns,
-## 4) [ ] appropriate warnings tests.
+## 3) [ ] appropriate warnings tests.
 ##===========================================================
 
 ## Generate data.
 testData <-
   ERTMonSimpleTestData( numberOfEntities = 10, numberOfVariables = 5, 
-                        timeInterval = 900, numberOfTimeCells = 40, randomStartTimesQ = TRUE, 
+                        timeInterval = 900, numberOfTimeCells = 10, randomStartTimesQ = TRUE, 
                         variableFunction = "Linear", 
                         exportDirectoryName = NULL )
 
