@@ -888,14 +888,14 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
   entityIDs <- entityIDs[knownEntityIDs]
   
   if( !is.null(matrixNames) ) {
-    feMats <- feMat[ names(feMats) %in% matrixNames ]
+    feMats <- feMats[ names(feMats) %in% matrixNames ]
   }
   
   feMats <- 
     setNames(
       purrr::map( names(feMats), function(x) {
-        mat <- feMats[[x]]
-        rownames(mat) <- paste( x, rownames(mat), sep=".")
+        mat <- feMats[[x]][ entityIDs, , drop=F ]
+        rownames(mat) <- paste( x, rownames(mat), sep = sep )
         mat
       }), 
       names(feMats)
@@ -906,7 +906,7 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
   feMats <- purrr::map( feMats, function(x) ImposeColumnIDs( colIDs = allColumnNames, x ) )
   
   resMat <- do.call(rbind, feMats)
-  resMat <- qMat[rowSums(abs(resMat)) > 0, ]
+  resMat <- resMat[rowSums(abs(resMat)) > 0, ]
 
   ertObj$Value <- resMat
   
