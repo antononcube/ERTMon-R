@@ -13,20 +13,20 @@ LazyData: true
 RoxygenNote: 6.1.1
 Collate: 
     'ComputationSpecificationClass.R'
-    'DashboardLauncher.R'
     'DataConversionFunctions.R'
-    'DataIngesterClass.R'
-    'DataIngestionFrameworkFunctions.R'
-    'DataSplitterClass.R'
-    'DataTransformerCatMatricesClass.R'
-    'DataTransformerClass.R'
     'DataWrapperClass.R'
+    'DataIngestionFrameworkFunctions.R'
+    'DataIngesterClass.R'
+    'DataSplitterClass.R'
+    'DataTransformerClass.R'
+    'DataTransformerCatMatricesClass.R'
     'ERTMon.R'
     'ERTMonCreateInterface.R'
     'FakeMedicalDataCreation.R'
     'LoadClasses.R'
     'OutlierIdentifiers.R'
     'SimpleTestDataCreation.R'
+    'DashboardLauncher.R'
 Imports:
     purrr,
     dplyr,
