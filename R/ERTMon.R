@@ -309,15 +309,35 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
   ## Or use ERTMonTakeFeatureNames(ertObj) .
   rnames <- paste( ertObj$dtObj@compSpec@parameters$Variable, ertObj$dtObj@compSpec@parameters$Aggregation.function, sep = ".")
 
+  ## In principle we could use theseS somehow.
+  # ertObj$dtObj <- makeSparseMatrices(ertObj$dtObj, echoStepsQ = FALSE )
+  # res <- ertObj$dtObj@sparseMatrices
+  
   res <-
     purrr::map( rnames, function(x) smat[, grep(x, colnames(smat), fixed=T), drop=F ] )
-  
+
   if( noColumnPrefixes ) {
     res <-
       purrr::map( res,
-                  function(x) {
-                    if( !is.null(x) && ncol(x)>0) { colnames(x) <- 1:ncol(x) }
-                    x
+                  function(sm) {
+                    ## Here the assumption here is wrong:
+                    ## the columns are alphabetically ordered not by TimeGridCell values.
+                    # if( !is.null(x) && ncol(x)>0) { colnames(x) <- 1:ncol(x) }
+                    
+                    ## Suppress warning messages while converting column names to corresponding values
+                    oldw <- getOption("warn"); options(warn = -1)
+                    colVals <- as.numeric( purrr::map( strsplit( colnames(sm), "\\." ), function(x) x[[length(x)]] ) )
+                    options(warn = oldw)
+
+                    if ( sum( is.na( colVals ) ) > 0 ) { 
+                      warning("Could not remove the column prefixes.", call. = T )
+                      sm 
+                    } else {
+                      colOrder <- order( colVals  )
+                      sm <- sm[, colOrder, drop = F]
+                      colnames(sm) <- colVals[colOrder]
+                      sm
+                    }
                   })
   }
   names(res) <- rnames
@@ -512,6 +532,113 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
   }
 }
 
+
+##===========================================================
+## Filter event records
+##===========================================================
+
+#' Filtering of event records.
+#' @description Filters event records for specified min and max observation times
+#' and/or locations ID's.
+#' @param ertObj An ERTMon object.
+#' @param minObservatonTime Minimum observation time. 
+#' It can be NULL, an integer alue (seconds), \code{"MinTime"}, or \code{"MaxMinTime"}.
+#' @param maxObservatonTime Minimum observation time. 
+#' NULL has the same effect as \code{"MinTime"} -- no filtering. 
+#' It can be NULL, an integer alue (seconds), \code{"MaxTime"}, or \code{"MinMaxTime"}.
+#' NULL has the same effect as \code{"MaxTime"} -- no filtering. 
+#' @param locationIDs A character vector with location ID's.
+#' If NULL no filtering over location ID's is done.
+#' @return An ERTMon object.
+#' @details The primary reason for this function is to assure the user
+#' that all events adhere to certain explicitly postulated predicates.
+#' \code{"MaxMinTime"} means that for each variable-and-entity pair is found the 
+#' min observation time.
+#' The found the min-max-times and max-min-times are assigned to 
+#' \code{ertObj$SummarisedObservationTimes}.
+#' @export
+ERTMonFilterEventRecords <- function( ertObj, minObservationTime = NULL, maxObservationTime = NULL, locationIDs = NULL ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
+  if( is.null(minObservationTime) && is.null(maxObservationTime) && is.null(locationIDs) ) {
+    warning("All filtering arguments are NULL, no filtering is done.", call. = T)
+    return(ertObj)
+  }
+  
+  if( !( is.null(minObservationTime) || is.numeric(minObservationTime) || tolower(minObservationTime) %in% tolower( c("MinTime", "MaxMinTime") ) ) ) {
+    warning("The argument minObservationTime is expected to be NULL, or a number (seconds), or one of {'MinTime', 'MaxMinTime'}.", call. = T)
+    return(ertObj)
+  }
+  
+  if( !( is.null(maxObservationTime) || is.numeric(maxObservationTime) || tolower(maxObservationTime) %in% tolower( c("MaxTime", "MinMaxTime") ) ) ) {
+    warning("The argument maxObservationTime is expected to be NULL, or a number (seconds), or one of {'MaxTime', 'MinMaxTime'}.", call. = T)
+    return(ertObj)
+  }
+  
+  if( !( is.null(locationIDs) || is.character(locationIDs) ) ) {
+    warning("The argument locationIDs is expected to be NULL or a character vector.", call. = T)
+    return(ertObj)
+  }
+  
+  qGroupDates <-
+    ertObj %>% 
+    ERTMonTakeEventRecords %>% 
+    dplyr::group_by( Variable, EntityID ) %>%
+    dplyr::summarise(  MinObservationTime = min(ObservationTime, na.rm = T), MaxObservationTime = max(ObservationTime, na.rm = T) ) %>% 
+    dplyr::arrange()
+  
+  if( is.numeric(minObservationTime) ) { 
+    maxMinTime <- minObservationTime 
+  } else {
+    minMaxTime <- min(qGroupDates$MaxObservationTime, na.rm = T) 
+  }
+  
+  if( is.numeric(maxObservationTime) ) {
+    minMaxTime <- maxObservationTime
+  } else {
+    maxMinTime <- max(qGroupDates$MinObservationTime, na.rm = T) 
+  }
+  
+  if( is.null(minObservationTime) || is.null(maxObservationTime) ) {
+    
+    qMinMaxTimes <-
+      ertObj %>% 
+      ERTMonTakeEventRecords %>% 
+      dplyr::summarise( MinTime = min(ObservationTime, na.rm = T), MaxTime = max(ObservationTime, na.rm = T) )
+    
+    if( is.null(minObservationTime) ) { minMaxTime <- qMinMaxTimes$MinTime }
+    if( is.null(maxObservationTime) ) { maxMaxTime <- qMinMaxTimes$MaxTime }
+    
+  }
+    
+  if( is.null(locationIDs) ) {
+    
+    ertObj <- 
+      ertObj %>% 
+      ERTMonSetEventRecords( ertObj %>% 
+                              ERTMonTakeEventRecords %>% 
+                              dplyr::filter( maxMinTime <= ObservationTime,
+                                             ObservationTime <= minMaxTime ) )
+    
+  } else {
+    
+    ertObj <- 
+      ertObj %>% 
+      ERTMonSetEventRecords( ertObj %>% 
+                              ERTMonTakeEventRecords %>% 
+                              dplyr::filter( maxMinTime <= ObservationTime,
+                                             ObservationTime <= minMaxTime,
+                                             LocationID %in% locationIDs ) )
+  }
+  
+  
+  ertObj$SummarisedObservationTimes <- qGroupDates
+  
+  ertObj
+}
+
+
 ##===========================================================
 ## Make time series feature extractor
 ##===========================================================
@@ -521,7 +648,7 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' @param ertObj An ERTMon object.
 #' @param outlierIdentifier Outlier parameters function.
 #' @param alignmentSpec A time series alignment specification argument 
-#' with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number. 
+#' with acceptable values \code{"MinTime"}, \code{"MaxTime"}, or a non-negative number. 
 #' @param echoStepsQ Should the computational steps be proclaimed?
 #' @param progressObject An object to be used in a progress gauge.
 #' @details The result feature matrix is assigned to \code{ertObj$Value}.
@@ -543,8 +670,14 @@ ERTMonProcessEventRecords <- function( ertObj,
     return(ERTMonFailureSymbol)
   }
 
-  ## Find is the calculation of a label feature matrix specified?
+  ## Get the computation specification.
   compSpec <- ertObj %>% ERTMonTakeComputationSpecification
+  
+  ## Filter the comutation specification to variables in the event records.
+  erVars <- unique( (ertObj %>% ERTMonTakeEventRecords)$Variable )
+  compSpec <- compSpec[ compSpec$Variable %in% erVars, ]
+  
+  ## Find is the calculation of a label feature matrix specified?
   findLabelMatQ <- FALSE
   if ( is.data.frame(compSpec) ) {
     findLabelMatQ <- HasLabelRowQ( compSpec )
