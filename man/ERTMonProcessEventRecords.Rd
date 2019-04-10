@@ -15,7 +15,7 @@ ERTMonProcessEventRecords(ertObj,
 \item{outlierIdentifier}{Outlier parameters function.}
 
 \item{alignmentSpec}{A time series alignment specification argument 
-with acceptable values \"MinTime\", \"MaxTime\", or a non-negative number.}
+with acceptable values \code{"MinTime"}, \code{"MaxTime"}, or a non-negative number.}
 
 \item{echoStepsQ}{Should the computational steps be proclaimed?}
 
