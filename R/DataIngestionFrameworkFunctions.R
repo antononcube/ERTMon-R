@@ -196,14 +196,17 @@ AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLengt
   
   if( echoStepsQ ) { cat("\n\tFind most recent observation date for each entity...\n") }
   
-  eventRecords <- 
-    dplyr::left_join(
-      dplyr::filter( dplyr::summarise( dplyr::group_by( dplyr::select( eventRecords, EntityID, ObservationTime ), EntityID ), 
-                                       MaxTimeEpoch = max(ObservationTime, na.rm = T),
-                                       MinTimeEpoch = min(ObservationTime, na.rm = T)), 
-                     !is.na(MaxTimeEpoch) ),
-      eventRecords, by = "EntityID")
+  minMaxTimes <-
+    eventRecords %>% 
+    dplyr::select( EntityID, ObservationTime ) %>% 
+    dplyr::group_by( EntityID ) %>% 
+    dplyr::summarise( MaxTimeEpoch = max(ObservationTime, na.rm = T), MinTimeEpoch = min(ObservationTime, na.rm = T) ) %>% 
+    dplyr::filter( !is.na(MaxTimeEpoch) )
   
+  eventRecords <- 
+    minMaxTimes %>% 
+    dplyr::left_join(eventRecords, by = "EntityID") 
+
   if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
   
   if( echoStepsQ ) { cat("\n\tCompute differences with max time...\n") }
@@ -219,7 +222,7 @@ AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLengt
                                    DiffToMaxObsTime = ObservationTime - MinTimeEpoch )
     
   } else if ( is.numeric(alignmentSpec) && alignmentSpec >= 0 ) {
-    
+
     eventRecords <- 
       eventRecords %>% 
       dplyr::mutate( DiffToMaxObsTime = ObservationTime - alignmentSpec ) %>% 
@@ -233,7 +236,7 @@ AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLengt
   
   if( echoStepsQ ) { cat("\n\tRestrict event records to specfied maximal history length...\n") }
 
-  eventRecords <- dplyr::mutate( eventRecords, DiffToMaxObsTime = as.numeric( DiffToMaxObsTime ) )
+  eventRecords <- dplyr::mutate( eventRecords, DiffToMaxObsTime = as.double( DiffToMaxObsTime ) )
   eventRecords <- dplyr::filter( eventRecords, DiffToMaxObsTime <= maxHistoryLength )
   ## In order to make this work with Spark innter join has to be used (dplyr or SQL).
   
@@ -349,14 +352,19 @@ AggregateEventRecordsBySpec <- function(specRow,
                                         echoStepsQ = echoStepsQ )
     
     if( nrow(res) > 0 ) { res$MatrixName <- mName }
+    
     res
+    
   } else {
     
     ## The standard case.
     
     eventRecordsData %>% 
       dplyr::filter( Variable == specRow$Variable ) %>% 
-      AddTimeGrid( specRow$Max.history.length, specRow$Aggregation.interval.length, alignmentSpec = alignmentSpec, echoStepsQ = echoStepsQ ) %>% 
+      AddTimeGrid( maxHistoryLength = specRow$Max.history.length, 
+                   aggregationIntervalLength = specRow$Aggregation.interval.length, 
+                   alignmentSpec = alignmentSpec, 
+                   echoStepsQ = echoStepsQ ) %>% 
       dplyr::mutate( VarID = paste(Variable, TimeGridCell, sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
       dplyr::summarise( AValue = func(Value) ) %>%
