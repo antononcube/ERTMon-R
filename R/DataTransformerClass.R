@@ -167,7 +167,7 @@ setMethod("transformData",
               aggregateOverTimeGrid( object, alignmentSpec = alignmentSpec, echoStepsQ = echoStepsQ )
             
             ## Time cells interpretations
-            if( tolower(alignmentSpec) %in% c("maxtime", "max") ) { tsSign = -1 } else { tsSign = 1}
+            if( tolower(alignmentSpec) %in% c("maxtime", "max") ) { tsSign = -1 } else { tsSign = 1 }
             
             object@timeCellsInterpretation <-
               eventRecordsData %>% 
@@ -321,7 +321,7 @@ setMethod("aggregateOverTimeGrid",
             ##     for each time grid cell 
             ##       find aggregate function values
             if( echoStepsQ ) { cat("\n\tFind aggregated values...\n") }
-            
+
             aggrERData <-
               object@compSpec@parameters %>%
               rowwise() %>%
@@ -455,7 +455,7 @@ setMethod("makeSparseMatrices",
                     colVals <- as.numeric( purrr::map( strsplit( colnames(sm), "\\." ), function(x) x[[length(x)]] ) )
                     options(warn = oldw)
                     
-                    if ( sum( is.na( colVals ) ) > 0 || sort(colVals) != (1:ncol(sm)) ) { sm }
+                    if ( sum( is.na( colVals ) ) > 0 || mean(sort(colVals) != (1:ncol(sm))) > 0 ) { sm }
                     else {
                       colOrder <- order( colVals  )
                       sm[, colOrder, drop = F]
