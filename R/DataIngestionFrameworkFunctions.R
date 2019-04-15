@@ -275,6 +275,8 @@ AggregateEventRecordsBySpec <- function(specRow,
   func <- aggrFuncSpecToFunc[ specRow$Aggregation.function[[1]] ][[1]]
   mName <- paste( specRow$Variable, specRow$Aggregation.function, sep = ".")
 
+  timeGridCellMaxNumberOfDigits <- floor(log10( specRow$Max.history.length / specRow$Aggregation.interval.length )) + 1
+  
   if( specRow$Variable == "Attribute" ) {
     
     entityData %>% 
@@ -287,7 +289,7 @@ AggregateEventRecordsBySpec <- function(specRow,
     
     entityData %>% 
       dplyr::filter( Attribute == "Label" ) %>% 
-      dplyr::mutate( VarID = paste("Label", Value, sep="."), TimeGridCell = 0) %>% 
+      dplyr::mutate( VarID = paste("Label", Value, sep="."), TimeGridCell = 0 ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
       dplyr::summarise( AValue = 1 ) %>% 
       dplyr::mutate( MatrixName = "Label" )
@@ -301,7 +303,7 @@ AggregateEventRecordsBySpec <- function(specRow,
       dplyr::select( EntityID, LocationID, DiffToMaxObsTime, TimeGridCell ) %>%
       #dplyr::filter( DiffToMaxObsTime <= specRow$Max.history.length ) %>%
       #dplyr::mutate( TimeGridCell = floor( DiffToMaxObsTime / specRow$Aggregation.interval.length ) ) %>%
-      dplyr::mutate( VarID = paste(LocationID, TimeGridCell, sep=".") ) %>% 
+      dplyr::mutate( VarID = paste(LocationID, formatC( TimeGridCell, width = timeGridCellMaxNumberOfDigits, flag = "0"), sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
       dplyr::summarise( AValue = func(LocationID) ) %>% 
       dplyr::mutate( MatrixName = mName ) 
@@ -365,7 +367,7 @@ AggregateEventRecordsBySpec <- function(specRow,
                    aggregationIntervalLength = specRow$Aggregation.interval.length, 
                    alignmentSpec = alignmentSpec, 
                    echoStepsQ = echoStepsQ ) %>% 
-      dplyr::mutate( VarID = paste(Variable, TimeGridCell, sep=".") ) %>% 
+      dplyr::mutate( VarID = paste(Variable, formatC( TimeGridCell, width = timeGridCellMaxNumberOfDigits, flag = "0"), sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
       dplyr::summarise( AValue = func(Value) ) %>%
       dplyr::mutate( MatrixName = mName )
