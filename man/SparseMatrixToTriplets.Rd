@@ -2,16 +2,22 @@
 % Please edit documentation in R/DataConversionFunctions.R
 \name{SparseMatrixToTriplets}
 \alias{SparseMatrixToTriplets}
-\title{Convert a sparse matrix to triplets data frame.}
+\title{Convert sparse matrix into triplets}
 \usage{
 SparseMatrixToTriplets(smat)
 }
 \arguments{
-\item{smat}{a sparse matrix}
+\item{smat}{A sparse matrix.}
 }
 \value{
-a data frame of triplets
+A data frame of triplets.
 }
 \description{
-Converts a sparse matrix to triplets
+Converts a sparse matrix into a data frame triplets.
 }
+\seealso{
+Other Sparse matrix transformation functions: \code{\link{ConvertMultiColumnDataFrameToSparseMatrix}},
+  \code{\link{ToColumnValueIncidenceMatrix}},
+  \code{\link{TripletsToSparseMatrix}}
+}
+\concept{Sparse matrix transformation functions}

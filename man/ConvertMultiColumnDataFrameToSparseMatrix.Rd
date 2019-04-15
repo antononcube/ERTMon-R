@@ -22,3 +22,9 @@ This does not work if the  \code{tagTypeColNames} have dash in them.
 I assume because of the string-to-formula conversion in  \code{SMRCreateItemTagMatrix}.
 Obviously, the dependence of the  \code{SMRCreateItemTagMatrix} can be removed.
 }
+\seealso{
+Other Sparse matrix transformation functions: \code{\link{SparseMatrixToTriplets}},
+  \code{\link{ToColumnValueIncidenceMatrix}},
+  \code{\link{TripletsToSparseMatrix}}
+}
+\concept{Sparse matrix transformation functions}
