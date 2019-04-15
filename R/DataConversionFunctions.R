@@ -51,6 +51,9 @@
 ## The most recent version of this file can be found in:
 ##     https://github.com/antononcube/MathematicaForPrediction/blob/master/R/DataConversionFunctions.R
 ##
+## It might be better this file functions to be in a separated package, 
+## but the trade-off is not clear.
+##
 ##=======================================================================================
 
 # Load libraries
@@ -176,6 +179,7 @@ TwoFilesTriplets <- function( fname1, fname2, sep="\t", propertiesToStrings=TRUE
 #' Make a sparse array/matrix from triplets.
 #' @description Turns a data frame of three columns (triplets) into a sparse matrix
 #' @param triplets a data frame with three columns
+#' @family Sparse matrix transformation functions
 #' @export
 TripletsToSparseMatrix <-  function( triplets ) {
   itemIDs <- unique( triplets[,1] )
@@ -196,27 +200,25 @@ TripletsToSparseMatrix <-  function( triplets ) {
   smat
 }
 
-#' Convert a sparse matrix to triplets data frame.
-#' @description Converts a sparse matrix to triplets
-#' @param smat a sparse matrix
-#' @return a data frame of triplets 
+#' Convert sparse matrix into triplets
+#' @description Converts a sparse matrix into a data frame triplets.
+#' @param smat A sparse matrix.
+#' @return A data frame of triplets.
+#' @family Sparse matrix transformation functions
 #' @export
 SparseMatrixToTriplets <- function( smat ) {
-  # Use summary() over sparse matrix.
-  # Then using rules over the indices.
+  
   triplets <- summary(smat)
-
-  # Rules
-  if( !is.null(colnames(smat)) && !is.null(rownames(smat)) ) {
-    rowRules <- 1:nrow(smat)
-    names(rowRules) <- rownames( smat )
-    colRules <- 1:ncol(smat)
-    names(colRules) <- colnames( smat )
-    triplets$i <- names( rowRules[ triplets$i ] )
-    triplets$j <- names( colRules[ triplets$j ] )
+  
+  if( !is.null(rownames(smat)) ) {
+    triplets$i <- rownames(smat)[ triplets$i ]
   }
-
-  triplets
+  
+  if( !is.null(colnames(smat)) ) {
+    triplets$j <- colnames(smat)[ triplets$j ]
+  }
+  
+  as.data.frame(triplets, stringsAsFactors=FALSE)
 }
 
 #' Impose row ID's to a sparse matrix.
@@ -334,6 +336,7 @@ IngestMovieDataColumn <- IngestMultiValuedDataColumn
 #' @details This does not work if the  \code{tagTypeColNames} have dash in them.
 #' I assume because of the string-to-formula conversion in  \code{SMRCreateItemTagMatrix}.
 #' Obviously, the dependence of the  \code{SMRCreateItemTagMatrix} can be removed.
+#' @family Sparse matrix transformation functions
 #' @export
 ConvertMultiColumnDataFrameToSparseMatrix <- function( multiColDF, itemColName, tagTypeColNames ) {
 
@@ -427,6 +430,7 @@ MakeMatrixByColumnPartition <- function( data, colNameForRows, colNameForColumns
 #' @param mat an integer matrix to be converted to column value incidence matrix.
 #' @param rowNames boolean to assign or not the result matrix row names to be the argument matrix row names
 #' @param colNames boolean to assign or not the result matrix column names derived from the argument matrix column names
+#' @family Sparse matrix transformation functions
 #' @export
 ToColumnValueIncidenceMatrix <- function( mat, rowNames = TRUE, colNames = TRUE ) {
 
