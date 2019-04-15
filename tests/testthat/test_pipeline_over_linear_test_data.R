@@ -3,7 +3,7 @@ library(ERTMon)
 
 testData <-
   ERTMonSimpleTestData( numberOfEntities = 10, numberOfVariables = 3, 
-                        timeInterval = 900, numberOfTimeCells = 36, randomStartTimesQ = TRUE, 
+                        timeInterval = 900, numberOfTimeCells = 42, randomStartTimesQ = TRUE, 
                         variableFunction = "Linear", 
                         exportDirectoryName = NULL )
 
@@ -42,4 +42,16 @@ test_that("Positive time grid cells interpretation times", {
 ## Hence we expect all 3's for the variable features. (With prefixex "Var".)
 test_that("Counts of three for each time cell", {
   expect_equal( mean( as.numeric(fmat0[, grep( "^Var", colnames(fmat0), value = T)]) == 3 ), 1 )
+})
+
+colVec1 <- purrr::map_chr( strsplit( grep( "Var.1", colnames(fmat0), value = T, fixed = T), "\\."), function(x) x[[length(x)]])
+colVec2 <- purrr::map_chr( strsplit( grep( "Var.2", colnames(fmat0), value = T, fixed = T), "\\."), function(x) x[[length(x)]])
+colVec3 <- purrr::map_chr( strsplit( grep( "Var.3", colnames(fmat0), value = T, fixed = T), "\\."), function(x) x[[length(x)]])
+
+
+test_that("The feature matrix has properly ordered columns", {
+  expect_equal( mean( as.numeric(colVec1) == sort(as.numeric(colVec1)) ), 1 )
+  expect_equal( mean( as.numeric(colVec2) == sort(as.numeric(colVec2)) ), 1 )
+  expect_equal( mean( as.numeric(colVec3) == sort(as.numeric(colVec3)) ), 1 )
+  
 })
