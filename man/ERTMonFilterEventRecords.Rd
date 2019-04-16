@@ -33,7 +33,7 @@ An ERTMon object.
 }
 \description{
 Filters event records for specified min and max observation times
-and/or entitie ID's and/or variable names and/or location ID's.
+and/or entitie ID's and/or location ID's and/or variable names.
 }
 \details{
 The primary reason for this function is to assure the user

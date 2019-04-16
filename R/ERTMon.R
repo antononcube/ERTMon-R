@@ -539,7 +539,7 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 
 #' Filtering of event records.
 #' @description Filters event records for specified min and max observation times
-#' and/or entitie ID's and/or variable names and/or location ID's.
+#' and/or entitie ID's and/or location ID's and/or variable names.
 #' @param ertObj An ERTMon object.
 #' @param minObservatonTime Minimum observation time. 
 #' It can be NULL, an integer alue (seconds), \code{"MinTime"}, or \code{"MaxMinTime"}.
@@ -549,10 +549,10 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' NULL has the same effect as \code{"MaxTime"} -- no filtering. 
 #' @param entityIDs A character vector with entity ID's.
 #' If NULL no filtering over entity ID's is done.
-#' @param variables A character vector with variable names.
-#' If NULL no filtering over variables is done.
 #' @param locationIDs A character vector with location ID's.
 #' If NULL no filtering over location ID's is done.
+#' @param variables A character vector with variable names.
+#' If NULL no filtering over variables is done.
 #' @return An ERTMon object.
 #' @details The primary reason for this function is to assure the user
 #' that all events adhere to certain explicitly postulated predicates.
