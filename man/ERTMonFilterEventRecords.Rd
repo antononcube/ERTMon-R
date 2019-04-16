@@ -5,13 +5,20 @@
 \title{Filtering of event records.}
 \usage{
 ERTMonFilterEventRecords(ertObj, minObservationTime = NULL,
-  maxObservationTime = NULL, locationIDs = NULL)
+  maxObservationTime = NULL, entityIDs = NULL, locationIDs = NULL,
+  variables = NULL)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
+\item{entityIDs}{A character vector with entity ID's.
+If NULL no filtering over entity ID's is done.}
+
 \item{locationIDs}{A character vector with location ID's.
 If NULL no filtering over location ID's is done.}
+
+\item{variables}{A character vector with variable names.
+If NULL no filtering over variables is done.}
 
 \item{minObservatonTime}{Minimum observation time. 
 It can be NULL, an integer alue (seconds), \code{"MinTime"}, or \code{"MaxMinTime"}.}
@@ -26,7 +33,7 @@ An ERTMon object.
 }
 \description{
 Filters event records for specified min and max observation times
-and/or locations ID's.
+and/or entitie ID's and/or variable names and/or location ID's.
 }
 \details{
 The primary reason for this function is to assure the user

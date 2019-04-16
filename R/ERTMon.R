@@ -539,7 +539,7 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 
 #' Filtering of event records.
 #' @description Filters event records for specified min and max observation times
-#' and/or locations ID's.
+#' and/or entitie ID's and/or variable names and/or location ID's.
 #' @param ertObj An ERTMon object.
 #' @param minObservatonTime Minimum observation time. 
 #' It can be NULL, an integer alue (seconds), \code{"MinTime"}, or \code{"MaxMinTime"}.
@@ -547,6 +547,10 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' NULL has the same effect as \code{"MinTime"} -- no filtering. 
 #' It can be NULL, an integer alue (seconds), \code{"MaxTime"}, or \code{"MinMaxTime"}.
 #' NULL has the same effect as \code{"MaxTime"} -- no filtering. 
+#' @param entityIDs A character vector with entity ID's.
+#' If NULL no filtering over entity ID's is done.
+#' @param variables A character vector with variable names.
+#' If NULL no filtering over variables is done.
 #' @param locationIDs A character vector with location ID's.
 #' If NULL no filtering over location ID's is done.
 #' @return An ERTMon object.
@@ -557,11 +561,15 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 #' The found the min-max-times and max-min-times are assigned to 
 #' \code{ertObj$SummarisedObservationTimes}.
 #' @export
-ERTMonFilterEventRecords <- function( ertObj, minObservationTime = NULL, maxObservationTime = NULL, locationIDs = NULL ) {
+ERTMonFilterEventRecords <- function( ertObj, 
+                                      minObservationTime = NULL, maxObservationTime = NULL, 
+                                      entityIDs = NULL, 
+                                      locationIDs = NULL,
+                                      variables = NULL) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
-  if( is.null(minObservationTime) && is.null(maxObservationTime) && is.null(locationIDs) ) {
+  if( is.null(minObservationTime) && is.null(maxObservationTime) && is.null(entityIDs) && is.null(locationIDs) && is.null(variables) ) {
     warning("All filtering arguments are NULL, no filtering is done.", call. = T)
     return(ertObj)
   }
@@ -600,40 +608,51 @@ ERTMonFilterEventRecords <- function( ertObj, minObservationTime = NULL, maxObse
     maxMinTime <- max(qGroupDates$MinObservationTime, na.rm = T) 
   }
   
-  if( is.null(minObservationTime) || is.null(maxObservationTime) ) {
+  if( is.null(minObservationTime) || is.null(maxObservationTime) || tolower(minObservationTime) == "mintime" || tolower(maxObservationTime) == "maxtime" ) {
     
     qMinMaxTimes <-
       ertObj %>% 
       ERTMonTakeEventRecords %>% 
       dplyr::summarise( MinTime = min(ObservationTime, na.rm = T), MaxTime = max(ObservationTime, na.rm = T) )
     
-    if( is.null(minObservationTime) ) { minMaxTime <- qMinMaxTimes$MinTime }
-    if( is.null(maxObservationTime) ) { maxMaxTime <- qMinMaxTimes$MaxTime }
+    if( is.null(minObservationTime) || tolower(minObservationTime) == "mintime" ) { maxMinTime <- qMinMaxTimes$MinTime }
+    if( is.null(maxObservationTime) || tolower(maxObservationTime) == "maxtime" ) { minMaxTime <- qMinMaxTimes$MaxTime }
     
   }
-    
-  if( is.null(locationIDs) ) {
-    
-    ertObj <- 
-      ertObj %>% 
-      ERTMonSetEventRecords( ertObj %>% 
-                              ERTMonTakeEventRecords %>% 
-                              dplyr::filter( maxMinTime <= ObservationTime,
-                                             ObservationTime <= minMaxTime ) )
-    
-  } else {
-    
-    ertObj <- 
-      ertObj %>% 
-      ERTMonSetEventRecords( ertObj %>% 
-                              ERTMonTakeEventRecords %>% 
-                              dplyr::filter( maxMinTime <= ObservationTime,
-                                             ObservationTime <= minMaxTime,
-                                             LocationID %in% locationIDs ) )
-  }
+  
+  
+  ertObj <-
+    ertObj %>%
+    ERTMonSetEventRecords( ertObj %>%
+                             ERTMonTakeEventRecords %>%
+                             dplyr::filter( maxMinTime <= ObservationTime,
+                                            ObservationTime <= minMaxTime,
+                                            if( is.null(entityIDs) ) { TRUE } else { EntityID %in% entityIDs },
+                                            if( is.null(variables) ) { TRUE } else { Variable %in% variables },
+                                            if( is.null(locationIDs) ) { TRUE } else { LocationID %in% locationIDs } )
+    )
   
   
   ertObj$SummarisedObservationTimes <- qGroupDates
+  
+  if( nrow(ertObj %>% ERTMonTakeEventRecords) == 0 ) {
+    ## I am not sure is this message wanted / needed.
+    warning( "The event records filtering produced empty event records dataset. (Examine the summary of ertObj$SummarisedObservationTimes .)", call. = T )
+  }
+    
+  ## Filter entity attributes.
+  ertObj <- 
+    ertObj %>% ERTMonSetEntityAttributes( ertObj %>% 
+                                            ERTMonTakeEntityAttributes %>% 
+                                            dplyr::filter( EntityID %in% unique( (ertObj %>% ERTMonTakeEventRecords)$EntityID ) ) 
+    )
+  
+  ## Filter computation specification.
+  ertObj <- 
+    ertObj %>% ERTMonSetComputationSpecification( ertObj %>% 
+                                                    ERTMonTakeComputationSpecification %>% 
+                                                    dplyr::filter( Variable %in% unique( (ertObj %>% ERTMonTakeEventRecords)$Variable ) ) 
+    )
   
   ertObj
 }
@@ -693,14 +712,20 @@ ERTMonProcessEventRecords <- function( ertObj,
   compSpecObj <- setSpec( compSpecObj,  as.data.frame(ertObj$ComputationSpecification) )
   compSpecObj <- ingestSpec( compSpecObj, echoStepsQ = echoStepsQ )
   
+  ## Presence
+  if( nrow(ertObj$EventRecords) == 0 ) {
+    warning( "The event records data frame ertObj$EventRecords is empty.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  }
+  
   ## Completeness  
   if( mean(complete.cases(ertObj$EventRecords)) < 1 ) {
-    warning( "Some rows of 'EventRecords' are having missing values.", call. = TRUE )
+    warning( "Some rows of ertObj$EventRecords have missing values.", call. = TRUE )
     ertObj$EventRecords <- ertObj$EventRecords[ complete.cases(ertObj$EventRecords), ] 
   }
   
   if( mean(complete.cases(ertObj$EntityAttributes)) < 1 ) {
-    warning( "Some rows of 'EntityAttributes' are having missing values.", call. = TRUE )
+    warning( "Some rows of ertObj$EntityAttributes have missing values.", call. = TRUE )
     ertObj$EntityAttributes <- ertObj$EntityAttributes[ complete.cases(ertObj$EntityAttributes), ]
   }
   
