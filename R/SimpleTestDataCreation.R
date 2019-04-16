@@ -117,7 +117,7 @@ GenereateSimpleTestDataEventRecords <- function( entityAttributes,
   timeGridIndexes <- seq(0,numberOfTimeCells-1)
   
   if( randomStartTimesQ ) {
-    entityIDToRandomStartTime <- runif( n = unique(entityAttributes$EntityID), min = 0, max = 1000 )
+    entityIDToRandomStartTime <- runif( n = unique(entityAttributes$EntityID), min = 0, max = 100 * timeInterval )
     names(entityIDToRandomStartTime) <- unique(entityAttributes$EntityID)
   }
   
