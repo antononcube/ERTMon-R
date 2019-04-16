@@ -689,6 +689,12 @@ ERTMonProcessEventRecords <- function( ertObj,
     return(ERTMonFailureSymbol)
   }
 
+  ## Presence
+  if( nrow(ertObj$EventRecords) == 0 ) {
+    warning( "The event records data frame ertObj$EventRecords is empty.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+  }
+  
   ## Get the computation specification.
   compSpec <- ertObj %>% ERTMonTakeComputationSpecification
   
@@ -711,12 +717,6 @@ ERTMonProcessEventRecords <- function( ertObj,
   compSpecObj <- new( "ComputationSpecification" )
   compSpecObj <- setSpec( compSpecObj,  as.data.frame(ertObj$ComputationSpecification) )
   compSpecObj <- ingestSpec( compSpecObj, echoStepsQ = echoStepsQ )
-  
-  ## Presence
-  if( nrow(ertObj$EventRecords) == 0 ) {
-    warning( "The event records data frame ertObj$EventRecords is empty.", call. = TRUE )
-    return(ERTMonFailureSymbol)
-  }
   
   ## Completeness  
   if( mean(complete.cases(ertObj$EventRecords)) < 1 ) {
