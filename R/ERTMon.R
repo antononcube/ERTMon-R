@@ -599,13 +599,13 @@ ERTMonFilterEventRecords <- function( ertObj,
   if( is.numeric(minObservationTime) ) { 
     maxMinTime <- minObservationTime 
   } else {
-    minMaxTime <- min(qGroupDates$MaxObservationTime, na.rm = T) 
+    maxMinTime <- max(qGroupDates$MinObservationTime, na.rm = T) 
   }
   
   if( is.numeric(maxObservationTime) ) {
     minMaxTime <- maxObservationTime
   } else {
-    maxMinTime <- max(qGroupDates$MinObservationTime, na.rm = T) 
+    minMaxTime <- min(qGroupDates$MaxObservationTime, na.rm = T) 
   }
   
   if( is.null(minObservationTime) || is.null(maxObservationTime) || tolower(minObservationTime) == "mintime" || tolower(maxObservationTime) == "maxtime" ) {
