@@ -52,7 +52,7 @@ library(Matrix)
 
 setClass( "DataSplitter",
           
-          slots = list( id = "character", 
+          slots = list( ID = "character", 
                         trainInds = "integer",
                         testInds = "integer"),
           
