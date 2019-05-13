@@ -16,7 +16,7 @@ ERTMonTakeContingencyMatrices(ertObj, smat = NULL,
 If TRUE the column names are just integers.}
 
 \item{completeColumnRangeQ}{Should the columns correspond to all 
-time grid cell indexes between the mininmum and maximum one?
+time grid cell indexes between the minimum and maximum one?
 This is done only if \code{columnPrefixesQ=FALSE}.}
 }
 \value{

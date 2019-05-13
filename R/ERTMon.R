@@ -287,7 +287,7 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 #' @param columnPrefixesQ Should the column names have feature prefixes?
 #' If TRUE the column names are just integers.
 #' @param completeColumnRangeQ Should the columns correspond to all 
-#' time grid cell indexes between the mininmum and maximum one?
+#' time grid cell indexes between the minimum and maximum one?
 #' This is done only if \code{columnPrefixesQ=FALSE}.
 #' @return A list of named matrices.
 #' @details The sub-matrices are extracted through the corresponding prefixes.
