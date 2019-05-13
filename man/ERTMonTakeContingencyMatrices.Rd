@@ -5,14 +5,19 @@
 \title{Take feature sub-matrices.}
 \usage{
 ERTMonTakeContingencyMatrices(ertObj, smat = NULL,
-  noColumnPrefixes = TRUE)
+  columnPrefixesQ = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
 \item{smat}{If not NULL it is going to be used instead of \code{ertObj$Value}.}
 
-\item{noColumnPrefixes}{If TRUE the column names are just integers.}
+\item{columnPrefixesQ}{Should the column names have feature prefixes?
+If TRUE the column names are just integers.}
+
+\item{completeColumnRangeQ}{Should the columns correspond to all 
+time grid cell indexes between the mininmum and maximum one?
+This is done only if \code{columnPrefixesQ=FALSE}.}
 }
 \value{
 A list of named matrices.

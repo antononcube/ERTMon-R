@@ -284,13 +284,17 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 #' @description Returns the sub-matrices of the feature matrix.
 #' @param ertObj An ERTMon object.
 #' @param smat If not NULL it is going to be used instead of \code{ertObj$Value}.
-#' @param noColumnPrefixes If TRUE the column names are just integers.
+#' @param columnPrefixesQ Should the column names have feature prefixes?
+#' If TRUE the column names are just integers.
+#' @param completeColumnRangeQ Should the columns correspond to all 
+#' time grid cell indexes between the mininmum and maximum one?
+#' This is done only if \code{columnPrefixesQ=FALSE}.
 #' @return A list of named matrices.
 #' @details The sub-matrices are extracted through the corresponding prefixes.
 #' An alternative is to use the sparse matrices that are in \code{ertObj$dtObj}.
 #' @family Set/Take functions
 #' @export
-ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes = TRUE ) {
+ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, columnPrefixesQ = FALSE ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
@@ -316,7 +320,7 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
   res <-
     purrr::map( rnames, function(x) smat[, grep(x, colnames(smat), fixed=T), drop=F ] )
 
-  if( noColumnPrefixes ) {
+  if( !columnPrefixesQ ) {
     res <-
       purrr::map( res,
                   function(sm) {
@@ -336,7 +340,12 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, noColumnPrefixes
                       colOrder <- order( colVals  )
                       sm <- sm[, colOrder, drop = F]
                       colnames(sm) <- colVals[colOrder]
-                      sm
+                      
+                      if( completeColumnRangeQ ) {
+                        sm <- ImposeColumnIDs( colIDs = seq( min(colVals), max(calVals), 1 ), smat = sm )
+                      } else {
+                        sm
+                      }
                     }
                   })
   }
@@ -1040,7 +1049,7 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
     return(ERTMonFailureSymbol)
   }
   
-  feMats <- ertObj %>% ERTMonTakeContingencyMatrices
+  feMats <- ertObj %>% ERTMonTakeContingencyMatrices( noColumnPrefixes = )
   
   if( is.null(matrixNames) ) { matrixNames <- names(feMats) }
   
