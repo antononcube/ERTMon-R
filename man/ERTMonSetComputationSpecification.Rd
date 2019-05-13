@@ -28,6 +28,7 @@ Other Set/Take functions: \code{\link{ERTMonSetEntityAttributes}},
   \code{\link{ERTMonTakeFeatureNamePrefixes}},
   \code{\link{ERTMonTakeTimeCellsInterpretation}},
   \code{\link{ERTMonTakeTrasformedData}},
-  \code{\link{ERTMonTakeValue}}
+  \code{\link{ERTMonTakeValue}},
+  \code{\link{ERTMonTakeVariableOutlierBoundaries}}
 }
 \concept{Set/Take functions}

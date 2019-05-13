@@ -30,6 +30,7 @@ Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
   \code{\link{ERTMonTakeFeatureMatrix}},
   \code{\link{ERTMonTakeTimeCellsInterpretation}},
   \code{\link{ERTMonTakeTrasformedData}},
-  \code{\link{ERTMonTakeValue}}
+  \code{\link{ERTMonTakeValue}},
+  \code{\link{ERTMonTakeVariableOutlierBoundaries}}
 }
 \concept{Set/Take functions}

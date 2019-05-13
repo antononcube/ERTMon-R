@@ -397,15 +397,16 @@ ERTMonTakeTrasformedData <- function( ertObj ) {
 #' @description Returns a data frame with the interpretation of the time cells.
 #' @param ertObj An ERTMon object.
 #' @return A data frame. 
-#' @details Currently the entity time series can only be aligned to finish at 0. 
-#' Hence the interpretation times are non-positive.
+#' @details If the alignment specification given to \code{\link{ERTMonProcessEventRecords}}
+#' is "MaxTime" the entity time series will be aligned to finish at 0. 
+#' In that case the interpretation times are non-positive.
 #' @family Set/Take functions
 #' @export
 ERTMonTakeTimeCellsInterpretation <- function( ertObj ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
-  if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) ) {
+  if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeTimeCellsInterpretation", logicalResult = TRUE) ) {
     ERTMonFailureSymbol
   } else if( is.null(ertObj$dtObj@timeCellsInterpretation) ) { 
     ERTMonFailureSymbol 
@@ -413,6 +414,30 @@ ERTMonTakeTimeCellsInterpretation <- function( ertObj ) {
     ertObj$dtObj@timeCellsInterpretation
   }
 }
+
+
+##-----------------------------------------------------------
+
+#' Take variable outlier boundaries.
+#' @description Returns a data frame with the variable outlier boundaries.
+#' @param ertObj An ERTMon object.
+#' @return A data frame. 
+#' @details 
+#' @family Set/Take functions
+#' @export
+ERTMonTakeVariableOutlierBoundaries <- function( ertObj ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
+  if ( !ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeVariableOutlierBoundaries", logicalResult = TRUE) ) {
+    ERTMonFailureSymbol
+  } else if( is.null(ertObj$dtObj@timeCellsInterpretation) ) { 
+    ERTMonFailureSymbol 
+  } else { 
+    ertObj$dtObj@outlierBoundaries
+  }
+}
+
 
 ##===========================================================
 ## Data presence check
