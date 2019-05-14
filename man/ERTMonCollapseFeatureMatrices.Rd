@@ -19,7 +19,7 @@ If NULL then all entity ID's are used.}
 
 \item{collapseFunction}{A function that can be applied to a sparse matrix.}
 
-\item{completeColumnRangeQ}{See \link{\code{ERTMonTakeContingencyMatrices}}.}
+\item{completeColumnRangeQ}{See \code{\link{ERTMonTakeContingencyMatrices}}.}
 }
 \value{
 An ERTMon object.

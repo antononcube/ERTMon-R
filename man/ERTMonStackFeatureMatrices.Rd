@@ -21,7 +21,7 @@ If NULL then all entity ID's are used.}
 
 \item{dropEmptyRowsQ}{Should the empty rows be dropped or not?}
 
-\item{completeColumnRangeQ}{See \link{\code{ERTMonTakeContingencyMatrices}}.}
+\item{completeColumnRangeQ}{See \code{\link{ERTMonTakeContingencyMatrices}}.}
 }
 \description{
 Make a stack of feature sub-matrices.

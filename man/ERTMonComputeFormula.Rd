@@ -11,7 +11,7 @@ ERTMonComputeFormula(ertObj, formulaSpec, completeColumnRangeQ = FALSE)
 
 \item{formulaSpec}{A formula specification.}
 
-\item{completeColumnRangeQ}{See \link{\code{ERTMonTakeContingencyMatrices}}.}
+\item{completeColumnRangeQ}{See \code{\link{ERTMonTakeContingencyMatrices}}.}
 }
 \value{
 An ERTMon object.

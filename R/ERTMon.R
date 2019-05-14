@@ -943,7 +943,7 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
 #' @param entityIDs A character vector with entity ID's (that feature sub-matrices row names.)
 #' If NULL then all entity ID's are used.
 #' @param collapseFunction A function that can be applied to a sparse matrix. 
-#' @param completeColumnRangeQ See \link{\code{ERTMonTakeContingencyMatrices}}.
+#' @param completeColumnRangeQ See \code{\link{ERTMonTakeContingencyMatrices}}.
 #' @return An ERTMon object.
 #' @details The obtained list of collapsed matrices is assigned to \code{ertObj$Value}.
 #' This function is fairly simple -- it was programmed in order to have 
@@ -1027,7 +1027,7 @@ ERTMonCollapseFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs
 #' If NULL then all entity ID's are used.
 #' @param sep A separator string.
 #' @param dropEmptyRowsQ Should the empty rows be dropped or not?
-#' @param completeColumnRangeQ See \link{\code{ERTMonTakeContingencyMatrices}}.
+#' @param completeColumnRangeQ See \code{\link{ERTMonTakeContingencyMatrices}}.
 #' @details The obtained matrix is assigned to \code{ertObj$Value}.
 #' The entity ID's are concatenated with matrix names using the separator \code{sep}.
 #' The rows that are "empty" (without elements) are removed by default.
@@ -1117,7 +1117,7 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
 #' sub-matrices of an ERTMon object.
 #' @param ertObj An ERTMon object.
 #' @param formulaSpec A formula specification.
-#' @param completeColumnRangeQ See \link{\code{ERTMonTakeContingencyMatrices}}.
+#' @param completeColumnRangeQ See \code{\link{ERTMonTakeContingencyMatrices}}.
 #' @return An ERTMon object.
 #' @details The column names of \code{formulaSpec} are expected to include:
 #' \code{c("TermID", "TermCoefficient", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart")}.
