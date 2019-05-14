@@ -13,6 +13,9 @@ library(ERTMon)
 ## 3) [ ] appropriate warnings tests.
 ##===========================================================
 
+## The tests are supposed to pass with both TRUE and FALSE
+completeColumnRangeQ <- TRUE
+
 ## Generate data.
 testData <-
   ERTMonSimpleTestData( numberOfEntities = 10, numberOfVariables = 5, 
@@ -29,7 +32,7 @@ ertmon0 <-
   ERTMonProcessEventRecords( alignmentSpec = "MinTime" )
 
 ## Extract feature sub-matrices.
-feMats <- ertmon0 %>% ERTMonTakeContingencyMatrices
+feMats <- ertmon0 %>% ERTMonTakeContingencyMatrices( columnPrefixesQ = F, completeColumnRangeQ = completeColumnRangeQ )
 
 ## Select feature sub-matrices names to focus on.
 focusMatNames <- grep( "Mean$", ertmon0 %>% ERTMonTakeFeatureNamePrefixes, value = T )
@@ -37,7 +40,7 @@ focusMatNames <- grep( "Mean$", ertmon0 %>% ERTMonTakeFeatureNamePrefixes, value
 ## Collapse feature specified sub-matrices with the default collapse function, colSums.
 ertmon0 <- 
   ertmon0 %>% 
-  ERTMonCollapseFeatureMatrices( matrixNames = focusMatNames )
+  ERTMonCollapseFeatureMatrices( matrixNames = focusMatNames, completeColumnRangeQ = completeColumnRangeQ )
 
 ## Get the result. 
 resMats1 <- ertmon0 %>% ERTMonTakeValue
@@ -45,7 +48,7 @@ resMats1 <- ertmon0 %>% ERTMonTakeValue
 ## Collapse feature specified sub-matrices with rowSums.
 ertmon0 <- 
   ertmon0 %>% 
-  ERTMonCollapseFeatureMatrices( matrixNames = focusMatNames, collapseFunction = rowSums )
+  ERTMonCollapseFeatureMatrices( matrixNames = focusMatNames, collapseFunction = rowSums, completeColumnRangeQ = completeColumnRangeQ )
 
 ## Get the result.
 resMats2 <- ertmon0 %>% ERTMonTakeValue

@@ -4,12 +4,14 @@
 \alias{ERTMonComputeFormula}
 \title{Compute specified formula.}
 \usage{
-ERTMonComputeFormula(ertObj, formulaSpec)
+ERTMonComputeFormula(ertObj, formulaSpec, completeColumnRangeQ = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
 \item{formulaSpec}{A formula specification.}
+
+\item{completeColumnRangeQ}{See \link{\code{ERTMonTakeContingencyMatrices}}.}
 }
 \value{
 An ERTMon object.

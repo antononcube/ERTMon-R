@@ -5,7 +5,8 @@
 \title{Get feature sub-matrices collapsed.}
 \usage{
 ERTMonCollapseFeatureMatrices(ertObj, matrixNames = NULL,
-  entityIDs = NULL, collapseFunction = colSums)
+  entityIDs = NULL, collapseFunction = colSums,
+  completeColumnRangeQ = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -17,6 +18,8 @@ If NULL then all feature sub-matrices are collapsed.}
 If NULL then all entity ID's are used.}
 
 \item{collapseFunction}{A function that can be applied to a sparse matrix.}
+
+\item{completeColumnRangeQ}{See \link{\code{ERTMonTakeContingencyMatrices}}.}
 }
 \value{
 An ERTMon object.

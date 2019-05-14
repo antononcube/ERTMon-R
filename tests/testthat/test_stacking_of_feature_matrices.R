@@ -28,7 +28,7 @@ ertmon0 <-
   ERTMonProcessEventRecords( alignmentSpec = "MinTime" )
 
 ## Extract feature sub-matrices.
-feMats <- ertmon0 %>% ERTMonTakeContingencyMatrices
+feMats <- ertmon0 %>% ERTMonTakeContingencyMatrices( columnPrefixesQ = F, completeColumnRangeQ = T )
 
 ## Select feature sub-matrices names to focus on.
 focusMatNames <- grep( "Mean$", ertmon0 %>% ERTMonTakeFeatureNamePrefixes, value = T )
@@ -39,7 +39,7 @@ focusEntityIDs <- c( "1", "2", "6" )
 ## Stack feature specified sub-matrices.
 ertmon0 <- 
   ertmon0 %>% 
-  ERTMonStackFeatureMatrices( matrixNames = focusMatNames, entityIDs = focusEntityIDs, sep = "<@>" )
+  ERTMonStackFeatureMatrices( matrixNames = focusMatNames, entityIDs = focusEntityIDs, sep = "<@>", completeColumnRangeQ = T )
 
 ## Get the result. 
 res <- ertmon0 %>% ERTMonTakeValue

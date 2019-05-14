@@ -287,14 +287,14 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 #' @param columnPrefixesQ Should the column names have feature prefixes?
 #' If TRUE the column names are just integers.
 #' @param completeColumnRangeQ Should the columns correspond to all 
-#' time grid cell indexes between the minimum and maximum one?
-#' This is done only if \code{columnPrefixesQ=FALSE}.
+#' time grid cell indexes between the minimum and maximum ones?
+#' This is done only with \code{columnPrefixesQ = FALSE}.
 #' @return A list of named matrices.
 #' @details The sub-matrices are extracted through the corresponding prefixes.
 #' An alternative is to use the sparse matrices that are in \code{ertObj$dtObj}.
 #' @family Set/Take functions
 #' @export
-ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, columnPrefixesQ = FALSE ) {
+ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, columnPrefixesQ = FALSE, completeColumnRangeQ = FALSE ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
@@ -342,7 +342,7 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, columnPrefixesQ 
                       colnames(sm) <- colVals[colOrder]
                       
                       if( completeColumnRangeQ ) {
-                        sm <- ImposeColumnIDs( colIDs = seq( min(colVals), max(calVals), 1 ), smat = sm )
+                        sm <- ImposeColumnIDs( colIDs = seq( min(colVals), max(colVals), 1 ), smat = sm )
                       } else {
                         sm
                       }
@@ -943,13 +943,14 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
 #' @param entityIDs A character vector with entity ID's (that feature sub-matrices row names.)
 #' If NULL then all entity ID's are used.
 #' @param collapseFunction A function that can be applied to a sparse matrix. 
+#' @param completeColumnRangeQ See \link{\code{ERTMonTakeContingencyMatrices}}.
 #' @return An ERTMon object.
 #' @details The obtained list of collapsed matrices is assigned to \code{ertObj$Value}.
 #' This function is fairly simple -- it was programmed in order to have 
 #' the corresponding operation explicitly named in formula computation workflows.
 #' @family Feature matrices 
 #' @export
-ERTMonCollapseFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, collapseFunction = colSums ) {
+ERTMonCollapseFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, collapseFunction = colSums, completeColumnRangeQ = FALSE ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
@@ -967,7 +968,7 @@ ERTMonCollapseFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs
     return(ERTMonFailureSymbol)
   }
   
-  feMats <- ertObj %>% ERTMonTakeContingencyMatrices
+  feMats <- ertObj %>% ERTMonTakeContingencyMatrices( columnPrefixesQ = FALSE, completeColumnRangeQ = completeColumnRangeQ )
 
   if( is.null(matrixNames) ) { matrixNames <- names(feMats) }
   
@@ -1026,12 +1027,13 @@ ERTMonCollapseFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs
 #' If NULL then all entity ID's are used.
 #' @param sep A separator string.
 #' @param dropEmptyRowsQ Should the empty rows be dropped or not?
+#' @param completeColumnRangeQ See \link{\code{ERTMonTakeContingencyMatrices}}.
 #' @details The obtained matrix is assigned to \code{ertObj$Value}.
 #' The entity ID's are concatenated with matrix names using the separator \code{sep}.
 #' The rows that are "empty" (without elements) are removed by default.
 #' @family Feature matrices 
 #' @export
-ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, sep = ".", dropEmptyRowsQ = TRUE ) {
+ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = NULL, sep = ".", dropEmptyRowsQ = TRUE, completeColumnRangeQ = FALSE ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
@@ -1049,7 +1051,7 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
     return(ERTMonFailureSymbol)
   }
   
-  feMats <- ertObj %>% ERTMonTakeContingencyMatrices( noColumnPrefixes = )
+  feMats <- ertObj %>% ERTMonTakeContingencyMatrices( columnPrefixesQ = FALSE, completeColumnRangeQ = completeColumnRangeQ )
   
   if( is.null(matrixNames) ) { matrixNames <- names(feMats) }
   
@@ -1115,12 +1117,13 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
 #' sub-matrices of an ERTMon object.
 #' @param ertObj An ERTMon object.
 #' @param formulaSpec A formula specification.
+#' @param completeColumnRangeQ See \link{\code{ERTMonTakeContingencyMatrices}}.
 #' @return An ERTMon object.
 #' @details The column names of \code{formulaSpec} are expected to include:
 #' \code{c("TermID", "TermCoefficient", "FeatureName", "ReduceFunction", "Coefficient", "Exponent", "RatioPart")}.
 #' The result matrix is assigned into \code{ertObj$Value}.
 #' @export
-ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
+ERTMonComputeFormula <- function( ertObj, formulaSpec, completeColumnRangeQ = FALSE ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
@@ -1141,7 +1144,7 @@ ERTMonComputeFormula <- function( ertObj, formulaSpec ) {
     return(ERTMonFailureSymbol)
   }
   
-  smats <- ERTMonTakeContingencyMatrices( ertObj, noColumnPrefixes = T )
+  smats <- ERTMonTakeContingencyMatrices( ertObj, columnPrefixesQ = FALSE, completeColumnRangeQ = completeColumnRangeQ )
   
   resMat <- ApplyFormulaSpecification( smats = smats[ grep("Label", names(smats), invert = T) ], formulaSpec = formulaSpec )
   

@@ -5,7 +5,8 @@
 \title{Make a stack of feature sub-matrices.}
 \usage{
 ERTMonStackFeatureMatrices(ertObj, matrixNames = NULL,
-  entityIDs = NULL, sep = ".", dropEmptyRowsQ = TRUE)
+  entityIDs = NULL, sep = ".", dropEmptyRowsQ = TRUE,
+  completeColumnRangeQ = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -19,6 +20,8 @@ If NULL then all entity ID's are used.}
 \item{sep}{A separator string.}
 
 \item{dropEmptyRowsQ}{Should the empty rows be dropped or not?}
+
+\item{completeColumnRangeQ}{See \link{\code{ERTMonTakeContingencyMatrices}}.}
 }
 \description{
 Make a stack of feature sub-matrices.
