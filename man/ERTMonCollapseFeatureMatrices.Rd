@@ -30,7 +30,7 @@ Get feature sub-matrices collapsed.
 \details{
 Collapses specified feature sub-matrices with a specified function.
 The collapse function can be one of \code{rowSums, rowMeans, colSums, colMeans} 
-or any other function that can be applied
+or any other function that can be applied.
 
 The obtained list of collapsed matrices is assigned to \code{ertObj$Value}.
 This function is fairly simple -- it was programmed in order to have 

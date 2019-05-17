@@ -936,7 +936,7 @@ ERTMonReadDataFromDirectory <- function( ertObj, directoryName, readCompSpecQ = 
 #' Get feature sub-matrices collapsed.
 #' @details Collapses specified feature sub-matrices with a specified function.
 #' The collapse function can be one of \code{rowSums, rowMeans, colSums, colMeans} 
-#' or any other function that can be applied
+#' or any other function that can be applied.
 #' @param ertObj An ERTMon object.
 #' @param matrixNames A character vector with names of feature sub-matrices to be collapsed.
 #' If NULL then all feature sub-matrices are collapsed.
