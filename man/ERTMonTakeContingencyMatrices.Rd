@@ -4,13 +4,16 @@
 \alias{ERTMonTakeContingencyMatrices}
 \title{Take feature sub-matrices.}
 \usage{
-ERTMonTakeContingencyMatrices(ertObj, smat = NULL,
+ERTMonTakeContingencyMatrices(ertObj, smat = NULL, matrixNames = NULL,
   columnPrefixesQ = FALSE, completeColumnRangeQ = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
 
 \item{smat}{If not NULL it is going to be used instead of \code{ertObj$Value}.}
+
+\item{matrixNames}{The contingency matrix names to be taken. 
+If NULL all contingency matrices are taken.}
 
 \item{columnPrefixesQ}{Should the column names have feature prefixes?
 If TRUE the column names are just integers.}

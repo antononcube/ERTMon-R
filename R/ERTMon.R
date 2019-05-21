@@ -284,6 +284,8 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 #' @description Returns the sub-matrices of the feature matrix.
 #' @param ertObj An ERTMon object.
 #' @param smat If not NULL it is going to be used instead of \code{ertObj$Value}.
+#' @param matrixNames The contingency matrix names to be taken. 
+#' If NULL all contingency matrices are taken.
 #' @param columnPrefixesQ Should the column names have feature prefixes?
 #' If TRUE the column names are just integers.
 #' @param completeColumnRangeQ Should the columns correspond to all 
@@ -294,7 +296,7 @@ ERTMonTakeFeatureNamePrefixes <- function( ertObj ) {
 #' An alternative is to use the sparse matrices that are in \code{ertObj$dtObj}.
 #' @family Set/Take functions
 #' @export
-ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, columnPrefixesQ = FALSE, completeColumnRangeQ = FALSE ) {
+ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, matrixNames = NULL, columnPrefixesQ = FALSE, completeColumnRangeQ = FALSE ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
@@ -310,46 +312,67 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, columnPrefixesQ 
     stop("Cannot find data transformation object. Transform the data first.", call. = TRUE )
   }
   
-  ## Or use ERTMonTakeFeatureNames(ertObj) .
   rnames <- paste( ertObj$dtObj@compSpec@parameters$Variable, ertObj$dtObj@compSpec@parameters$Aggregation.function, sep = ".")
+  
+  if( is.null(matrixNames) ) {
+    ## Or use ERTMonTakeFeatureNames(ertObj) .
+    matrixNames <- rnames
+  }  
+  
+  if( length(intersect(rnames, matrixNames)) == 0 ) {
+    
+    warning( "None of the specified matrix names is a contingency matrix names.", call. = TRUE)
+    return(ERTMonFailureSymbol)
+    
+  } else if ( length(setdiff(matrixNames, rnames)) > 0 ) {
+    
+    warning( "Some of the specified matrix names are not contingency matrix names.", call. = TRUE)
 
-  ## In principle we could use theseS somehow.
+  }
+  
+  ## In principle we could use these somehow.
   # ertObj$dtObj <- makeSparseMatrices(ertObj$dtObj, echoStepsQ = FALSE )
   # res <- ertObj$dtObj@sparseMatrices
   
   res <-
-    purrr::map( rnames, function(x) smat[, grep(x, colnames(smat), fixed=T), drop=F ] )
-
+    purrr::map( matrixNames, function(x) smat[, grep(x, colnames(smat), fixed=T), drop=F ] )
+  names(res) <- matrixNames
+  
   if( !columnPrefixesQ ) {
     res <-
-      purrr::map( res,
-                  function(sm) {
+      purrr::map( names(res),
+                  function(smName) {
                     ## Here the assumption here is wrong:
                     ## the columns are alphabetically ordered not by TimeGridCell values.
                     # if( !is.null(x) && ncol(x)>0) { colnames(x) <- 1:ncol(x) }
+                    
+                    sm <- res[[smName]]
                     
                     ## Suppress warning messages while converting column names to corresponding values
                     oldw <- getOption("warn"); options(warn = -1)
                     colVals <- as.numeric( purrr::map( strsplit( colnames(sm), "\\." ), function(x) x[[length(x)]] ) )
                     options(warn = oldw)
 
-                    if ( sum( is.na( colVals ) ) > 0 ) { 
+                    if( ncol(sm) == 0 ) {
+                      warning( paste("The contingency matrix", smName, "has zero columns."), call. = T)
+                      sm
+                    } else if ( sum( is.na( colVals ) ) > 0 ) { 
                       warning("Could not remove the column prefixes.", call. = T )
                       sm 
                     } else {
                       colOrder <- order( colVals  )
                       sm <- sm[, colOrder, drop = F]
                       colnames(sm) <- colVals[colOrder]
-                      
+
                       if( completeColumnRangeQ ) {
-                        sm <- ImposeColumnIDs( colIDs = seq( min(colVals), max(colVals), 1 ), smat = sm )
+                        sm <- ImposeColumnIDs( colIDs = as.character( min(colVals):max(colVals) ), smat = sm )
                       } else {
                         sm
                       }
                     }
                   })
+    names(res) <- matrixNames
   }
-  names(res) <- rnames
   
   res
 }
@@ -968,7 +991,7 @@ ERTMonCollapseFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs
     return(ERTMonFailureSymbol)
   }
   
-  feMats <- ertObj %>% ERTMonTakeContingencyMatrices( columnPrefixesQ = FALSE, completeColumnRangeQ = completeColumnRangeQ )
+  feMats <- ertObj %>% ERTMonTakeContingencyMatrices( matrixNames = matrixNames, columnPrefixesQ = FALSE, completeColumnRangeQ = completeColumnRangeQ )
 
   if( is.null(matrixNames) ) { matrixNames <- names(feMats) }
   
@@ -1051,7 +1074,7 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
     return(ERTMonFailureSymbol)
   }
   
-  feMats <- ertObj %>% ERTMonTakeContingencyMatrices( columnPrefixesQ = FALSE, completeColumnRangeQ = completeColumnRangeQ )
+  feMats <- ertObj %>% ERTMonTakeContingencyMatrices( matrixNames = matrixNames, columnPrefixesQ = FALSE, completeColumnRangeQ = completeColumnRangeQ )
   
   if( is.null(matrixNames) ) { matrixNames <- names(feMats) }
   
@@ -1095,7 +1118,7 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
       names(feMats)
     )
   
-  allColumnNames <- unique( unlist( purrr::map( feMats, colnames ) ) )
+  allColumnNames <- sort( unique( unlist( purrr::map( feMats, colnames ) ) ) )
   
   feMats <- purrr::map( feMats, function(x) ImposeColumnIDs( colIDs = allColumnNames, x ) )
   
