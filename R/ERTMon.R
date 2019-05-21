@@ -1118,7 +1118,8 @@ ERTMonStackFeatureMatrices <- function( ertObj, matrixNames = NULL, entityIDs = 
       names(feMats)
     )
   
-  allColumnNames <- sort( unique( unlist( purrr::map( feMats, colnames ) ) ) )
+  allColumnNames <- unique( unlist( purrr::map( feMats, colnames ) ) )
+  allColumnNames <- allColumnNames[ order(as.numeric(allColumnNames)) ]
   
   feMats <- purrr::map( feMats, function(x) ImposeColumnIDs( colIDs = allColumnNames, x ) )
   
