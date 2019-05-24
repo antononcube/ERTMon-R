@@ -7,9 +7,12 @@
 ImposeColumnIDs(colIDs, smat)
 }
 \arguments{
-\item{colIDs}{an array of col ID's}
+\item{colIDs}{A character vector of column ID's.}
 
-\item{smat}{a matrix with named columns}
+\item{smat}{A matrix with named columns.}
+}
+\value{
+A sparse matrix.
 }
 \description{
 Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's

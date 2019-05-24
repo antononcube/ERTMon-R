@@ -223,8 +223,9 @@ SparseMatrixToTriplets <- function( smat ) {
 
 #' Impose row ID's to a sparse matrix.
 #' @description Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
-#' @param rowIDs an array of row ID's
-#' @param smat a matrix with named rows
+#' @param rowIDs A character vector of row ID's.
+#' @param smat A matrix with named rows.
+#' @return A sparse matrix.
 #' @export
 ImposeRowIDs <- function( rowIDs, smat ) {
 
@@ -246,12 +247,39 @@ ImposeRowIDs <- function( rowIDs, smat ) {
 
 #' Impose column ID's to a sparse matrix.
 #' @description Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
-#' @param colIDs an array of col ID's
-#' @param smat a matrix with named columns
+#' @param colIDs A character vector of column ID's.
+#' @param smat A matrix with named columns.
+#' @return A sparse matrix.
 #' @export
 ImposeColumnIDs <- function( colIDs, smat ) {
 
   t( ImposeRowIDs( colIDs, t(smat)) )
+}
+
+#' Sparse matrix row maximums.
+#' @description Find the row maximums in a sparse matrix.
+#' @param smat A sparse matrix.
+#' @details The argument \code{smat} is expected to be of type "dgCMatrix".
+#' This condition should hold \code{mean( names( RowMaxes(smat) ) == rownames(smat) ) == 1}.
+#' @return A numeric vector with named elements
+#' @export
+RowMaxes <- function( smat ) {
+  
+  rowMaxes <- setNames( ERTMon::SparseMatrixToTriplets( smat ), c("RowID", "ColID", "Value") )
+  rowMaxes <- rowMaxes %>% dplyr::group_by( RowID ) %>% dplyr::summarise( Max = max(Value) ) 
+  rowMaxes <- setNames( rowMaxes %>% dplyr::pull( Max ), rowMaxes %>% dplyr::pull( RowID ) ) 
+  rowMaxes <- rowMaxes[rownames(smat) ]
+  
+  rowMaxes
+}
+
+#' Sparse matrix column maximums.
+#' @description Find the column maximums in a sparse matrix.
+#' @param smat A sparse matrix.
+#' @details The argument \code{smat} is expected to be of type "dgCMatrix".
+#' @export
+ColMaxes <- function( smat ) {
+  RowMaxes(t(smat))
 }
 
 #' Piecewise function constructor.
