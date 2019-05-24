@@ -454,7 +454,6 @@ ERTMonTakeTimeCellsInterpretation <- function( ertObj ) {
 #' @description Returns a data frame with the variable outlier boundaries.
 #' @param ertObj An ERTMon object.
 #' @return A data frame. 
-#' @details 
 #' @family Set/Take functions
 #' @export
 ERTMonTakeVariableOutlierBoundaries <- function( ertObj ) {
@@ -468,6 +467,87 @@ ERTMonTakeVariableOutlierBoundaries <- function( ertObj ) {
   } else { 
     ertObj$dtObj@outlierBoundaries
   }
+}
+
+
+##-----------------------------------------------------------
+
+#' Take alignment specification.
+#' @description Returns the aligment specification used when 
+#' the last time \code{ERTMonProcessEventRecords} was called.
+#' @param ertObj An ERTMon object.
+#' @return A data frame. 
+#' @family Set/Take functions
+#' @export
+ERTMonTakeAlignmentSpec <- function( ertObj ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
+  if ( !ERTMonMemberPresenceCheck( ertObj = ertObj, memberName = "AlignmentSpec", functionName = "ERTMonTakeAlignmentSpec", logicalResult = TRUE ) ) {
+    ERTMonFailureSymbol
+  } else { 
+    ertObj$AlignmentSpec
+  }
+}
+
+
+##===========================================================
+## Take time series data frame
+##===========================================================
+
+#' Take time series data frame.
+#' @description Returns a data frame with the feature matrix represented as
+#' a set of time series in long form.
+#' @param ertObj An ERTMon object.
+#' @param origin A date-time object or something that can be coerced to such object,
+#' that can be used in \code{\link{as.POSIXct}}.
+#' @return A data frame. 
+#' @family Set/Take functions
+#' @export
+ERTMonTakeTimeSeriesDataFrame <- function( ertObj, origin = "1900-01-01" ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
+  
+  dfTGC <-
+    ertObj %>% 
+    ERTMonTakeTimeCellsInterpretation
+  
+  minObservationTime <- ertObj %>% ERTMonTakeAlignmentSpec
+
+  if( ERTMonFailureQ(minObservationTime) ) { return(ERTMonFailureSymbol) }
+  
+  if( !is.numeric(minObservationTime) ) { minObservationTime <- 0 }
+  
+  dfTGC <-
+    dfTGC %>% 
+    dplyr::mutate( MeanTime = (StartTime + EndTime) / 2 ) %>% 
+    dplyr::mutate( StartTime = as.POSIXct( StartTime + minObservationTime, origin = origin ) ) %>% 
+    dplyr::mutate( EndTime = as.POSIXct( EndTime + minObservationTime, origin = origin ) ) %>% 
+    dplyr::mutate( MeanTime = as.POSIXct( MeanTime + minObservationTime, origin = origin ) )
+  
+  smats <- ertObj %>% ERTMonTakeContingencyMatrices( columnPrefixesQ = FALSE, completeColumnRangeQ = TRUE )
+  
+  if( ERTMonFailureQ(smats) ) { return(ERTMonFailureSymbol) }
+  
+    
+  res <- 
+    purrr::map( names(smats), function(x) { 
+      
+      qDF <- setNames( SparseMatrixToTriplets( smats[[x]] ), c("EntityID", "TimeGridCell", "Value") )
+      
+      qDF$TimeGridCell <- as.numeric(qDF$TimeGridCell)
+
+      qDF <- 
+        qDF %>% 
+        dplyr::inner_join( dfTGC %>% dplyr::filter( MatrixName == x ), by = c( "TimeGridCell") )
+      
+      qDF <- cbind( MatrixName = x, qDF, stringsAsFactors = FALSE )
+      
+      qDF
+    })
+  
+  dplyr::bind_rows(res)
+  
 }
 
 
@@ -809,6 +889,7 @@ ERTMonProcessEventRecords <- function( ertObj,
                           alignmentSpec = alignmentSpec,
                           echoStepsQ = echoStepsQ )
   
+  ertObj$AlignmentSpec = alignmentSpec
   ertObj$compSpecObj <- compSpecObj
   ertObj$dtObj <- dtObj
   ertObj$Value <- dtObj@dataMat

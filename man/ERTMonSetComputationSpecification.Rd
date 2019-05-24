@@ -20,6 +20,7 @@ Sets a computation specification data frame into the monad object.
 \seealso{
 Other Set/Take functions: \code{\link{ERTMonSetEntityAttributes}},
   \code{\link{ERTMonSetEventRecords}},
+  \code{\link{ERTMonTakeAlignmentSpec}},
   \code{\link{ERTMonTakeComputationSpecification}},
   \code{\link{ERTMonTakeContingencyMatrices}},
   \code{\link{ERTMonTakeEntityAttributes}},
@@ -27,6 +28,7 @@ Other Set/Take functions: \code{\link{ERTMonSetEntityAttributes}},
   \code{\link{ERTMonTakeFeatureMatrix}},
   \code{\link{ERTMonTakeFeatureNamePrefixes}},
   \code{\link{ERTMonTakeTimeCellsInterpretation}},
+  \code{\link{ERTMonTakeTimeSeriesDataFrame}},
   \code{\link{ERTMonTakeTrasformedData}},
   \code{\link{ERTMonTakeValue}},
   \code{\link{ERTMonTakeVariableOutlierBoundaries}}
