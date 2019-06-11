@@ -10,6 +10,10 @@ testData <-
                         variableFunction = "Linear", 
                         exportDirectoryName = NULL )
 
+testData$EventRecords <-
+  testData$EventRecords %>% 
+  dplyr::mutate( Variable = paste0( 'a[/.', Variable, '/]') )
+
 testData$ComputationSpecification <-
   testData$ComputationSpecification %>% 
   dplyr::mutate( Variable = paste0( 'a[/.', Variable, '/]') )
@@ -22,6 +26,6 @@ ertmon0 <-
   ERTMonProcessEventRecords( alignmentSpec = "MinTime" )
 
 
-test_that("Expected monad object", {
-  expect_is( ertmon0, "list" )
+wartest_that("Expected monad object", {
+  expect_is( ertmon0, "ERTMon" )
 })
