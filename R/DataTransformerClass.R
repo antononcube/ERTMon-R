@@ -159,13 +159,13 @@ setMethod("transformData",
                   data.frame( Variable = x$Variable[[1]], Lower = obs[[1]], Upper = obs[[2]], stringsAsFactors = F )
                 })
             }
-            
+
             ## Main transformation computation
             eventRecordsData <- 
               eventRecordsData %>%
               restrictToSpecifiedVariables( object, echoStepsQ = echoStepsQ ) %>%
               aggregateOverTimeGrid( object, alignmentSpec = alignmentSpec, echoStepsQ = echoStepsQ )
-            
+
             ## Time cells interpretations
             if( tolower(alignmentSpec) %in% c("maxtime", "max") ) { tsSign = -1 } else { tsSign = 1 }
             
@@ -208,7 +208,7 @@ setMethod("transformData",
             if( !testDataRun ) {
               object <- aggregateAndAccumulateOverGroups(object, eventRecordsData, echoStepsQ = echoStepsQ )
             }
-            
+
             ## Normalize
             object@transformedData <- eventRecordsData %>% normalize(object, echoStepsQ = echoStepsQ)
             
@@ -237,9 +237,18 @@ setMethod("restrictToSpecifiedVariables",
             }
             
             if( echoStepsQ ) { cat("\n\tRestrict event records to specificed variables...\n") }
-            
+
             eventRecords <- dplyr::filter( eventRecords, Variable %in% object@compSpec@parameters$Variable )
-            
+          
+            if( is.null(eventRecords) || nrow(eventRecords) == 0 ) {
+              
+              if( sum( unique(eventRecords$Variable) %in% object@compSpec@parameters$Variable ) == 0 ) {
+                stop("None of the computation specification variables are found in the event records.", call. = TRUE )
+              }
+                
+              stop("Obtained empty event records after variable restriction.", call. = TRUE )
+            }
+              
             if( echoStepsQ ) { cat("\n\t\t...DONE\n") }
             
             eventRecords
@@ -409,7 +418,7 @@ setMethod("makeSparseMatrices",
             
             ## Find is the calculation of a label feature matrix specified?
             findLabelMatQ <- HasLabelRowQ( object@compSpec@parameters )
-            
+
             if( findLabelMatQ ) {
               labelMat <- 
                 xtabs( ~ EntityID + Value, 
@@ -419,6 +428,10 @@ setMethod("makeSparseMatrices",
               labelMat@x[labelMat@x > 1 ] <- 1
             }
             
+            if( is.null(object@transformedData) || nrow(object@transformedData) == 0 ) {
+              stop("The object@transformedData is empty.", call. = TRUE)
+            }
+              
             smats <- 
               purrr::map( 
                 split( object@transformedData, object@transformedData$MatrixName ), 
@@ -463,7 +476,14 @@ setMethod("makeSparseMatrices",
                   }
                 })
             names(smats) <- smatNames
-            
+
+            ## Most likely redundant at this point,
+            ## because of the earlier check with object@transformedData.
+            if( length(smats) == 0 ) {
+              warning("No sparse matrices were derived.", call. = T)
+              return(object)
+            }
+              
             ## Final result
             object@sparseMatrices <- smats
             object@dataMat <- do.call( cbind, smats )
@@ -560,7 +580,7 @@ setMethod("aggregateAndAccumulateOverGroups",
             if( echoStepsQ ) { cat("\n\tAggregation over groups functions application (and accumulation)...\n") }
             
             allEntityAttributes <- unique(object@entityAttributes$Attribute)
-            
+
             object@groupAggregatedValues <-
               purrr::map_dfr( split( object@compSpec@parameters, object@compSpec@parameters$MatrixName), function(specRow) { 
                 

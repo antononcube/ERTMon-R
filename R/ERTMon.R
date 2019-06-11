@@ -774,7 +774,7 @@ ERTMonFilterEventRecords <- function( ertObj,
   
   if( nrow(ertObj %>% ERTMonTakeEventRecords) == 0 ) {
     ## I am not sure is this message wanted / needed.
-    warning( "The event records filtering produced empty event records dataset. (Examine the summary of ertObj$SummarisedObservationTimes .)", call. = T )
+    warning( "The event records filtering produced an empty event records dataset. (Examine the summary of ertObj$SummarisedObservationTimes .)", call. = T )
   }
     
   ## Filter entity attributes.
