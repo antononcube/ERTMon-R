@@ -26,6 +26,6 @@ ertmon0 <-
   ERTMonProcessEventRecords( alignmentSpec = "MinTime" )
 
 
-wartest_that("Expected monad object", {
+test_that("Expected monad object", {
   expect_is( ertmon0, "ERTMon" )
 })
