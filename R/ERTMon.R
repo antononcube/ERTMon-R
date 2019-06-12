@@ -832,11 +832,25 @@ ERTMonProcessEventRecords <- function( ertObj,
     return(ERTMonFailureSymbol)
   }
   
+  ## Event records variables.
+  erVars <- unique( (ertObj %>% ERTMonTakeEventRecords)$Variable )
+  
+  ## Variables in event records and comp spec.
+  if( mean( ertObj$ComputationSpecification$Variable %in% erVars ) == 0 ) {
+    
+    warning( "None of the variables of ertObj$ComputationSpecification are in ertObj$EventRecords.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+    
+  } else if ( mean( ertObj$ComputationSpecification$Variable %in% erVars ) < 1 ) {
+    
+    warning( "Some variables of ertObj$ComputationSpecification are not in ertObj$EventRecords.", call. = TRUE )
+    
+  }
+  
   ## Get the computation specification.
   compSpec <- ertObj %>% ERTMonTakeComputationSpecification
   
   ## Filter the comutation specification to variables in the event records.
-  erVars <- unique( (ertObj %>% ERTMonTakeEventRecords)$Variable )
   compSpec <- compSpec[ compSpec$Variable %in% erVars, ]
   
   ## Find is the calculation of a label feature matrix specified?
