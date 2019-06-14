@@ -13,7 +13,7 @@ ERTMonTakeAlignmentSpec(ertObj)
 A data frame.
 }
 \description{
-Returns the aligment specification used when 
+Returns the alignment specification used when 
 the last time \code{ERTMonProcessEventRecords} was called.
 }
 \seealso{

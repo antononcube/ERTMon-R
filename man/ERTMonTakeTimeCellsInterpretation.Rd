@@ -17,7 +17,7 @@ Returns a data frame with the interpretation of the time cells.
 }
 \details{
 If the alignment specification given to \code{\link{ERTMonProcessEventRecords}}
-is "MaxTime" the entity time series will be aligned to finish at 0. 
+is \code{"MaxTime"} the entity time series will be aligned to finish at 0. 
 In that case the interpretation times are non-positive.
 }
 \seealso{

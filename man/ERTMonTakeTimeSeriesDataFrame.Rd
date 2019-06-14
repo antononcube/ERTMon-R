@@ -4,10 +4,14 @@
 \alias{ERTMonTakeTimeSeriesDataFrame}
 \title{Take time series data frame.}
 \usage{
-ERTMonTakeTimeSeriesDataFrame(ertObj, origin = "1900-01-01")
+ERTMonTakeTimeSeriesDataFrame(ertObj, matrixNames = NULL,
+  origin = "1900-01-01")
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
+
+\item{matrixNames}{The matrix names to be in the result data frame.
+If NULL all matrix names are used.}
 
 \item{origin}{A date-time object or something that can be coerced to such object,
 that can be used in \code{\link{as.POSIXct}}.}
