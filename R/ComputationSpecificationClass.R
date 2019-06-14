@@ -171,8 +171,8 @@ setMethod("ingestSpec",
                 IRQ = function(x) IRQ(x,na.rm=T),
                 Count = function(x) length(x),
                 First = function(x) x[[1]], 
-                Length = n,
-                Tally = tally )
+                Length = dplyr::n,
+                Tally = dplyr::tally )
        
             ## Rules for known normalization functions     
             object@normalizationFuncSpecToFunc <- object@aggrFuncSpecToFunc

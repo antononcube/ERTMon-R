@@ -26,7 +26,7 @@ cells interpretation into CSV files.
 \details{
 The CSV files are written in the specified directory \code{directoryName}. 
 The file name prefix \code{fileNamePrefix} is concatenated to the generic file names:
-"longFormComputationSpecification.csv", "featureMatrix.csv", and "timeCellsInterpretation.csv".
+\code{"longFormComputationSpecification.csv", "featureMatrix.csv", "timeCellsInterpretation.csv"}.
 The conversion into long form of the computation specification is considered to be 
 more convenient from a "model management" perspective. 
 The data to be exported is assigned to result's \code{$Value}.

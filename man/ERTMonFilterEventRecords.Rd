@@ -21,11 +21,11 @@ If NULL no filtering over location ID's is done.}
 If NULL no filtering over variables is done.}
 
 \item{minObservatonTime}{Minimum observation time. 
-It can be NULL, an integer alue (seconds), \code{"MinTime"}, or \code{"MaxMinTime"}.}
+It can be NULL, an integer value (seconds), \code{"MinTime"}, or \code{"MaxMinTime"}.}
 
 \item{maxObservatonTime}{Minimum observation time. 
 NULL has the same effect as \code{"MinTime"} -- no filtering. 
-It can be NULL, an integer alue (seconds), \code{"MaxTime"}, or \code{"MinMaxTime"}.
+It can be NULL, an integer value (seconds), \code{"MaxTime"}, or \code{"MinMaxTime"}.
 NULL has the same effect as \code{"MaxTime"} -- no filtering.}
 }
 \value{
@@ -33,7 +33,7 @@ An ERTMon object.
 }
 \description{
 Filters event records for specified min and max observation times
-and/or entitie ID's and/or location ID's and/or variable names.
+and/or entity ID's and/or location ID's and/or variable names.
 }
 \details{
 The primary reason for this function is to assure the user

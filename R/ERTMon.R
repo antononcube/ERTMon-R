@@ -430,7 +430,7 @@ ERTMonTakeTrasformedData <- function( ertObj ) {
 #' @param ertObj An ERTMon object.
 #' @return A data frame. 
 #' @details If the alignment specification given to \code{\link{ERTMonProcessEventRecords}}
-#' is "MaxTime" the entity time series will be aligned to finish at 0. 
+#' is \code{"MaxTime"} the entity time series will be aligned to finish at 0. 
 #' In that case the interpretation times are non-positive.
 #' @family Set/Take functions
 #' @export
@@ -473,7 +473,7 @@ ERTMonTakeVariableOutlierBoundaries <- function( ertObj ) {
 ##-----------------------------------------------------------
 
 #' Take alignment specification.
-#' @description Returns the aligment specification used when 
+#' @description Returns the alignment specification used when 
 #' the last time \code{ERTMonProcessEventRecords} was called.
 #' @param ertObj An ERTMon object.
 #' @return A data frame. 
@@ -499,19 +499,44 @@ ERTMonTakeAlignmentSpec <- function( ertObj ) {
 #' @description Returns a data frame with the feature matrix represented as
 #' a set of time series in long form.
 #' @param ertObj An ERTMon object.
+#' @param matrixNames The matrix names to be in the result data frame.
+#' If NULL all matrix names are used.
 #' @param origin A date-time object or something that can be coerced to such object,
 #' that can be used in \code{\link{as.POSIXct}}.
 #' @return A data frame. 
 #' @family Set/Take functions
 #' @export
-ERTMonTakeTimeSeriesDataFrame <- function( ertObj, origin = "1900-01-01" ) {
+ERTMonTakeTimeSeriesDataFrame <- function( ertObj, matrixNames = NULL, origin = "1900-01-01" ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
   dfTGC <-
     ertObj %>% 
     ERTMonTakeTimeCellsInterpretation
+
+  knownMatrixNames <- ertObj %>% ERTMonTakeFeatureNamePrefixes
   
+  if( is.null(matrixNames) ) {
+    
+    matrixNames <- knownMatrixNames
+    
+  } else if ( !is.character(matrixNames) ) {
+    
+    warning( "The argument matrixNames is expected to be a character vector or NULL.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+    
+  } else if ( sum( matrixNames %in% knownMatrixNames ) == 0 ) {
+    
+    warning( "The argument matrixNames has no known matrix names.", call. = TRUE )
+    return(ERTMonFailureSymbol)
+    
+  } else if (  mean( matrixNames %in% knownMatrixNames ) < 1 ) {
+    
+    warning( "Some elements of the argument matrixNames are unknown matrix names.", call. = TRUE )
+    matrixNames <- matrixNames[ matrixNames %in% knownMatrixNames ]
+    
+  }
+    
   minObservationTime <- ertObj %>% ERTMonTakeAlignmentSpec
 
   if( ERTMonFailureQ(minObservationTime) ) { return(ERTMonFailureSymbol) }
@@ -520,16 +545,17 @@ ERTMonTakeTimeSeriesDataFrame <- function( ertObj, origin = "1900-01-01" ) {
   
   dfTGC <-
     dfTGC %>% 
+    dplyr::filter( MatrixName %in% matrixNames ) %>% 
     dplyr::mutate( MeanTime = (StartTime + EndTime) / 2 ) %>% 
     dplyr::mutate( StartTime = as.POSIXct( StartTime + minObservationTime, origin = origin ) ) %>% 
     dplyr::mutate( EndTime = as.POSIXct( EndTime + minObservationTime, origin = origin ) ) %>% 
     dplyr::mutate( MeanTime = as.POSIXct( MeanTime + minObservationTime, origin = origin ) )
-  
-  smats <- ertObj %>% ERTMonTakeContingencyMatrices( columnPrefixesQ = FALSE, completeColumnRangeQ = TRUE )
+
+  smats <- ertObj %>% ERTMonTakeContingencyMatrices( matrixNames = matrixNames, columnPrefixesQ = FALSE, completeColumnRangeQ = TRUE )
   
   if( ERTMonFailureQ(smats) ) { return(ERTMonFailureSymbol) }
   
-    
+
   res <- 
     purrr::map( names(smats), function(x) { 
       
@@ -676,13 +702,13 @@ ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult =
 
 #' Filtering of event records.
 #' @description Filters event records for specified min and max observation times
-#' and/or entitie ID's and/or location ID's and/or variable names.
+#' and/or entity ID's and/or location ID's and/or variable names.
 #' @param ertObj An ERTMon object.
 #' @param minObservatonTime Minimum observation time. 
-#' It can be NULL, an integer alue (seconds), \code{"MinTime"}, or \code{"MaxMinTime"}.
+#' It can be NULL, an integer value (seconds), \code{"MinTime"}, or \code{"MaxMinTime"}.
 #' @param maxObservatonTime Minimum observation time. 
 #' NULL has the same effect as \code{"MinTime"} -- no filtering. 
-#' It can be NULL, an integer alue (seconds), \code{"MaxTime"}, or \code{"MinMaxTime"}.
+#' It can be NULL, an integer value (seconds), \code{"MaxTime"}, or \code{"MinMaxTime"}.
 #' NULL has the same effect as \code{"MaxTime"} -- no filtering. 
 #' @param entityIDs A character vector with entity ID's.
 #' If NULL no filtering over entity ID's is done.
@@ -1408,7 +1434,7 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
 #' @return An ERTMon object or \code{ERTMonFailureSymbol}.
 #' @details The CSV files are written in the specified directory \code{directoryName}. 
 #' The file name prefix \code{fileNamePrefix} is concatenated to the generic file names:
-#' "longFormComputationSpecification.csv", "featureMatrix.csv", and "timeCellsInterpretation.csv".
+#' \code{"longFormComputationSpecification.csv", "featureMatrix.csv", "timeCellsInterpretation.csv"}.
 #' The conversion into long form of the computation specification is considered to be 
 #' more convenient from a "model management" perspective. 
 #' The data to be exported is assigned to result's \code{$Value}.
