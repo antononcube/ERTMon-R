@@ -15,8 +15,8 @@ testData$ComputationSpecification <- unique(testData$ComputationSpecification)
 testData$ComputationSpecification <-
   testData$ComputationSpecification %>% 
   dplyr::group_by( Variable ) %>% 
-  dplyr::filter( dplyr::row_number() == n() ) %>% 
-  ungroup()
+  dplyr::filter( dplyr::row_number() == dplyr::n() ) %>% 
+  dplyr::ungroup()
 
 ertmon0 <-
   ERTMonUnit() %>%
