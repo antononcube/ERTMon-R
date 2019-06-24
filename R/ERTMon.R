@@ -590,6 +590,10 @@ ERTMonTakeTimeSeriesDataFrame <- function( ertObj, matrixNames = NULL, origin = 
 #' @export
 ERTMonDataCheck <- function( ertObj, functionName = NULL, logicalResult = FALSE ) {
   
+  if( ERTMonFailureQ(ertObj) ) { 
+    if(logicalResult) { FALSE } else { return(ERTMonFailureSymbol) }
+  }
+  
   res <- TRUE
   
   if( is.null(functionName) || nchar(functionName) == 0 ) { 
@@ -633,6 +637,10 @@ ERTMonDataCheck <- function( ertObj, functionName = NULL, logicalResult = FALSE 
 #' @return A logical value or an ERTMon object.
 #' @export
 ERTMonMemberPresenceCheck <- function( ertObj, memberName, memberPrettyName = memberName, functionName = "", logicalResult = FALSE ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { 
+    if(logicalResult) { FALSE } else { return(ERTMonFailureSymbol) }
+  }
   
   res <- TRUE
   
@@ -678,6 +686,10 @@ ERTMonDataTransformerCheck <- function( ertObj, functionName = "", logicalResult
 #' @return A logical value or an ERTMon object.
 #' @export
 ERTMonFeatureMatrixCheck <- function( ertObj, functionName = "", logicalResult = FALSE ) {
+  
+  if( ERTMonFailureQ(ertObj) ) { 
+    if(logicalResult) { FALSE } else { return(ERTMonFailureSymbol) }
+  }
   
   res <- ERTMonDataTransformerCheck(ertObj = ertObj, functionName = "ERTMonTakeFeatureMatrix", logicalResult = TRUE) 
   
