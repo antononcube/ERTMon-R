@@ -647,7 +647,7 @@ ERTMonMemberPresenceCheck <- function( ertObj, memberName, memberPrettyName = me
   if( nchar(functionName) > 0 ) { functionName <- paste0( functionName, ":: ") }
   
   if( is.null(ertObj[[memberName]]) ) {
-    warning( paste0( functionName, paste0("Cannot find ", memberPrettyName, "."), call. = TRUE) )
+    warning( paste0( functionName, "Cannot find ", memberPrettyName, "."), call. = TRUE )
     res <- FALSE
   }
   
