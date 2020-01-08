@@ -162,7 +162,12 @@ ERTMonSetEntityAttributes <- function( ertObj, eAttrs ) {
     return(ERTMonFailureSymbol)
   }
   
-  ertObj$EntityAttributes <- eAttrs[, expectedColNames]
+  res <- eAttrs[, expectedColNames]
+  
+  i <- sapply(res, is.factor)
+  res[i] <- lapply(res[i], as.character)
+  
+  ertObj$EntityAttributes <- res 
   
   ertObj
 }
