@@ -208,6 +208,9 @@ ERTMonSimpleTestData <- function( numberOfEntities = 10,
     write.csv( x = fakeCompSpec, file = file.path( exportDirectoryName, "computationSpecification.csv" ) )
   } 
     
+  # fakeEntityAttributes$EntityID <- as.character( fakeEntityAttributes$EntityID )
+  # fakeEventRecords$EntityID <- as.character( fakeEventRecords$EntityID )
+  
   list( EntityAttributes = fakeEntityAttributes, 
         EventRecords = fakeEventRecords, 
         ComputationSpecification = fakeCompSpec )
