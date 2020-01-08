@@ -4,8 +4,7 @@
 \alias{TopOutlierPosition}
 \title{Top outlier positions finder.}
 \usage{
-TopOutlierPosition(dataVec,
-  outlierIdentifier = HampelIdentifierParameters)
+TopOutlierPosition(dataVec, outlierIdentifier = HampelIdentifierParameters)
 }
 \arguments{
 \item{dataVec}{A data vector.}

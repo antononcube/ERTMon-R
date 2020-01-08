@@ -1423,7 +1423,7 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
 #' @return An ERTMon object or \code{ERTMonFailureSymbol}.
 #' @details The CSV files are written in the specified directory \code{directoryName}. 
 #' The file name prefix \code{fileNamePrefix} is concatenated to the generic file names:
-#' \code{"longFormComputationSpecification.csv", "featureMatrix.csv", "timeCellsInterpretation.csv"}.
+#' \code{"longFormComputationSpecification.csv", "featureMatrix.csv", "timeCellsInterpretation.csv", "featureMatrixTimeSeries.csv"}.
 #' The conversion into long form of the computation specification is considered to be 
 #' more convenient from a "model management" perspective. 
 #' The data to be exported is assigned to result's \code{$Value}.
@@ -1478,7 +1478,15 @@ ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste
     write.csv( x = tsDF, file = file.path( directoryName, paste0(fileNamePrefix, "timeCellsInterpretation.csv")), row.names = FALSE )
   }  
   
-  ertObj$Value <- list( ComputationSpecification = compSpec, FeatureMatrix = ertObj$Value, TimeCellsInterpretation = tsDF )
+  ## Export feature matrix time series data frame
+  fmtsDF <- ERTMonTakeTimeSeriesDataFrame( ertObj )
+  fmtsDF <- cbind( ModelID = modelID, fmtsDF, stringsAsFactors = FALSE )
+  
+  if( !is.null(directoryName) ) {
+    write.csv( x = fmtsDF, file = file.path( directoryName, paste0(fileNamePrefix, "featureMatrixTimeSeries.csv")), row.names = FALSE )
+  }  
+  
+  ertObj$Value <- list( ComputationSpecification = compSpec, FeatureMatrix = ertObj$Value, TimeCellsInterpretation = tsDF, FeatureMatrixTimeSeries = fmtsDF  )
   
   ## Result
   ertObj

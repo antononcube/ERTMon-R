@@ -4,8 +4,11 @@
 \alias{ConvertMultiColumnDataFrameToSparseMatrix}
 \title{Convert multi-column data frame into a sparse matrix.}
 \usage{
-ConvertMultiColumnDataFrameToSparseMatrix(multiColDF, itemColName,
-  tagTypeColNames)
+ConvertMultiColumnDataFrameToSparseMatrix(
+  multiColDF,
+  itemColName,
+  tagTypeColNames
+)
 }
 \arguments{
 \item{tagTypeColNames}{names of the tag type column names}
@@ -23,8 +26,9 @@ I assume because of the string-to-formula conversion in  \code{SMRCreateItemTagM
 Obviously, the dependence of the  \code{SMRCreateItemTagMatrix} can be removed.
 }
 \seealso{
-Other Sparse matrix transformation functions: \code{\link{SparseMatrixToTriplets}},
-  \code{\link{ToColumnValueIncidenceMatrix}},
-  \code{\link{TripletsToSparseMatrix}}
+Other Sparse matrix transformation functions: 
+\code{\link{SparseMatrixToTriplets}()},
+\code{\link{ToColumnValueIncidenceMatrix}()},
+\code{\link{TripletsToSparseMatrix}()}
 }
 \concept{Sparse matrix transformation functions}

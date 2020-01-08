@@ -4,8 +4,13 @@
 \alias{ERTMonExtractFeatures}
 \title{Extract feature with an already made data transformer.}
 \usage{
-ERTMonExtractFeatures(ertObj, eventRecords = NULL,
-  entityAttributes = NULL, echoStepsQ = TRUE, progressObject = NULL)
+ERTMonExtractFeatures(
+  ertObj,
+  eventRecords = NULL,
+  entityAttributes = NULL,
+  echoStepsQ = TRUE,
+  progressObject = NULL
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -28,6 +33,7 @@ Processes "unseen" data with an already made data transformer object.
 The result feature matrix is assigned to \code{ertObj$Value}.
 }
 \seealso{
-Other Transformation functions: \code{\link{ERTMonProcessEventRecords}}
+Other Transformation functions: 
+\code{\link{ERTMonProcessEventRecords}()}
 }
 \concept{Transformation functions}

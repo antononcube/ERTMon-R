@@ -20,19 +20,20 @@ using the computation specification.
 The matrix is not computed; only the computation specification is needed.
 }
 \seealso{
-Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
-  \code{\link{ERTMonSetEntityAttributes}},
-  \code{\link{ERTMonSetEventRecords}},
-  \code{\link{ERTMonTakeAlignmentSpec}},
-  \code{\link{ERTMonTakeComputationSpecification}},
-  \code{\link{ERTMonTakeContingencyMatrices}},
-  \code{\link{ERTMonTakeEntityAttributes}},
-  \code{\link{ERTMonTakeEventRecords}},
-  \code{\link{ERTMonTakeFeatureMatrix}},
-  \code{\link{ERTMonTakeTimeCellsInterpretation}},
-  \code{\link{ERTMonTakeTimeSeriesDataFrame}},
-  \code{\link{ERTMonTakeTrasformedData}},
-  \code{\link{ERTMonTakeValue}},
-  \code{\link{ERTMonTakeVariableOutlierBoundaries}}
+Other Set/Take functions: 
+\code{\link{ERTMonSetComputationSpecification}()},
+\code{\link{ERTMonSetEntityAttributes}()},
+\code{\link{ERTMonSetEventRecords}()},
+\code{\link{ERTMonTakeAlignmentSpec}()},
+\code{\link{ERTMonTakeComputationSpecification}()},
+\code{\link{ERTMonTakeContingencyMatrices}()},
+\code{\link{ERTMonTakeEntityAttributes}()},
+\code{\link{ERTMonTakeEventRecords}()},
+\code{\link{ERTMonTakeFeatureMatrix}()},
+\code{\link{ERTMonTakeTimeCellsInterpretation}()},
+\code{\link{ERTMonTakeTimeSeriesDataFrame}()},
+\code{\link{ERTMonTakeTrasformedData}()},
+\code{\link{ERTMonTakeValue}()},
+\code{\link{ERTMonTakeVariableOutlierBoundaries}()}
 }
 \concept{Set/Take functions}

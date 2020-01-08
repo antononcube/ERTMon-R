@@ -4,8 +4,15 @@
 \alias{ERTMonPlotFeatureMatrices}
 \title{Plot rows of feature sub-matrices as time series.}
 \usage{
-ERTMonPlotFeatureMatrices(ertObj, matrixNames = NULL, entityIDs = NULL,
-  origin = NULL, echoQ = TRUE, facets = vars(EntityID), ...)
+ERTMonPlotFeatureMatrices(
+  ertObj,
+  matrixNames = NULL,
+  entityIDs = NULL,
+  origin = NULL,
+  echoQ = TRUE,
+  facets = vars(EntityID),
+  ...
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -36,7 +43,8 @@ In order to plot each feature matrix time series(es) separately use
 \code{facets=vars(MatrixName)}.
 }
 \seealso{
-Other Feature matrices: \code{\link{ERTMonCollapseFeatureMatrices}},
-  \code{\link{ERTMonStackFeatureMatrices}}
+Other Feature matrices: 
+\code{\link{ERTMonCollapseFeatureMatrices}()},
+\code{\link{ERTMonStackFeatureMatrices}()}
 }
 \concept{Feature matrices}

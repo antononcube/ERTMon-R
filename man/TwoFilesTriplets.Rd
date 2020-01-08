@@ -4,8 +4,7 @@
 \alias{TwoFilesTriplets}
 \title{Combine two triplets files.}
 \usage{
-TwoFilesTriplets(fname1, fname2, sep = "\\t",
-  propertiesToStrings = TRUE)
+TwoFilesTriplets(fname1, fname2, sep = "\\t", propertiesToStrings = TRUE)
 }
 \arguments{
 \item{fname1}{name of the first file}

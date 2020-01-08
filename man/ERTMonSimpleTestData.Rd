@@ -4,10 +4,15 @@
 \alias{ERTMonSimpleTestData}
 \title{Simple test data generation}
 \usage{
-ERTMonSimpleTestData(numberOfEntities = 10, numberOfVariables = 3,
-  timeInterval = 900, numberOfTimeCells = 36,
-  randomStartTimesQ = FALSE, variableFunction = "Linear",
-  exportDirectoryName = NULL)
+ERTMonSimpleTestData(
+  numberOfEntities = 10,
+  numberOfVariables = 3,
+  timeInterval = 900,
+  numberOfTimeCells = 36,
+  randomStartTimesQ = FALSE,
+  variableFunction = "Linear",
+  exportDirectoryName = NULL
+)
 }
 \arguments{
 \item{numberOfEntities}{The number of entities.}

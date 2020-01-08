@@ -4,8 +4,12 @@
 \alias{ERTMonReadComputationSpecification}
 \title{Read a computation specification from a file.}
 \usage{
-ERTMonReadComputationSpecification(ertObj, fileName, ingestQ = FALSE,
-  echoStepsQ = FALSE)
+ERTMonReadComputationSpecification(
+  ertObj,
+  fileName,
+  ingestQ = FALSE,
+  echoStepsQ = FALSE
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -24,6 +28,7 @@ Reads a computation specification data frame from a file.
 The specified file is expected to be a CSV file.
 }
 \seealso{
-Other Data ingestion functions: \code{\link{ERTMonReadDataFromDirectory}}
+Other Data ingestion functions: 
+\code{\link{ERTMonReadDataFromDirectory}()}
 }
 \concept{Data ingestion functions}

@@ -4,9 +4,13 @@
 \alias{ERTMonCollapseFeatureMatrices}
 \title{Get feature sub-matrices collapsed.}
 \usage{
-ERTMonCollapseFeatureMatrices(ertObj, matrixNames = NULL,
-  entityIDs = NULL, collapseFunction = colSums,
-  completeColumnRangeQ = FALSE)
+ERTMonCollapseFeatureMatrices(
+  ertObj,
+  matrixNames = NULL,
+  entityIDs = NULL,
+  collapseFunction = colSums,
+  completeColumnRangeQ = FALSE
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -37,7 +41,8 @@ This function is fairly simple -- it was programmed in order to have
 the corresponding operation explicitly named in formula computation workflows.
 }
 \seealso{
-Other Feature matrices: \code{\link{ERTMonPlotFeatureMatrices}},
-  \code{\link{ERTMonStackFeatureMatrices}}
+Other Feature matrices: 
+\code{\link{ERTMonPlotFeatureMatrices}()},
+\code{\link{ERTMonStackFeatureMatrices}()}
 }
 \concept{Feature matrices}

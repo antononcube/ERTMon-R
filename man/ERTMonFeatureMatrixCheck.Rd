@@ -4,8 +4,7 @@
 \alias{ERTMonFeatureMatrixCheck}
 \title{Feature matrix presence check.}
 \usage{
-ERTMonFeatureMatrixCheck(ertObj, functionName = "",
-  logicalResult = FALSE)
+ERTMonFeatureMatrixCheck(ertObj, functionName = "", logicalResult = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}

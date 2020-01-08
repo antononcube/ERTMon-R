@@ -11,7 +11,15 @@ if(FALSE) {
                           variableFunction = "Linear", 
                           exportDirectoryName = NULL )
   
-  # testData$ComputationSpecification$Normalization.function <- "Mean"
+  # testData$ComputationSpecification$Normalization.function <- "Count"
+  testData$ComputationSpecification$Aggregation.function <- "Count"
+  testData$ComputationSpecification <- unique(testData$ComputationSpecification)
+  
+  testData$ComputationSpecification <-
+    testData$ComputationSpecification %>% 
+    dplyr::group_by( Variable ) %>% 
+    dplyr::filter( dplyr::row_number() == n() ) %>% 
+    ungroup()
   
   ertmon1 <-
     ERTMonUnit() %>%

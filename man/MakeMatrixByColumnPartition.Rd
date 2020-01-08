@@ -4,9 +4,15 @@
 \alias{MakeMatrixByColumnPartition}
 \title{Make a matrix by column partitioning.}
 \usage{
-MakeMatrixByColumnPartition(data, colNameForRows, colNameForColumns,
-  breaks = 10, leftOverlap = NULL, rightOverlap = NULL,
-  colnamesPrefix = "")
+MakeMatrixByColumnPartition(
+  data,
+  colNameForRows,
+  colNameForColumns,
+  breaks = 10,
+  leftOverlap = NULL,
+  rightOverlap = NULL,
+  colnamesPrefix = ""
+)
 }
 \arguments{
 \item{data}{a data frame}

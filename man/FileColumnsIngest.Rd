@@ -4,8 +4,13 @@
 \alias{FileColumnsIngest}
 \title{File columns ingestion.}
 \usage{
-FileColumnsIngest(fname, sep = "\\t", expectedColumns = 3,
-  header = TRUE, apply.iconv = TRUE)
+FileColumnsIngest(
+  fname,
+  sep = "\\t",
+  expectedColumns = 3,
+  header = TRUE,
+  apply.iconv = TRUE
+)
 }
 \arguments{
 \item{fname}{filename assumed with suffix "TSV"}

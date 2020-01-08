@@ -4,8 +4,13 @@
 \alias{IngestMultiValuedDataColumn}
 \title{Multi-value column ingestion.}
 \usage{
-IngestMultiValuedDataColumn(itemRows, tagTypeColName,
-  itemIDColName = "ID", nTagsPerField = 12, split = ",")
+IngestMultiValuedDataColumn(
+  itemRows,
+  tagTypeColName,
+  itemIDColName = "ID",
+  nTagsPerField = 12,
+  split = ","
+)
 }
 \arguments{
 \item{itemRows}{a data frame of flat content data}

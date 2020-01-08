@@ -4,9 +4,14 @@
 \alias{ERTMonFilterEventRecords}
 \title{Filtering of event records.}
 \usage{
-ERTMonFilterEventRecords(ertObj, minObservationTime = NULL,
-  maxObservationTime = NULL, entityIDs = NULL, locationIDs = NULL,
-  variables = NULL)
+ERTMonFilterEventRecords(
+  ertObj,
+  minObservationTime = NULL,
+  maxObservationTime = NULL,
+  entityIDs = NULL,
+  locationIDs = NULL,
+  variables = NULL
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}

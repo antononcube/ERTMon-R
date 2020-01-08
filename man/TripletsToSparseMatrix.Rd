@@ -13,8 +13,9 @@ TripletsToSparseMatrix(triplets)
 Turns a data frame of three columns (triplets) into a sparse matrix
 }
 \seealso{
-Other Sparse matrix transformation functions: \code{\link{ConvertMultiColumnDataFrameToSparseMatrix}},
-  \code{\link{SparseMatrixToTriplets}},
-  \code{\link{ToColumnValueIncidenceMatrix}}
+Other Sparse matrix transformation functions: 
+\code{\link{ConvertMultiColumnDataFrameToSparseMatrix}()},
+\code{\link{SparseMatrixToTriplets}()},
+\code{\link{ToColumnValueIncidenceMatrix}()}
 }
 \concept{Sparse matrix transformation functions}

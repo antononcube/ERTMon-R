@@ -4,9 +4,13 @@
 \alias{ERTMonMemberPresenceCheck}
 \title{General member presence check.}
 \usage{
-ERTMonMemberPresenceCheck(ertObj, memberName,
-  memberPrettyName = memberName, functionName = "",
-  logicalResult = FALSE)
+ERTMonMemberPresenceCheck(
+  ertObj,
+  memberName,
+  memberPrettyName = memberName,
+  functionName = "",
+  logicalResult = FALSE
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}

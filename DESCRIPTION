@@ -1,21 +1,22 @@
 Package: ERTMon
 Type: Package
 Title: Event Records Transformations Monad
-Version: 0.7.0
+Version: 0.8.0
 Author: Anton Antonov <antononcube@gmail.com>
 Maintainer: Anton Antonov <antononcube@gmail.com>
 Description: This package has an implementation an Event Records Transformations Monad that
     converts event records data into a (sparse) feature matrix with a given computation
     specification.
-License: BSD 3
+License: LGPL-3.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Collate: 
+    'DataIngestionFrameworkFunctions.R'
     'ComputationSpecificationClass.R'
+    'DashboardLauncher.R'
     'DataConversionFunctions.R'
     'DataWrapperClass.R'
-    'DataIngestionFrameworkFunctions.R'
     'DataIngesterClass.R'
     'DataSplitterClass.R'
     'DataTransformerClass.R'
@@ -26,7 +27,6 @@ Collate:
     'LoadClasses.R'
     'OutlierIdentifiers.R'
     'SimpleTestDataCreation.R'
-    'DashboardLauncher.R'
 Imports:
     purrr (>= 0.3.2),
     dplyr (>= 0.8.0),

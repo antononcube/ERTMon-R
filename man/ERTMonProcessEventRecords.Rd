@@ -4,10 +4,13 @@
 \alias{ERTMonProcessEventRecords}
 \title{Process the data and make feature matrix.}
 \usage{
-ERTMonProcessEventRecords(ertObj,
+ERTMonProcessEventRecords(
+  ertObj,
   outlierIdentifier = SPLUSQuartileIdentifierParameters,
-  alignmentSpec = "MaxTime", echoStepsQ = FALSE,
-  progressObject = NULL)
+  alignmentSpec = "MaxTime",
+  echoStepsQ = FALSE,
+  progressObject = NULL
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -34,6 +37,7 @@ the difference \code{ObservationTime - alignmentSpec} and keeping the event reco
 that difference is non-negative.
 }
 \seealso{
-Other Transformation functions: \code{\link{ERTMonExtractFeatures}}
+Other Transformation functions: 
+\code{\link{ERTMonExtractFeatures}()}
 }
 \concept{Transformation functions}

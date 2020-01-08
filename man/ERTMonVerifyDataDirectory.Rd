@@ -17,6 +17,7 @@ Verify does a directory have the CSV files \code{eventRecords.csv}
 and \code{entityAttributes.csv}.
 }
 \seealso{
-Other Non-monadic functions.: \code{\link{ERTMonEmptyComputationSpecification}}
+Other Non-monadic functions.: 
+\code{\link{ERTMonEmptyComputationSpecification}()}
 }
 \concept{Non-monadic functions.}

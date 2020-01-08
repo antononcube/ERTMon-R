@@ -4,8 +4,7 @@
 \alias{ERTMonObject}
 \title{Make a ERTMon unit.}
 \usage{
-ERTMonObject(eventRecords = NULL, entityAttributes = NULL,
-  compSpec = NULL)
+ERTMonObject(eventRecords = NULL, entityAttributes = NULL, compSpec = NULL)
 }
 \description{
 A synonym of \code{ERTMonUnit}.

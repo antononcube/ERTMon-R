@@ -4,13 +4,14 @@
 \alias{ERTMonCreateInterface}
 \title{Event records transformation dashboard}
 \usage{
-ERTMonCreateInterface(dataDirectoryName = "./",
+ERTMonCreateInterface(
+  dataDirectoryName = "./",
   testDataDirectoryName = "./",
-  compSpecFileName = file.path(dataDirectoryName,
-  "computationSpecification.csv"),
+  compSpecFileName = file.path(dataDirectoryName, "computationSpecification.csv"),
   exportModelID = as.character(Sys.time()),
-  exportFilePrefix = gsub(pattern = " ", replacement = "_",
-  paste0(exportModelID, "_"), fixed = TRUE))
+  exportFilePrefix = gsub(pattern = " ", replacement = "_", paste0(exportModelID, "_"),
+    fixed = TRUE)
+)
 }
 \arguments{
 \item{dataDirectoryName}{A directory name with data.}
@@ -33,7 +34,8 @@ Creates the Shiny application with an
 event records transformations interface.
 }
 \seealso{
-Other Interface functions: \code{\link{ERTMonMakeServerFunction}},
-  \code{\link{ERTMonMakeUI}}
+Other Interface functions: 
+\code{\link{ERTMonMakeServerFunction}()},
+\code{\link{ERTMonMakeUI}()}
 }
 \concept{Interface functions}

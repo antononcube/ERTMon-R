@@ -4,8 +4,13 @@
 \alias{ERTMonTakeContingencyMatrices}
 \title{Take feature sub-matrices.}
 \usage{
-ERTMonTakeContingencyMatrices(ertObj, smat = NULL, matrixNames = NULL,
-  columnPrefixesQ = FALSE, completeColumnRangeQ = FALSE)
+ERTMonTakeContingencyMatrices(
+  ertObj,
+  smat = NULL,
+  matrixNames = NULL,
+  columnPrefixesQ = FALSE,
+  completeColumnRangeQ = FALSE
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -33,19 +38,20 @@ The sub-matrices are extracted through the corresponding prefixes.
 An alternative is to use the sparse matrices that are in \code{ertObj$dtObj}.
 }
 \seealso{
-Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
-  \code{\link{ERTMonSetEntityAttributes}},
-  \code{\link{ERTMonSetEventRecords}},
-  \code{\link{ERTMonTakeAlignmentSpec}},
-  \code{\link{ERTMonTakeComputationSpecification}},
-  \code{\link{ERTMonTakeEntityAttributes}},
-  \code{\link{ERTMonTakeEventRecords}},
-  \code{\link{ERTMonTakeFeatureMatrix}},
-  \code{\link{ERTMonTakeFeatureNamePrefixes}},
-  \code{\link{ERTMonTakeTimeCellsInterpretation}},
-  \code{\link{ERTMonTakeTimeSeriesDataFrame}},
-  \code{\link{ERTMonTakeTrasformedData}},
-  \code{\link{ERTMonTakeValue}},
-  \code{\link{ERTMonTakeVariableOutlierBoundaries}}
+Other Set/Take functions: 
+\code{\link{ERTMonSetComputationSpecification}()},
+\code{\link{ERTMonSetEntityAttributes}()},
+\code{\link{ERTMonSetEventRecords}()},
+\code{\link{ERTMonTakeAlignmentSpec}()},
+\code{\link{ERTMonTakeComputationSpecification}()},
+\code{\link{ERTMonTakeEntityAttributes}()},
+\code{\link{ERTMonTakeEventRecords}()},
+\code{\link{ERTMonTakeFeatureMatrix}()},
+\code{\link{ERTMonTakeFeatureNamePrefixes}()},
+\code{\link{ERTMonTakeTimeCellsInterpretation}()},
+\code{\link{ERTMonTakeTimeSeriesDataFrame}()},
+\code{\link{ERTMonTakeTrasformedData}()},
+\code{\link{ERTMonTakeValue}()},
+\code{\link{ERTMonTakeVariableOutlierBoundaries}()}
 }
 \concept{Set/Take functions}

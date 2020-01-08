@@ -4,8 +4,13 @@
 \alias{ERTMonReadDataFromDirectory}
 \title{Read data from a directory.}
 \usage{
-ERTMonReadDataFromDirectory(ertObj, directoryName, readCompSpecQ = TRUE,
-  progressObject = NULL, echoStepsQ = FALSE)
+ERTMonReadDataFromDirectory(
+  ertObj,
+  directoryName,
+  readCompSpecQ = TRUE,
+  progressObject = NULL,
+  echoStepsQ = FALSE
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -30,6 +35,7 @@ The specified directory is expected to have the files
 \code{eventRecords.csv}, \code{entityAttributes.csv}, and \code{computationSpecification.csv}.
 }
 \seealso{
-Other Data ingestion functions: \code{\link{ERTMonReadComputationSpecification}}
+Other Data ingestion functions: 
+\code{\link{ERTMonReadComputationSpecification}()}
 }
 \concept{Data ingestion functions}

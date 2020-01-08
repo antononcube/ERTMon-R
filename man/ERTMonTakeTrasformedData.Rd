@@ -17,19 +17,20 @@ Takes the transformed data frame from the data transformer object
 which is in the monad object.
 }
 \seealso{
-Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
-  \code{\link{ERTMonSetEntityAttributes}},
-  \code{\link{ERTMonSetEventRecords}},
-  \code{\link{ERTMonTakeAlignmentSpec}},
-  \code{\link{ERTMonTakeComputationSpecification}},
-  \code{\link{ERTMonTakeContingencyMatrices}},
-  \code{\link{ERTMonTakeEntityAttributes}},
-  \code{\link{ERTMonTakeEventRecords}},
-  \code{\link{ERTMonTakeFeatureMatrix}},
-  \code{\link{ERTMonTakeFeatureNamePrefixes}},
-  \code{\link{ERTMonTakeTimeCellsInterpretation}},
-  \code{\link{ERTMonTakeTimeSeriesDataFrame}},
-  \code{\link{ERTMonTakeValue}},
-  \code{\link{ERTMonTakeVariableOutlierBoundaries}}
+Other Set/Take functions: 
+\code{\link{ERTMonSetComputationSpecification}()},
+\code{\link{ERTMonSetEntityAttributes}()},
+\code{\link{ERTMonSetEventRecords}()},
+\code{\link{ERTMonTakeAlignmentSpec}()},
+\code{\link{ERTMonTakeComputationSpecification}()},
+\code{\link{ERTMonTakeContingencyMatrices}()},
+\code{\link{ERTMonTakeEntityAttributes}()},
+\code{\link{ERTMonTakeEventRecords}()},
+\code{\link{ERTMonTakeFeatureMatrix}()},
+\code{\link{ERTMonTakeFeatureNamePrefixes}()},
+\code{\link{ERTMonTakeTimeCellsInterpretation}()},
+\code{\link{ERTMonTakeTimeSeriesDataFrame}()},
+\code{\link{ERTMonTakeValue}()},
+\code{\link{ERTMonTakeVariableOutlierBoundaries}()}
 }
 \concept{Set/Take functions}

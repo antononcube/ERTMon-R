@@ -16,19 +16,20 @@ A data frame.
 Returns a data frame with the variable outlier boundaries.
 }
 \seealso{
-Other Set/Take functions: \code{\link{ERTMonSetComputationSpecification}},
-  \code{\link{ERTMonSetEntityAttributes}},
-  \code{\link{ERTMonSetEventRecords}},
-  \code{\link{ERTMonTakeAlignmentSpec}},
-  \code{\link{ERTMonTakeComputationSpecification}},
-  \code{\link{ERTMonTakeContingencyMatrices}},
-  \code{\link{ERTMonTakeEntityAttributes}},
-  \code{\link{ERTMonTakeEventRecords}},
-  \code{\link{ERTMonTakeFeatureMatrix}},
-  \code{\link{ERTMonTakeFeatureNamePrefixes}},
-  \code{\link{ERTMonTakeTimeCellsInterpretation}},
-  \code{\link{ERTMonTakeTimeSeriesDataFrame}},
-  \code{\link{ERTMonTakeTrasformedData}},
-  \code{\link{ERTMonTakeValue}}
+Other Set/Take functions: 
+\code{\link{ERTMonSetComputationSpecification}()},
+\code{\link{ERTMonSetEntityAttributes}()},
+\code{\link{ERTMonSetEventRecords}()},
+\code{\link{ERTMonTakeAlignmentSpec}()},
+\code{\link{ERTMonTakeComputationSpecification}()},
+\code{\link{ERTMonTakeContingencyMatrices}()},
+\code{\link{ERTMonTakeEntityAttributes}()},
+\code{\link{ERTMonTakeEventRecords}()},
+\code{\link{ERTMonTakeFeatureMatrix}()},
+\code{\link{ERTMonTakeFeatureNamePrefixes}()},
+\code{\link{ERTMonTakeTimeCellsInterpretation}()},
+\code{\link{ERTMonTakeTimeSeriesDataFrame}()},
+\code{\link{ERTMonTakeTrasformedData}()},
+\code{\link{ERTMonTakeValue}()}
 }
 \concept{Set/Take functions}

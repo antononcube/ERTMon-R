@@ -13,6 +13,7 @@ A data frame with one row.
 Gives a data frame with an "empty" computation specification row.
 }
 \seealso{
-Other Non-monadic functions.: \code{\link{ERTMonVerifyDataDirectory}}
+Other Non-monadic functions.: 
+\code{\link{ERTMonVerifyDataDirectory}()}
 }
 \concept{Non-monadic functions.}

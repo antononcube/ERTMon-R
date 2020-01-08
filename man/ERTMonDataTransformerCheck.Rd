@@ -4,8 +4,7 @@
 \alias{ERTMonDataTransformerCheck}
 \title{Check presence of a data transformer object.}
 \usage{
-ERTMonDataTransformerCheck(ertObj, functionName = "",
-  logicalResult = FALSE)
+ERTMonDataTransformerCheck(ertObj, functionName = "", logicalResult = FALSE)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}

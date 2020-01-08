@@ -2,7 +2,9 @@
 if(FALSE) {
   
   rm(list=ls())
-  library(ERTMon)
+  library(devtools)
+  devtools::load_all()
+  # library(ERTMon)
   # source("./R/LoadClasses.R")
   
   dirName <- if( grepl("vignettes", getwd()) ) { file.path( getwd(), "..", "data", "FakeData") } else { file.path( getwd(), "data", "FakeData")}
@@ -17,6 +19,7 @@ if(FALSE) {
   print(head(fakeEntityAttributes))
   
   fakeCompSpec <- read.csv( file = file.path( dirName, "computationSpecification.csv"), stringsAsFactors = FALSE)
+  fakeCompSpec <- fakeCompSpec[ fakeCompSpec$Variable != "Label" , ]
   print(fakeCompSpec)
   
   cat("\nSetting data...\n")
@@ -33,7 +36,7 @@ if(FALSE) {
   
   ertmon1 <-
     ertmon1 %>%
-    ERTMonProcessEventRecords( alignmentSpec = "MaxTime" )
+    ERTMonProcessEventRecords( alignmentSpec = "MaxTime", echoStepsQ = FALSE )
   
   cat("...DONE\n")
   

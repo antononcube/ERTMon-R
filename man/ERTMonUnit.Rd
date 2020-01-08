@@ -4,8 +4,7 @@
 \alias{ERTMonUnit}
 \title{Make a ERTMon Unit}
 \usage{
-ERTMonUnit(eventRecords = NULL, entityAttributes = NULL,
-  compSpec = NULL)
+ERTMonUnit(eventRecords = NULL, entityAttributes = NULL, compSpec = NULL)
 }
 \arguments{
 \item{eventRecords}{A data frame with event records; can be NULL.}

@@ -4,9 +4,14 @@
 \alias{ERTMonStackFeatureMatrices}
 \title{Make a stack of feature sub-matrices.}
 \usage{
-ERTMonStackFeatureMatrices(ertObj, matrixNames = NULL,
-  entityIDs = NULL, sep = ".", dropEmptyRowsQ = TRUE,
-  completeColumnRangeQ = FALSE)
+ERTMonStackFeatureMatrices(
+  ertObj,
+  matrixNames = NULL,
+  entityIDs = NULL,
+  sep = ".",
+  dropEmptyRowsQ = TRUE,
+  completeColumnRangeQ = FALSE
+)
 }
 \arguments{
 \item{ertObj}{An ERTMon object.}
@@ -34,7 +39,8 @@ The entity ID's are concatenated with matrix names using the separator \code{sep
 The rows that are "empty" (without elements) are removed by default.
 }
 \seealso{
-Other Feature matrices: \code{\link{ERTMonCollapseFeatureMatrices}},
-  \code{\link{ERTMonPlotFeatureMatrices}}
+Other Feature matrices: 
+\code{\link{ERTMonCollapseFeatureMatrices}()},
+\code{\link{ERTMonPlotFeatureMatrices}()}
 }
 \concept{Feature matrices}

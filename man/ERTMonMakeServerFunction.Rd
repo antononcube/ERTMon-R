@@ -14,7 +14,8 @@ Creates the Shiny server function for an
 event records transformations interface
 }
 \seealso{
-Other Interface functions: \code{\link{ERTMonCreateInterface}},
-  \code{\link{ERTMonMakeUI}}
+Other Interface functions: 
+\code{\link{ERTMonCreateInterface}()},
+\code{\link{ERTMonMakeUI}()}
 }
 \concept{Interface functions}

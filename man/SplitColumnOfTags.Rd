@@ -4,8 +4,12 @@
 \alias{SplitColumnOfTags}
 \title{Split column of tags.}
 \usage{
-SplitColumnOfTags(dataColumn, numberOfSplits, sep = ",",
-  emptyStringReplacement = "null")
+SplitColumnOfTags(
+  dataColumn,
+  numberOfSplits,
+  sep = ",",
+  emptyStringReplacement = "null"
+)
 }
 \arguments{
 \item{dataColumn}{data vector}
