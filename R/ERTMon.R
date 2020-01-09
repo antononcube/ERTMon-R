@@ -1420,6 +1420,9 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
 #' @param directoryName A directory name for the export. If \code{NULL} no files are written.
 #' @param modelID A string.
 #' @param fileNamePrefix A string.
+#' @param origin A date-time object or something that can be coerced to such object, 
+#' that can be used in as.POSIXct. 
+#' It is passed to \code{\link{ERTMonTakeTimeSeriesDataFrame}}.
 #' @return An ERTMon object or \code{ERTMonFailureSymbol}.
 #' @details The CSV files are written in the specified directory \code{directoryName}. 
 #' The file name prefix \code{fileNamePrefix} is concatenated to the generic file names:
@@ -1428,7 +1431,7 @@ ERTMonExportToCSVFeatureMatrix <- function( ertObj, fileName = NULL, modelID = N
 #' more convenient from a "model management" perspective. 
 #' The data to be exported is assigned to result's \code{$Value}.
 #' @export
-ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste0(modelID,"-") ) {
+ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste0(modelID,"-"), origin = "1900-01-01" ) {
   
   if( ERTMonFailureQ(ertObj) ) { return(ERTMonFailureSymbol) }
   
@@ -1479,7 +1482,7 @@ ERTMonExport <- function( ertObj, directoryName, modelID, fileNamePrefix = paste
   }  
   
   ## Export feature matrix time series data frame
-  fmtsDF <- ERTMonTakeTimeSeriesDataFrame( ertObj )
+  fmtsDF <- ERTMonTakeTimeSeriesDataFrame( ertObj, origin = origin )
   fmtsDF <- cbind( ModelID = modelID, fmtsDF, stringsAsFactors = FALSE )
   
   if( !is.null(directoryName) ) {

@@ -8,7 +8,8 @@ ERTMonExport(
   ertObj,
   directoryName,
   modelID,
-  fileNamePrefix = paste0(modelID, "-")
+  fileNamePrefix = paste0(modelID, "-"),
+  origin = "1900-01-01"
 )
 }
 \arguments{
@@ -19,6 +20,10 @@ ERTMonExport(
 \item{modelID}{A string.}
 
 \item{fileNamePrefix}{A string.}
+
+\item{origin}{A date-time object or something that can be coerced to such object, 
+that can be used in as.POSIXct. 
+It is passed to \code{\link{ERTMonTakeTimeSeriesDataFrame}}.}
 }
 \value{
 An ERTMon object or \code{ERTMonFailureSymbol}.
