@@ -150,7 +150,7 @@ setMethod("ingestSpec",
             object@normalizationFuncSpecToFunc <- object@aggrFuncSpecToFunc
             
             ## Labels
-            object@survivedLabel <- object@parameters[ object@parameters$Variable == "Label","Critical.label"]
+            object@survivedLabel <- object@parameters[ object@parameters$Variable == "Label", "Critical.label"]
             object@diedLabel <- paste0("Non.", object@survivedLabel)
             
             object@labels <- c(object@survivedLabel, object@diedLabel)
