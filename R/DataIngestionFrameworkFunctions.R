@@ -171,7 +171,7 @@ AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLengt
     eventRecords %>% 
     dplyr::select( EntityID, ObservationTime ) %>% 
     dplyr::group_by( EntityID ) %>% 
-    dplyr::summarise( MaxTimeEpoch = max(ObservationTime, na.rm = T), MinTimeEpoch = min(ObservationTime, na.rm = T, .groups = "drop") ) %>% 
+    dplyr::summarise( MaxTimeEpoch = max(ObservationTime, na.rm = T), MinTimeEpoch = min(ObservationTime, na.rm = T), .groups = "drop" ) %>% 
     dplyr::filter( !is.na(MaxTimeEpoch) )
   
   eventRecords <- 
