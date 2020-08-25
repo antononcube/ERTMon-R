@@ -237,7 +237,7 @@ ImposeColumnIDs <- function( colIDs, smat ) {
 RowMaxes <- function( smat ) {
   
   rowMaxes <- setNames( ERTMon::SparseMatrixToTriplets( smat ), c("RowID", "ColID", "Value") )
-  rowMaxes <- rowMaxes %>% dplyr::group_by( RowID ) %>% dplyr::summarise( Max = max(Value) ) 
+  rowMaxes <- rowMaxes %>% dplyr::group_by( RowID ) %>% dplyr::summarise( Max = max(Value), .groups = "drop" ) 
   rowMaxes <- setNames( rowMaxes %>% dplyr::pull( Max ), rowMaxes %>% dplyr::pull( RowID ) ) 
   rowMaxes <- rowMaxes[rownames(smat) ]
   

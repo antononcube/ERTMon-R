@@ -62,7 +62,7 @@ setMethod("makeSparseMatrices",
             
             ## Find is the calculation of a label feature matrix specified?
             findLabelMatQ <- HasLabelRowQ( object@compSpec@parameters )
-            
+
             if ( findLabelMatQ ) {
               
               labelMatInd <- grep( "Label", names(object@sparseMatrices) )

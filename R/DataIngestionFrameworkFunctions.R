@@ -171,7 +171,7 @@ AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLengt
     eventRecords %>% 
     dplyr::select( EntityID, ObservationTime ) %>% 
     dplyr::group_by( EntityID ) %>% 
-    dplyr::summarise( MaxTimeEpoch = max(ObservationTime, na.rm = T), MinTimeEpoch = min(ObservationTime, na.rm = T) ) %>% 
+    dplyr::summarise( MaxTimeEpoch = max(ObservationTime, na.rm = T), MinTimeEpoch = min(ObservationTime, na.rm = T, .groups = "drop") ) %>% 
     dplyr::filter( !is.na(MaxTimeEpoch) )
   
   eventRecords <- 
@@ -254,7 +254,7 @@ AggregateEventRecordsBySpec <- function(specRow,
       dplyr::mutate( MatrixName = mName ) %>% 
       dplyr::mutate( VarID = paste("Attribute",Attribute,sep="."), TimeGridCell = 0 ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
-      dplyr::summarise( AValue = 1 )
+      dplyr::summarise( AValue = 1, .groups = "drop" )
     
   } else if( specRow$Variable == "Label" ) {
     
@@ -262,7 +262,7 @@ AggregateEventRecordsBySpec <- function(specRow,
       dplyr::filter( Attribute == "Label" ) %>% 
       dplyr::mutate( VarID = paste("Label", Value, sep="."), TimeGridCell = 0 ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
-      dplyr::summarise( AValue = 1 ) %>% 
+      dplyr::summarise( AValue = 1, .groups = "drop" ) %>% 
       dplyr::mutate( MatrixName = "Label" )
     
   } else if( specRow$Variable == "LocationID" ) {
@@ -276,7 +276,7 @@ AggregateEventRecordsBySpec <- function(specRow,
       #dplyr::mutate( TimeGridCell = floor( DiffToMaxObsTime / specRow$Aggregation.interval.length ) ) %>%
       dplyr::mutate( VarID = paste(LocationID, formatC( TimeGridCell, width = timeGridCellMaxNumberOfDigits, flag = "0"), sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
-      dplyr::summarise( AValue = func(LocationID) ) %>% 
+      dplyr::summarise( AValue = func(LocationID), .groups = "drop" ) %>% 
       dplyr::mutate( MatrixName = mName ) 
     
   } else if ( specRow$Aggregation.function %in% c( "OutliersCount", "OutCnt", "OutliersFraction", "OutFrc" ) ) {
@@ -340,7 +340,7 @@ AggregateEventRecordsBySpec <- function(specRow,
                    echoStepsQ = echoStepsQ ) %>% 
       dplyr::mutate( VarID = paste(Variable, formatC( TimeGridCell, width = timeGridCellMaxNumberOfDigits, flag = "0"), sep=".") ) %>% 
       dplyr::group_by( EntityID, TimeGridCell, VarID ) %>% 
-      dplyr::summarise( AValue = func(Value) ) %>%
+      dplyr::summarise( AValue = func(Value), .groups = "drop" ) %>%
       dplyr::mutate( MatrixName = mName )
     
   }
@@ -373,7 +373,7 @@ NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, no
     dfNormalizationValues <- 
       matLongFormData %>% 
       dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
-      dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
+      dplyr::summarise( NormalizationValue = func(AValue), .groups = "drop" ) %>% 
       dplyr::ungroup()
     
     matLongFormData %>% 
@@ -391,7 +391,7 @@ NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, no
                            dplyr::filter( Attribute == specRow$Normalization.scope[[1]] ),
                          by = "EntityID" ) %>% 
       dplyr::group_by( Attribute ) %>% 
-      dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
+      dplyr::summarise( NormalizationValue = func(AValue), .groups = "drop" ) %>% 
       dplyr::ungroup()
     
     matLongFormData %>% 

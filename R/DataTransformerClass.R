@@ -243,7 +243,7 @@ setMethod("addTimeGrid",
             eventRecords <- 
               dplyr::left_join(
                 dplyr::filter( dplyr::summarise( dplyr::group_by( dplyr::select( eventRecords, EntityID, ObservationTime ), EntityID ), 
-                                                 MostRecentTimeEpoch = max(ObservationTime, na.rm = T) ), 
+                                                 MostRecentTimeEpoch = max(ObservationTime, na.rm = T), .groups = "drop" ), 
                                !is.na(MostRecentTimeEpoch) ),
                 eventRecords, by = "EntityID")
             
@@ -388,7 +388,7 @@ setMethod("makeSparseMatrices",
             if( echoStepsQ ) { cat("\n\tMake sparse matrices...\n") }
             
             ## Find is the calculation of a label feature matrix specified?
-            findLabelMatQ <- HasLabelRowQ( object@compSpec@parameters )
+            findLabelMatQ <- HasLabelRowQ( compSpec = object@compSpec@parameters, labelVariable = "Label" )
 
             if( findLabelMatQ ) {
               labelMat <- 
@@ -402,26 +402,34 @@ setMethod("makeSparseMatrices",
             if( is.null(object@transformedData) || nrow(object@transformedData) == 0 ) {
               stop("The object@transformedData is empty.", call. = TRUE)
             }
-              
+            
             smats <- 
               purrr::map( 
                 split( object@transformedData, object@transformedData$MatrixName ), 
                 function(x) { 
                   
-                  ## I am not sure this here is the best way to handle this.
-                  if( sum( is.nan(x$AValue) ) ) {
-                    warning( paste0( "NaN values for the matrix", x$MatrixName[[1]], ". Attempting to continue by replacing each NaN with 0." ), call. = T )
-                    x$AValue[ is.nan(x$AValue) ] <- 0
+                  if( findLabelMatQ && x$MatrixName[[1]] == "Label" ) { 
+                    NA
+                  } else {
+                    ## I am not sure this here is the best way to handle this.
+                    if( sum( is.nan(x$AValue) ) ) {
+                      warning( paste0( "NaN values for the matrix", x$MatrixName[[1]], ". Attempting to continue by replacing each NaN with 0." ), call. = T )
+                      x$AValue[ is.nan(x$AValue) ] <- 0
+                    }
+                    
+                    res <- xtabs( AValue ~ EntityID + VarID, x, sparse = T) 
+                    colnames(res) <- paste( x$MatrixName[[1]], colnames(res), sep="-")
+                    res
                   }
                   
-                  res <- xtabs( AValue ~ EntityID + VarID, x, sparse = T) 
-                  colnames(res) <- paste( x$MatrixName[[1]], colnames(res), sep="-")
-                  res
                 }) 
+            
+            smats <- smats[ !is.na(smats) ]
             
             allRowIDs <- unique( unlist( purrr::map( smats, rownames) ) )
             
             smats <- purrr::map( smats, function(x) ImposeRowIDs( rowIDs = allRowIDs, smat = x ) )
+            
             if( findLabelMatQ ) {
               smats <- c( smats, Label = ImposeRowIDs( rowIDs = allRowIDs, smat = labelMat ) )
             }
@@ -570,7 +578,7 @@ setMethod("aggregateAndAccumulateOverGroups",
                     dfNormalizationValues <- 
                       aggrERData %>% 
                       dplyr::filter( MatrixName == specRow$MatrixName ) %>% 
-                      dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
+                      dplyr::summarise( NormalizationValue = func(AValue), .groups = "drop" ) %>% 
                       dplyr::mutate( Scope = "Variable", Attribute = NA ) %>% 
                       dplyr::ungroup()
                     
@@ -592,7 +600,7 @@ setMethod("aggregateAndAccumulateOverGroups",
                                            dplyr::filter( Attribute == specRow$Normalization.scope[[1]] ),
                                          by = "EntityID" ) %>% 
                       dplyr::group_by( Attribute ) %>% 
-                      dplyr::summarise( NormalizationValue = func(AValue) ) %>% 
+                      dplyr::summarise( NormalizationValue = func(AValue), .groups = "drop" ) %>% 
                       dplyr::ungroup()
                     
                     if( nrow(dfNormalizationValues) == 0 ) { NULL }

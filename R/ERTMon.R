@@ -745,7 +745,7 @@ ERTMonFilterEventRecords <- function( ertObj,
     ertObj %>% 
     ERTMonTakeEventRecords %>% 
     dplyr::group_by( Variable, EntityID ) %>%
-    dplyr::summarise(  MinObservationTime = min(ObservationTime, na.rm = T), MaxObservationTime = max(ObservationTime, na.rm = T) ) %>% 
+    dplyr::summarise(  MinObservationTime = min(ObservationTime, na.rm = T), MaxObservationTime = max(ObservationTime, na.rm = T), .groups = "drop" ) %>% 
     dplyr::arrange()
   
   if( is.numeric(minObservationTime) ) { 
@@ -765,7 +765,7 @@ ERTMonFilterEventRecords <- function( ertObj,
     qMinMaxTimes <-
       ertObj %>% 
       ERTMonTakeEventRecords %>% 
-      dplyr::summarise( MinTime = min(ObservationTime, na.rm = T), MaxTime = max(ObservationTime, na.rm = T) )
+      dplyr::summarise( MinTime = min(ObservationTime, na.rm = T), MaxTime = max(ObservationTime, na.rm = T), .groups = "drop" )
     
     if( is.null(minObservationTime) || tolower(minObservationTime) == "mintime" ) { maxMinTime <- qMinMaxTimes$MinTime }
     if( is.null(maxObservationTime) || tolower(maxObservationTime) == "maxtime" ) { minMaxTime <- qMinMaxTimes$MaxTime }
