@@ -289,7 +289,15 @@ ERTMonTakeContingencyMatrices <- function( ertObj, smat = NULL, matrixNames = NU
     stop("Cannot find data transformation object. Transform the data first.", call. = TRUE )
   }
   
-  rnames <- paste( ertObj$dtObj@compSpec@parameters$Variable, ertObj$dtObj@compSpec@parameters$Aggregation.function, sep = ".")
+  ## This is way too ad-hoc - debugged the outcomes for hours.
+  ## rnames <- paste( ertObj$dtObj@compSpec@parameters$Variable, ertObj$dtObj@compSpec@parameters$Aggregation.function, sep = ".")
+  
+  rnames <- ertObj$compSpecObj@parameters$MatrixName
+  if( is.null(rnames) ) {
+    warning( "Cannot find MatrixName column in the computation specification ertObj$compSpecObj@parameters. (Is the event data processed?)", call. = TRUE)
+    return(ERTMonFailureSymbol)
+  }
+  
   
   if( is.null(matrixNames) ) {
     ## Or use ERTMonTakeFeatureNames(ertObj) .
