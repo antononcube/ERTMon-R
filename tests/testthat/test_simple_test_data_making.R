@@ -62,7 +62,7 @@ test_that("Simple test constant data", {
   ## This test checks that.
   expect_equal( constantTestData$EventRecords %>% 
                   dplyr::group_by( EntityID ) %>% 
-                  dplyr::summarise( MinObsTime = min(ObservationTime) ) %>% 
+                  dplyr::summarise( MinObsTime = min(ObservationTime), .groups = "drop" ) %>% 
                   dplyr::select( MinObsTime ) %>% 
                   unique() %>% 
                   nrow(),
@@ -72,7 +72,7 @@ test_that("Simple test constant data", {
   ## Check that we have constant values.  
   expect_equal( constantTestData$EventRecords %>% 
                   dplyr::group_by( EntityID ) %>% 
-                  dplyr::summarise( MinValue = min(Value) ) %>% 
+                  dplyr::summarise( MinValue = min(Value), .groups = "drop" ) %>% 
                   dplyr::select( MinValue ) %>% 
                   unique() %>% 
                   nrow(),
@@ -86,7 +86,7 @@ test_that("Simple test linear data", {
   ## This test checks that.
   expect_equal( linearTestData$EventRecords %>% 
                   dplyr::group_by( EntityID ) %>% 
-                  dplyr::summarise( MinObsTime = min(ObservationTime) ) %>% 
+                  dplyr::summarise( MinObsTime = min(ObservationTime), .groups = "drop" ) %>% 
                   dplyr::select( MinObsTime ) %>% 
                   unique() %>% 
                   nrow(),
