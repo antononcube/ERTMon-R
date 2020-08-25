@@ -3,15 +3,18 @@ title: "Wine quality data as medical records data"
 author: Anton Antonov
 date: "2018-10-13"
 output: html_notebook
+params:
+  exportQ: TRUE
 ---
 
 ```{r}
 library(dplyr)
 library(reshape2)
+library(ERTMon)
 ```
 
 ```{r}
-saveDirectoryName <- "~/ERTMon-R/WineQualityData/"
+saveDirectoryName <- "../data/WineQualityData/"
 ```
 
 # Introduction
@@ -40,7 +43,7 @@ dfWineQuality <-
 ```
 
 ```{r}
-summary(as.data.frame(unclass(dfWineQuality)))
+summary(as.data.frame(unclass(dfWineQuality), stringsAsFactors = T))
 ```
 
 ## Long form
@@ -62,31 +65,26 @@ dfWineQualityLongForm <-
 ```{r}
 pids <- unique(dfWineQualityLongForm$EntityID)
 dfWineEntities <-
-  data.frame( EntityID = dfWineQuality$id, Age = floor(runif(n = nrow(dfWineQuality), min = 0, max = 100)), Sex = "U", 
-              Label = dfWineQuality$Label, stringsAsFactors = F ) 
+  data.frame( EntityID = dfWineQuality$id, 
+              Age = floor(runif(n = nrow(dfWineQuality), min = 0, max = 100)), 
+              Sex = "U", 
+              Label = dfWineQuality$Label, 
+              stringsAsFactors = F ) 
 dfWineEntities <-
   dfWineEntities %>%
-  mutate( Label = ifelse( Label == "high", "high", "Non.high") )
+  dplyr::mutate( Label = ifelse( Label == "high", "high", "Non.high") )
 dfWineEntities <- melt( dfWineEntities, id.vars = "EntityID")
 dfWineEntities <- setNames(dfWineEntities, c("EntityID", "Attribute", "Value"))
 dfWineEntities <- dfWineEntities %>% arrange(EntityID)
 dfWineEntities
 ```
 
-## Export
-
-```{r}
-write.csv( x = dfWineEntities, file = paste0( saveDirectoryName, "entityAttributes.csv") )
-```
-
-```{r}
-write.csv( x = dfWineQualityLongForm, file = paste0( saveDirectoryName, "eventRecords.csv") )
-```
 
 # Specifications
 
 ```{r}
-origSpec <- read.csv( "~/ERTMon-R/data/computationSpecification.csv", stringsAsFactors = F)
+#origSpec <- read.csv( "../data/computationSpecification.csv", stringsAsFactors = F)
+origSpec <- ERTMonEmptyComputationSpecification( nrow = 1L )
 origSpec
 ```
 
@@ -105,6 +103,12 @@ outSpecDF <- outSpecDF[ order(outSpecDF$Variable), ]
 outSpecDF
 ```
 
+## Export
+
 ```{r}
-write.csv( x = outSpecDF, file= paste0( saveDirectoryName, "computationSpecification.csv" ), row.names = F)
+if(params$exportQ) {
+  write.csv( x = dfWineEntities, file = paste0( saveDirectoryName, "entityAttributes.csv") )
+  write.csv( x = dfWineQualityLongForm, file = paste0( saveDirectoryName, "eventRecords.csv") )
+  write.csv( x = outSpecDF, file= paste0( saveDirectoryName, "computationSpecification.csv" ), row.names = F)
+}
 ```

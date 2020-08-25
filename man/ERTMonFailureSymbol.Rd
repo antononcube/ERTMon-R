@@ -4,7 +4,9 @@
 \name{ERTMonFailureSymbol}
 \alias{ERTMonFailureSymbol}
 \title{Failure symbol for ERTMon.}
-\format{An object of class \code{logical} of length 1.}
+\format{
+An object of class \code{logical} of length 1.
+}
 \usage{
 ERTMonFailureSymbol
 }
