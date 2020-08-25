@@ -8,7 +8,7 @@ params:
 output: html_notebook
 ---
 
-```{r, eval=TRUE, include=FALSE}
+```{r setup}
 library(stringi)
 library(stringr)
 library(RcppRoll)
@@ -69,7 +69,7 @@ If it is done it is for convenience or "as a memo".
 (The label values are set through the parameters CSV table in the class ComputationSpecification.)
 
 ```{r}
-#dwObj@survivedLabel <- compSpecObj@parameters[ compSpecObj@parameters$Variable == "Label","Critical.label"]
+#dwObj@survivedLabel <- compSpecObj@parameters[ compSpecObj@parameters$Variable == "Label", "Critical.label"]
 ## Note the the computation here has two different approaches.
 #dwObj@diedLabel <- paste0("Non.", dwObj@survivedLabel)
 #dwObj@diedLabel <- setdiff( dwObj@labels, dwObj@survivedLabel)
@@ -114,8 +114,15 @@ if( params$categoricalMatricesQ ) {
 
 Note that the data has not been "seen" by the data transformation object:
 
+```{r, rows.print=20}
+compSpecObj@parameters
+```
+
 ```{r} 
-dtObj <- transformData( dtObj, compSpecObj, trainingData, dwObj@entityAttributes[ dwObj@entityAttributes$EntityID %in% trainingEntityIDs, ], 
+dtObj <- transformData( object = dtObj, 
+                        compSpec = compSpecObj, 
+                        eventRecordsData = trainingData, 
+                        entityAttributes = dwObj@entityAttributes[ (dwObj@entityAttributes$EntityID %in% trainingEntityIDs), ], 
                         outlierIdentifierParameteres = SPLUSQuartileIdentifierParameters) # also HampelIdentifierParameters or QuartileIdentifierParameters
 ```
 
@@ -124,11 +131,11 @@ transformedTrainingDataDF <- dtObj@transformedData
 ```
 
 ```{r}
-summary(as.data.frame(unclass(dtObj@transformedData)), maxsum=20)
+summary( as.data.frame(unclass(dtObj@transformedData), stringsAsFactors = T),  maxsum=20 )
 ```
 
 ```{r}
-summary( dtObj@transformedData %>% dplyr::filter( MatrixName == "HR.OutFrc" ) )
+summary( as.data.frame(unclass(dtObj@transformedData %>% dplyr::filter( MatrixName == "HR.OutFrc" )), stringsAsFactors = T) )
 ```
 
 Matrix version of the transformed data:
@@ -153,13 +160,13 @@ Here we show summaries of the entity data and medical data that are going to be 
 ### Patient data
 
 ```{r}
-summary(as.data.frame(unclass(dwObj@entityAttributes)))
+summary(as.data.frame(unclass(dwObj@entityAttributes), stringsAsFactors = T))
 ```
 
 ### Event records
 
 ```{r}
-summary(as.data.frame(unclass(dwObj@eventRecords)))
+summary(as.data.frame(unclass(dwObj@eventRecords), stringsAsFactors = T))
 ```
 
 ### Transformed event records data (training)
@@ -169,7 +176,7 @@ dim(transformedTrainingDataDF)
 ```
 
 ```{r}
-summary(as.data.frame(unclass(transformedTrainingDataDF)), maxsum=12)
+summary(as.data.frame(unclass(transformedTrainingDataDF), stringsAsFactors = T), maxsum=12)
 ```
  
 The corresponding data matrix:
@@ -209,6 +216,13 @@ smats <- setNames( purrr::map(names(smats), function(x) {m<-smats[[x]]; colnames
 ```
 
 ```{r}
-clSMRFreq <- SMRCreateFromMatrices( matrices = smats, tagTypes = names(smats), itemColumnName = "EntityID" )
+purrr::map_df( smats, function(x) data.frame( NRow = nrow(x), NCol = ncol(x) ), .id = "MatrixName" )
 ```
 
+```{r}
+names(smats)
+```
+
+```{r}
+clSMRFreq <- SMRCreateFromMatrices( matrices = smats[1:8], tagTypes = NULL, itemColumnName = "EntityID" )
+```
