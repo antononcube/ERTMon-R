@@ -1,6 +1,9 @@
 # Event Records Transformations Monad in R
 
+<!-- badges: start -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Codecov test coverage](https://codecov.io/gh/antononcube/ERTMon-R/branch/master/graph/badge.svg)](https://codecov.io/gh/antononcube/ERTMon-R?branch=master)
+<!-- badges: end -->
 
 This repository has an R implementation of the "**E**vent **R**ecords **T**ransformations **Mon**ad" (ERTMon) 
 described in [AA1] and implemented with Mathematica in [AAp1].
