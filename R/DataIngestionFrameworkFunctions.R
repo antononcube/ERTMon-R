@@ -225,9 +225,9 @@ AddTimeGrid <- function(eventRecords, maxHistoryLength, aggregationIntervalLengt
 }
 
 #' @description Finds entity-vs-time-grid-cell aggregation values based on variable-related specification.
-#' @param specRow a speficication that has columns "Variable" and "Aggregation.function"
+#' @param specRow a specification that has columns "Variable" and "Aggregation.function"
 #' @param eventRecordsData event records data in long form
-#' @param entityData entity specifica data
+#' @param entityData entity specific data
 #' @param aggrFuncSpecToFunc a named elements list of aggregation functions
 #' @param outlierBoundaries a data frame with columns c("Variable", "Lower", "Upper")
 #' @param outlierIdentifierFunc outlier identifier function
@@ -329,7 +329,6 @@ AggregateEventRecordsBySpec <- function(specRow,
     res
     
   } else {
-    
     ## The standard case.
     
     eventRecordsData %>% 
