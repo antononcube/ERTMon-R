@@ -10,7 +10,7 @@ Description: This package has an implementation an Event Records Transformations
 License: LGPL-3.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Collate: 
     'DataIngestionFrameworkFunctions.R'
     'ComputationSpecificationClass.R'
