@@ -629,10 +629,10 @@ setMethod("aggregateAndAccumulateOverGroups",
 ##---------------------------------------------------------
 ## Normalization step for the method "normalize".
 #' @description Applies a normalization function to long form contingency matrix data.
-#' @param specRow a speficication that has columns "MatrixName" and "Normalization"
+#' @param specRow a specification that has columns "MatrixName" and "Normalization"
 #' @param object the current object; it is the second argument in order to use %>%
 #' @param matLongFormData aggregated event records in long form
-#' @param entityAttributes entity specifica data
+#' @param entityAttributes entity specific data
 #' @param normalizationFuncSpecToFunc a named elements list of normalization functions
 setMethod("normalizeGroupsBySpec",
           signature = c(specRow = "list", object = "DataTransformer",  matLongFormData = "data.frame", entityAttributes = "data.frame", normalizationFuncSpecToFunc = "list"), 
@@ -643,14 +643,19 @@ setMethod("normalizeGroupsBySpec",
               if( is.null(object@groupAggregatedValues) ) {
                 stop("Missing accumulated averages data.", call. = TRUE )  
               }
-              
+          
               if ( ! ( specRow$Normalization.function[[1]] %in% c( names(normalizationFuncSpecToFunc), c( "Null", "NULL", "None") ) ) ) {
                 stop("Uknown normalization function.", call. = TRUE )
               }
               
-              dfNormalizationValues <- 
-                object@groupAggregatedValues %>%
-                dplyr::filter( MatrixName == specRow$MatrixName )
+
+              if( length(object@groupAggregatedValues) > 0 ) {
+                dfNormalizationValues <- 
+                  object@groupAggregatedValues %>%
+                  dplyr::filter( MatrixName == specRow$MatrixName )
+              } else {
+                dfNormalizationValues <- NULL
+              }
               
               if( is.null(dfNormalizationValues) || nrow(dfNormalizationValues) == 0 ) {
                 
